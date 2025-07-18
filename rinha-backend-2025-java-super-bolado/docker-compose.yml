@@ -1,0 +1,141 @@
+services:
+  backend-1:
+    image: gabxdevv/rinha-backend-2025-java-2:1.0.0
+    container_name: gaxdev_backend-1
+    environment:
+      RETRY_API_DEFAULT: 14
+      HTTP_CLIENT_WORKER: 21
+      TIMEOUT_DEFAULT: 180
+      TIMEOUT_FALLBACK: 95
+      QUEUE_BUFFER: 9000
+      THREADS_VIRTUAL_ENABLED: true
+      PAYMENT_PROCESSOR_URL_DEFAULT: http://payment-processor-default:8080/payments
+      PAYMENT_PROCESSOR_URL_FALLBACK: http://payment-processor-fallback:8080/payments
+      LOG_LEVEL: off
+      SERVER_PORT: 8080
+      BACK_END_URL: http://backend-2:8080
+      JAVA_OPTS: >-
+        -server
+        -XX:+UseG1GC
+        -XX:+UseFastAccessorMethods
+        -Xlog:disable
+        -XX:-PrintGC
+        -XX:+UseStringCache
+        -XX:-PrintGCDetails
+        -XX:-FlightRecorder
+        -XX:+DisableExplicitGC
+        -XX:+UseLargePages
+        -XX:+UseNUMA
+        -XX:+OptimizeStringConcat
+        -XX:+AggressiveOpts
+        -XX:-UseCounterDecay
+        -XX:+UseTransparentHugePages
+        -XX:+UseNUMAInterleaving
+        -XX:+UseCompressedOops
+        -XX:+UseCompressedClassPointers
+        -XX:+UseFastUnorderedTimeStamps
+        -XX:+UnlockExperimentalVMOptions
+        -XX:-UseBiasedLocking
+    networks:
+      - backend
+      - payment-processor
+    deploy:
+      resources:
+        limits:
+          cpus: '0.6'
+          memory: '116MB'
+
+  backend-2:
+    image: gabxdevv/rinha-backend-2025-java-2:1.0.0
+    container_name: gaxdev_backend-2
+    restart: always
+    environment:
+      RETRY_API_DEFAULT: 14
+      HTTP_CLIENT_WORKER: 21
+      TIMEOUT_DEFAULT: 180
+      TIMEOUT_FALLBACK: 95
+      QUEUE_BUFFER: 9000
+      THREADS_VIRTUAL_ENABLED: true
+      PAYMENT_PROCESSOR_URL_DEFAULT: http://payment-processor-default:8080/payments
+      PAYMENT_PROCESSOR_URL_FALLBACK: http://payment-processor-fallback:8080/payments
+      LOG_LEVEL: off
+      SERVER_PORT: 8080
+      BACK_END_URL: http://backend-1:8080
+      JAVA_OPTS: >-
+        -server
+        -XX:+UseG1GC
+        -XX:+UseFastAccessorMethods
+        -Xlog:disable
+        -XX:-PrintGC
+        -XX:+UseStringCache
+        -XX:-PrintGCDetails
+        -XX:-FlightRecorder
+        -XX:+DisableExplicitGC
+        -XX:+UseLargePages
+        -XX:+UseNUMA
+        -XX:+OptimizeStringConcat
+        -XX:+AggressiveOpts
+        -XX:-UseCounterDecay
+        -XX:+UseTransparentHugePages
+        -XX:+UseNUMAInterleaving
+        -XX:+UseCompressedOops
+        -XX:+UseCompressedClassPointers
+        -XX:+UseFastUnorderedTimeStamps
+        -XX:+UnlockExperimentalVMOptions
+        -XX:-UseBiasedLocking
+    networks:
+      - backend
+      - payment-processor
+    deploy:
+      resources:
+        limits:
+          cpus: '0.6'
+          memory: '116MB'
+
+  load-balancer:
+    image: gabxdevv/loud-balance-diferenciado:1.0.O
+    restart: always
+    container_name: gabxdev-load-balancer
+    depends_on:
+      - backend-1
+      - backend-2
+    ports:
+      - "9999:9999"
+    networks:
+      - backend
+    deploy:
+      resources:
+        limits:
+          cpus: "0.3"
+          memory: "116MB"
+    environment:
+      BACK_END_1_URL: ws://backend-1:8080/backend
+      BACK_END_2_URL: ws://backend-2:8080/backend
+      JAVA_OPTS: >-
+        -server
+        -XX:+UseG1GC
+        -XX:+UseFastAccessorMethods
+        -Xlog:disable
+        -XX:-PrintGC
+        -XX:+UseStringCache
+        -XX:-PrintGCDetails
+        -XX:-FlightRecorder
+        -XX:+DisableExplicitGC
+        -XX:+UseLargePages
+        -XX:+UseNUMA
+        -XX:+OptimizeStringConcat
+        -XX:+AggressiveOpts
+        -XX:-UseCounterDecay
+        -XX:+UseTransparentHugePages
+        -XX:+UseNUMAInterleaving
+        -XX:+UseCompressedOops
+        -XX:+UseCompressedClassPointers
+        -XX:+UseFastUnorderedTimeStamps
+        -XX:+UnlockExperimentalVMOptions
+        -XX:-UseBiasedLocking
+
+networks:
+  backend:
+    driver: bridge
+  payment-processor:
+    external: true

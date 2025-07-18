@@ -1,0 +1,54 @@
+spring:
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.admin.SpringApplicationAdminJmxAutoConfiguration
+  web:
+    resources:
+      add-mappings: false
+  application:
+    name: rinha-backend-2025-java
+    admin:
+      enabled: false
+  threads:
+    virtual:
+      enabled: ${THREADS_VIRTUAL_ENABLED:true}
+  main:
+    banner-mode: off
+    web-application-type: reactive
+  output:
+    ansi:
+      enabled: never
+  jmx:
+    enabled: false
+server:
+  port: ${SERVER_PORT:8084}
+  error:
+    include-binding-errors: never
+    include-path: never
+    include-exception: false
+    whitelabel:
+      enabled: false
+  compression:
+    enabled: false
+  netty:
+    validate-headers: false
+
+logging:
+  level:
+    root: ${LOG_LEVEL:INFO}
+    org:
+      springframework: ${LOG_LEVEL:INFO}
+
+rinha:
+  api:
+    backend: ${BACK_END_URL:http://localhost:8083}
+  server:
+    http-client-worker: ${HTTP_CLIENT_WORKER:25}
+  queue-buffer: ${QUEUE_BUFFER:15000}
+  payment:
+    processor:
+      timeout-default: ${TIMEOUT_DEFAULT:180}
+      timeout-fallback: ${TIMEOUT_FALLBACK:95}
+      retry-api-default: ${RETRY_API_DEFAULT:16}
+      url:
+        default: ${PAYMENT_PROCESSOR_URL_DEFAULT:http://localhost:8001/payments}
+        fallback: ${PAYMENT_PROCESSOR_URL_FALLBACK:http://localhost:8002/payments}

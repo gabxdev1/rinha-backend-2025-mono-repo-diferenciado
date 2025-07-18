@@ -1,0 +1,44 @@
+spring:
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.admin.SpringApplicationAdminJmxAutoConfiguration
+  web:
+    resources:
+      add-mappings: false
+  application:
+    name: loud-balance-diferenciado
+    admin:
+      enabled: false
+  threads:
+    virtual:
+      enabled: ${THREADS_VIRTUAL_ENABLED:true}
+  main:
+    banner-mode: off
+    web-application-type: reactive
+  output:
+    ansi:
+      enabled: never
+  jmx:
+    enabled: false
+server:
+  port: ${SERVER_PORT:9999}
+  error:
+    include-binding-errors: never
+    include-path: never
+    include-exception: false
+    whitelabel:
+      enabled: false
+  compression:
+    enabled: false
+  netty:
+    validate-headers: false
+
+logging:
+  level:
+    root: ${LOG_LEVEL:INFO}
+    org:
+      springframework: ${LOG_LEVEL:INFO}
+
+rinha:
+  api:
+    back-end-1-url: ${BACK_END_1_URL:ws://localhost:8083/backend}
+    back-end-2-url: ${BACK_END_2_URL:ws://localhost:8084/backend}
