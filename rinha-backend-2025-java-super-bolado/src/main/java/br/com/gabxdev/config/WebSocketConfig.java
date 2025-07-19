@@ -30,6 +30,4 @@ public class WebSocketConfig implements WebFluxConfigurer {
     public WebSocketHandlerAdapter wsAdapter() {
         return new WebSocketHandlerAdapter();
     }
-
-
 }
