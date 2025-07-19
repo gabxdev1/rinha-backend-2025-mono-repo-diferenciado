@@ -25,15 +25,6 @@ public class JsonParse {
         }
     }
 
-    public final static String PAYMENT_POST_REQUEST =
-            """
-                    {
-                        "correlationId": "%s",
-                        "amount": %s,
-                        "requestedAt" : "%s"
-                    }
-                    """;
-
     public static String buildPaymentDTO(Payment payment) {
         return new StringBuilder("{")
                 .append("\"correlationId\":\"").append(payment.getCorrelationId()).append("\",")
