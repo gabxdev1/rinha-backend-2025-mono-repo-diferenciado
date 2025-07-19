@@ -16,9 +16,9 @@ import java.util.HashMap;
 public class WebSocketConfig implements WebFluxConfigurer {
 
     @Bean
-    public HandlerMapping wsMapping(LoadBalanceHandler handler) {
+    public HandlerMapping wsMapping(LoadBalanceHandler loadBalanceHandler) {
         var map = new HashMap<String, LoadBalanceHandler>();
-        map.put("/backend", handler);
+        map.put("/backend", loadBalanceHandler);
 
         var mapping = new SimpleUrlHandlerMapping();
         mapping.setUrlMap(map);
