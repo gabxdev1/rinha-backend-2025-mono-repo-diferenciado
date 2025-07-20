@@ -26,15 +26,20 @@ public class PaymentMiddleware {
         callBackEndToPurgePayments();
     }
 
-    public Mono<Void> syncPaymentSummary(Instant from, Instant to) {
-        Sinks.One<PaymentSummaryGetResponse> sink = Sinks.one();
-        sinkRef.set(sink);
-
-        return Mono.fromRunnable(() -> {
-            var response = callBackEndSummary(from, to);
-            sink.tryEmitValue(response);
-        }).subscribeOn(Schedulers.boundedElastic()).then();
+    public Mono<PaymentSummaryGetResponse> syncPaymentSummary(Instant from, Instant to) {
+        return Mono.fromCallable(() ->
+                callBackEndSummary(from, to)).subscribeOn(Schedulers.single());
     }
+
+//    public Mono<Void> syncPaymentSummary(Instant from, Instant to) {
+//        Sinks.One<PaymentSummaryGetResponse> sink = Sinks.one();
+//        sinkRef.set(sink);
+//
+//        return Mono.fromRunnable(() -> {
+//            var response = callBackEndSummary(from, to);
+//            sink.tryEmitValue(response);
+//        }).subscribeOn(Schedulers.boundedElastic()).then();
+//    }
 
     public Mono<PaymentSummaryGetResponse> takeSummaryMerged(PaymentSummaryGetResponse current) {
         var sink = sinkRef.getAndSet(null);
@@ -47,7 +52,7 @@ public class PaymentMiddleware {
                 .map(remote -> mergeSummary(current, remote));
     }
 
-    private PaymentSummaryGetResponse mergeSummary(PaymentSummaryGetResponse summary1,
+    public static PaymentSummaryGetResponse mergeSummary(PaymentSummaryGetResponse summary1,
                                                    PaymentSummaryGetResponse summary2) {
         var api1TotalAmount1 = summary1.getDefaultApi().getTotalAmount();
         var api2TotalAmount1 = summary2.getDefaultApi().getTotalAmount();

@@ -6,10 +6,10 @@ import br.com.gabxdev.repository.InMemoryPaymentDatabase;
 import br.com.gabxdev.response.PaymentSummaryGetResponse;
 import br.com.gabxdev.ws.Event;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.socket.WebSocketSession;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
 
+import java.time.Instant;
 import java.time.ZoneOffset;
 
 import static br.com.gabxdev.mapper.JsonParse.parseInstant;
@@ -43,16 +43,32 @@ public class PaymentService {
         var to = parseInstant(instants[1]);
 
 
-        paymentMiddleware.syncPaymentSummary(from, to)
-                .then(Mono.fromSupplier(() -> {
-                    if (from.atZone(ZoneOffset.UTC).getYear() == 2000) {
-                        return paymentRepository.getTotalSummary();
-                    } else {
-                        return paymentRepository.getSummaryByTimeRange(from, to);
-                    }
-                }))
-                .flatMap(paymentMiddleware::takeSummaryMerged)
+        Mono.zip(paymentMiddleware.syncPaymentSummary(from, to), internalGetPaymentSummary(from, to))
+                .map(tuple ->
+                        PaymentMiddleware.mergeSummary(tuple.getT1(), tuple.getT2()))
                 .subscribe(summary -> sendSummary(event, summary, sink));
+
+
+//        paymentMiddleware.syncPaymentSummary(from, to)
+//                .then(Mono.fromSupplier(() -> {
+//                    if (from.atZone(ZoneOffset.UTC).getYear() == 2000) {
+//                        return paymentRepository.getTotalSummary();
+//                    } else {
+//                        return paymentRepository.getSummaryByTimeRange(from, to);
+//                    }
+//                }))
+//                .flatMap(paymentMiddleware::takeSummaryMerged)
+//                .subscribe(summary -> sendSummary(event, summary, sink));
+    }
+
+    private Mono<PaymentSummaryGetResponse> internalGetPaymentSummary(Instant from, Instant to) {
+        return Mono.fromSupplier(() -> {
+            if (from.atZone(ZoneOffset.UTC).getYear() == 2000) {
+                return paymentRepository.getTotalSummary();
+            } else {
+                return paymentRepository.getSummaryByTimeRange(from, to);
+            }
+        });
     }
 
     private void sendSummary(Event event, PaymentSummaryGetResponse response, Sinks.Many<String> sink) {
