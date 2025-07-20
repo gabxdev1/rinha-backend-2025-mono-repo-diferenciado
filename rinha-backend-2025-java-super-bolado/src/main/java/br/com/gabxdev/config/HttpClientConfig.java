@@ -19,6 +19,7 @@ public class HttpClientConfig {
     @Bean
     public WebClient apiPaymentProcessor(WebClient.Builder webClientBuilder) {
         var httpClient = HttpClient.create()
+                .keepAlive(true)
                 .compress(false)
                 .wiretap(false);
 

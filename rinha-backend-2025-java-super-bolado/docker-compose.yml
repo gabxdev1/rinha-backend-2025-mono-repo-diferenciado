@@ -24,18 +24,6 @@ services:
         -XX:-PrintGCDetails
         -XX:-FlightRecorder
         -XX:+DisableExplicitGC
-        -XX:+UseLargePages
-        -XX:+UseNUMA
-        -XX:+OptimizeStringConcat
-        -XX:+AggressiveOpts
-        -XX:-UseCounterDecay
-        -XX:+UseTransparentHugePages
-        -XX:+UseNUMAInterleaving
-        -XX:+UseCompressedOops
-        -XX:+UseCompressedClassPointers
-        -XX:+UseFastUnorderedTimeStamps
-        -XX:+UnlockExperimentalVMOptions
-        -XX:-UseBiasedLocking
     networks:
       - backend
       - payment-processor
@@ -71,18 +59,6 @@ services:
         -XX:-PrintGCDetails
         -XX:-FlightRecorder
         -XX:+DisableExplicitGC
-        -XX:+UseLargePages
-        -XX:+UseNUMA
-        -XX:+OptimizeStringConcat
-        -XX:+AggressiveOpts
-        -XX:-UseCounterDecay
-        -XX:+UseTransparentHugePages
-        -XX:+UseNUMAInterleaving
-        -XX:+UseCompressedOops
-        -XX:+UseCompressedClassPointers
-        -XX:+UseFastUnorderedTimeStamps
-        -XX:+UnlockExperimentalVMOptions
-        -XX:-UseBiasedLocking
     networks:
       - backend
       - payment-processor
@@ -121,18 +97,6 @@ services:
         -XX:-PrintGCDetails
         -XX:-FlightRecorder
         -XX:+DisableExplicitGC
-        -XX:+UseLargePages
-        -XX:+UseNUMA
-        -XX:+OptimizeStringConcat
-        -XX:+AggressiveOpts
-        -XX:-UseCounterDecay
-        -XX:+UseTransparentHugePages
-        -XX:+UseNUMAInterleaving
-        -XX:+UseCompressedOops
-        -XX:+UseCompressedClassPointers
-        -XX:+UseFastUnorderedTimeStamps
-        -XX:+UnlockExperimentalVMOptions
-        -XX:-UseBiasedLocking
 
 networks:
   backend:
