@@ -42,23 +42,10 @@ public class PaymentService {
         var from = parseInstant(instants[0]);
         var to = parseInstant(instants[1]);
 
-
         Mono.zip(paymentMiddleware.syncPaymentSummary(from, to), internalGetPaymentSummary(from, to))
                 .map(tuple ->
                         PaymentMiddleware.mergeSummary(tuple.getT1(), tuple.getT2()))
                 .subscribe(summary -> sendSummary(event, summary, sink));
-
-
-//        paymentMiddleware.syncPaymentSummary(from, to)
-//                .then(Mono.fromSupplier(() -> {
-//                    if (from.atZone(ZoneOffset.UTC).getYear() == 2000) {
-//                        return paymentRepository.getTotalSummary();
-//                    } else {
-//                        return paymentRepository.getSummaryByTimeRange(from, to);
-//                    }
-//                }))
-//                .flatMap(paymentMiddleware::takeSummaryMerged)
-//                .subscribe(summary -> sendSummary(event, summary, sink));
     }
 
     private Mono<PaymentSummaryGetResponse> internalGetPaymentSummary(Instant from, Instant to) {

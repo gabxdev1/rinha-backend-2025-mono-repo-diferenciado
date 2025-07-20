@@ -31,16 +31,6 @@ public class PaymentMiddleware {
                 callBackEndSummary(from, to)).subscribeOn(Schedulers.boundedElastic());
     }
 
-//    public Mono<Void> syncPaymentSummary(Instant from, Instant to) {
-//        Sinks.One<PaymentSummaryGetResponse> sink = Sinks.one();
-//        sinkRef.set(sink);
-//
-//        return Mono.fromRunnable(() -> {
-//            var response = callBackEndSummary(from, to);
-//            sink.tryEmitValue(response);
-//        }).subscribeOn(Schedulers.boundedElastic()).then();
-//    }
-
     public Mono<PaymentSummaryGetResponse> takeSummaryMerged(PaymentSummaryGetResponse current) {
         var sink = sinkRef.getAndSet(null);
         if (sink == null) {
