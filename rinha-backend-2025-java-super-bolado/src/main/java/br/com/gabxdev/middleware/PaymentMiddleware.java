@@ -28,7 +28,7 @@ public class PaymentMiddleware {
 
     public Mono<PaymentSummaryGetResponse> syncPaymentSummary(Instant from, Instant to) {
         return Mono.fromCallable(() ->
-                callBackEndSummary(from, to)).subscribeOn(Schedulers.single());
+                callBackEndSummary(from, to)).subscribeOn(Schedulers.boundedElastic());
     }
 
 //    public Mono<Void> syncPaymentSummary(Instant from, Instant to) {
