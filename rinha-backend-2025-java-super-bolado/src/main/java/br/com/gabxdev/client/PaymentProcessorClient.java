@@ -14,20 +14,16 @@ public class PaymentProcessorClient {
 
     private final WebClient apiPaymentProcessor;
 
+    private final Duration timeout = Duration.ofSeconds(30);
+
     @Value("${rinha.payment.processor.url.default}")
-    public String paymentProcessorUrlDefault;
+    private String paymentProcessorUrlDefault;
 
     @Value("${rinha.payment.processor.url.fallback}")
-    public String paymentProcessorUrlFallBack;
-
-    @Value("${rinha.payment.processor.timeout-default}")
-    public int timeoutDefault;
-
-    @Value("${rinha.payment.processor.timeout-fallback}")
-    public int timeoutFallback;
+    private String paymentProcessorUrlFallBack;
 
     @Value("${rinha.payment.processor.retry-api-default}")
-    public int retryApiDefault;
+    private int retryApiDefault;
 
     public PaymentProcessorClient(WebClient apiPaymentProcessor) {
         this.apiPaymentProcessor = apiPaymentProcessor;
@@ -55,14 +51,8 @@ public class PaymentProcessorClient {
         return apiPaymentProcessor.post()
                 .uri(paymentProcessorUrlFallBack)
                 .bodyValue(json)
-                .exchangeToMono(response -> {
-                    if (response.statusCode().is2xxSuccessful()) {
-                        return Mono.just(true);
-                    } else {
-                        return Mono.just(false);
-                    }
-                })
-                .timeout(Duration.ofSeconds(timeoutFallback))
+                .exchangeToMono(response -> Mono.just(response.statusCode().is2xxSuccessful()))
+                .timeout(timeout)
                 .onErrorReturn(false)
                 .block();
     }
@@ -71,25 +61,9 @@ public class PaymentProcessorClient {
         return apiPaymentProcessor.post()
                 .uri(paymentProcessorUrlDefault)
                 .bodyValue(json)
-                .exchangeToMono(response -> {
-                    if (response.statusCode().is2xxSuccessful()) {
-                        return Mono.just(true);
-                    } else {
-                        return Mono.just(false);
-                    }
-                })
-                .timeout(Duration.ofSeconds(timeoutDefault))
+                .exchangeToMono(response -> Mono.just(response.statusCode().is2xxSuccessful()))
+                .timeout(timeout)
                 .onErrorReturn(false)
                 .block();
     }
-
-    /**
-     * apiPaymentProcessor.post()
-     *                 .uri(paymentProcessorUrlDefault)
-     *                 .bodyValue(json)
-     *                 .retrieve()
-     *                 .toBodilessEntity()
-     *                 .timeout(Duration.ofSeconds(timeoutDefault))
-     *                 .block();
-     */
 }

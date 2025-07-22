@@ -14,8 +14,6 @@ import java.util.concurrent.atomic.AtomicReference;
 @Component
 public class PaymentMiddleware {
 
-    private final AtomicReference<Sinks.One<PaymentSummaryGetResponse>> sinkRef = new AtomicReference<>();
-
     private final RestClient apiInternalClient;
 
     public PaymentMiddleware(RestClient apiInternalClient) {
@@ -29,17 +27,6 @@ public class PaymentMiddleware {
     public Mono<PaymentSummaryGetResponse> syncPaymentSummary(Instant from, Instant to) {
         return Mono.fromCallable(() ->
                 callBackEndSummary(from, to)).subscribeOn(Schedulers.boundedElastic());
-    }
-
-    public Mono<PaymentSummaryGetResponse> takeSummaryMerged(PaymentSummaryGetResponse current) {
-        var sink = sinkRef.getAndSet(null);
-        if (sink == null) {
-            System.out.println("No sink available");
-            return Mono.error(new IllegalStateException("Nenhuma resposta disponível"));
-        }
-
-        return sink.asMono()
-                .map(remote -> mergeSummary(current, remote));
     }
 
     public static PaymentSummaryGetResponse mergeSummary(PaymentSummaryGetResponse summary1,

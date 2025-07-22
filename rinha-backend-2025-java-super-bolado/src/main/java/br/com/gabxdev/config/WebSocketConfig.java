@@ -22,7 +22,7 @@ public class WebSocketConfig implements WebFluxConfigurer {
 
         var mapping = new SimpleUrlHandlerMapping();
         mapping.setUrlMap(map);
-        mapping.setOrder(10);
+        mapping.setOrder(1);
         return mapping;
     }
 

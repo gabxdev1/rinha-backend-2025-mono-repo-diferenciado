@@ -49,6 +49,7 @@ rinha:
       timeout-default: ${TIMEOUT_DEFAULT:180}
       timeout-fallback: ${TIMEOUT_FALLBACK:95}
       retry-api-default: ${RETRY_API_DEFAULT:16}
+      use-thread-virtual: ${USE_THREAD_VIRTUAL:false}
       url:
         default: ${PAYMENT_PROCESSOR_URL_DEFAULT:http://localhost:8001/payments}
         fallback: ${PAYMENT_PROCESSOR_URL_FALLBACK:http://localhost:8002/payments}

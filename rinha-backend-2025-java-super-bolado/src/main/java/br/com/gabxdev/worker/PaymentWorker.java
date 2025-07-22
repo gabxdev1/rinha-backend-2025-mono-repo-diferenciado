@@ -12,6 +12,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 @Component
 public class PaymentWorker {
 
+    @Value("${rinha.payment.processor.use-thread-virtual}")
+    private boolean useVirtualThreads;
+
     @Value("${rinha.server.http-client-worker}")
     private Integer workersQuantity;
 
@@ -34,7 +37,11 @@ public class PaymentWorker {
         this.queue = new LinkedBlockingQueue<>(queueBuffer);
 
         for (int i = 0; i < workersQuantity; i++) {
-            Thread.startVirtualThread(this::runWorker);
+            if (useVirtualThreads) {
+                Thread.startVirtualThread(this::runWorker);
+            } else {
+                new Thread(this::runWorker).start();
+            }
         }
     }
 
@@ -55,15 +62,11 @@ public class PaymentWorker {
     }
 
     public void enqueue(Payment request) {
-        if (!queue.offer(request)) {
-            throw new RuntimeException("queue full");
-        }
+        queue.offer(request);
     }
 
     private void processPayment(Payment payment) {
-        var isSuccessful = processorClient.sendPayment(payment);
-
-        if (isSuccessful) {
+        if (processorClient.sendPayment(payment)) {
             paymentRepository.save(payment);
 
             return;
