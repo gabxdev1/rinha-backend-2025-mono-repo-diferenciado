@@ -7,7 +7,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 public class Payment {
-    private UUID correlationId;
+    private String correlationId;
 
     private BigDecimal amount;
 
@@ -20,17 +20,17 @@ public class Payment {
     public Payment() {
     }
 
-    public Payment(UUID correlationId, BigDecimal amount, Instant requestedAt) {
+    public Payment(String correlationId, BigDecimal amount, Instant requestedAt) {
         this.correlationId = correlationId;
         this.amount = amount;
         this.requestedAt = requestedAt;
     }
 
-    public UUID getCorrelationId() {
+    public String getCorrelationId() {
         return correlationId;
     }
 
-    public void setCorrelationId(UUID correlationId) {
+    public void setCorrelationId(String correlationId) {
         this.correlationId = correlationId;
     }
 

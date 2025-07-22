@@ -6,9 +6,6 @@ import br.com.gabxdev.response.PaymentSummaryGetResponse;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.UUID;
-
-import static br.com.gabxdev.mapper.JsonTemplate.PAYMENT_SUMMARY;
 
 public class JsonParse {
 
@@ -51,10 +48,16 @@ public class JsonParse {
                                            String totalRequestsFallback,
                                            String amountTotalDefault) {
 
-        return String.format(PAYMENT_SUMMARY,
-                totalRequestsDefault,
-                totalAmountDefault,
-                totalRequestsFallback,
-                amountTotalDefault);
+        return new StringBuilder("{")
+                .append("\"default\": {")
+                .append("\"totalRequests\":").append(totalRequestsDefault).append(",")
+                .append("\"totalAmount\":").append(totalAmountDefault)
+                .append("},")
+                .append("\"fallback\": {")
+                .append("\"totalRequests\":").append(totalRequestsFallback).append(",")
+                .append("\"totalAmount\":").append(amountTotalDefault)
+                .append("}")
+                .append("}")
+                .toString();
     }
 }

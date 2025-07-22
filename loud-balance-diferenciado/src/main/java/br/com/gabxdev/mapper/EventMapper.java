@@ -10,8 +10,9 @@ import java.time.ZoneOffset;
 @Component
 public class EventMapper {
     public String toPaymentPostRequest(String json) {
-        return Event.buildEventDTO(" ", EventType.PAYMENT_POST,
-                JsonParse.extractUUIDFromRequest(json));
+        return Event.buildEventDTO(" ",
+                EventType.PAYMENT_POST,
+                PaymentParse.extractUUIDFromRequest(json));
     }
 
     public String toPurgePaymentsPostRequest() {

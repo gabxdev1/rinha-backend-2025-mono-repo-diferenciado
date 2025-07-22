@@ -12,9 +12,7 @@ public class PaymentMapper {
     private final static BigDecimal amount = new BigDecimal("19.90");
 
     public static Payment toPayment(String uuid) {
-        var correlationId = UUID.fromString(uuid);
-
-        var paymentPostToProcessorRequest = new Payment(correlationId, amount,
+        var paymentPostToProcessorRequest = new Payment(uuid, amount,
                 Instant.now());
 
         paymentPostToProcessorRequest.json = buildPaymentDTO(paymentPostToProcessorRequest);

@@ -63,7 +63,7 @@ public class PaymentService {
         event.setPayload(payload);
 
         var message = Event.buildEventDTO(event);
-        sink.tryEmitNext(message);
+        sink.emitNext(message, Sinks.EmitFailureHandler.FAIL_FAST);
     }
 
     public void purgePayments() {

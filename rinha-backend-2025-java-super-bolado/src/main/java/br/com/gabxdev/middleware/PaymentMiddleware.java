@@ -5,11 +5,9 @@ import br.com.gabxdev.response.PaymentSummaryGetResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import reactor.core.publisher.Mono;
-import reactor.core.publisher.Sinks;
 import reactor.core.scheduler.Schedulers;
 
 import java.time.Instant;
-import java.util.concurrent.atomic.AtomicReference;
 
 @Component
 public class PaymentMiddleware {
@@ -30,7 +28,7 @@ public class PaymentMiddleware {
     }
 
     public static PaymentSummaryGetResponse mergeSummary(PaymentSummaryGetResponse summary1,
-                                                   PaymentSummaryGetResponse summary2) {
+                                                         PaymentSummaryGetResponse summary2) {
         var api1TotalAmount1 = summary1.getDefaultApi().getTotalAmount();
         var api2TotalAmount1 = summary2.getDefaultApi().getTotalAmount();
 

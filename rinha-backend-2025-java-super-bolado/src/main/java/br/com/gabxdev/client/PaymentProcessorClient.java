@@ -14,7 +14,7 @@ public class PaymentProcessorClient {
 
     private final WebClient apiPaymentProcessor;
 
-    private final Duration timeout = Duration.ofSeconds(30);
+    private final Duration timeout = Duration.ofSeconds(10);
 
     @Value("${rinha.payment.processor.url.default}")
     private String paymentProcessorUrlDefault;

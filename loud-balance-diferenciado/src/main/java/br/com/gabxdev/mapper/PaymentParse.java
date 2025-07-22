@@ -1,6 +1,8 @@
 package br.com.gabxdev.mapper;
 
-public class JsonParse {
+import java.time.Instant;
+
+public class PaymentParse {
     private final static String key = "\"correlationId\":";
 
     public static String extractUUIDFromRequest(String json) {
@@ -9,4 +11,5 @@ public class JsonParse {
 
         return json.substring(start, end);
     }
+
 }

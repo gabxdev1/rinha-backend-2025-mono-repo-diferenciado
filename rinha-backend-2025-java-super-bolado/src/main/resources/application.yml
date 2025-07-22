@@ -42,14 +42,12 @@ rinha:
   api:
     backend: ${BACK_END_URL:http://localhost:8083}
   server:
-    http-client-worker: ${HTTP_CLIENT_WORKER:25}
-  queue-buffer: ${QUEUE_BUFFER:15000}
+    worker-pool-size: ${WORKER_POOL_SIZE:25}
+  queue-buffer: ${QUEUE_BUFFER:10000}
   payment:
     processor:
-      timeout-default: ${TIMEOUT_DEFAULT:180}
-      timeout-fallback: ${TIMEOUT_FALLBACK:95}
-      retry-api-default: ${RETRY_API_DEFAULT:16}
-      use-thread-virtual: ${USE_THREAD_VIRTUAL:false}
+      retry-api-default: ${RETRY_API_DEFAULT:14}
+      use-thread-virtual: ${USE_THREAD_VIRTUAL:true}
       url:
         default: ${PAYMENT_PROCESSOR_URL_DEFAULT:http://localhost:8001/payments}
         fallback: ${PAYMENT_PROCESSOR_URL_FALLBACK:http://localhost:8002/payments}

@@ -10,7 +10,7 @@
     </parent>
     <groupId>br.com.gabxdev</groupId>
     <artifactId>rinha-backend-2025-java-super-bolado</artifactId>
-    <version>1.0.0</version>
+    <version>2.0.0</version>
     <name>rinha-backend-2025-java-super-bolado</name>
     <description>rinha-backend-2025-java-super-bolado</description>
     <properties>
@@ -38,7 +38,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <image>
-                        <name>gabxdevv/rinha-backend-2025-java-2:${project.version}</name>
+                        <name>gabxdevv/rinha-backend-2025-java:${project.version}</name>
                         <builder>paketobuildpacks/builder-jammy-java-tiny:latest</builder>
                         <env>
                             <BP_NATIVE_IMAGE>true</BP_NATIVE_IMAGE>

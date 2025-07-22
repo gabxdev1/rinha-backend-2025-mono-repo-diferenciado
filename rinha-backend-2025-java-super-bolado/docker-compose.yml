@@ -1,19 +1,15 @@
 services:
   backend-1:
-    image: gabxdevv/rinha-backend-2025-java-2:1.0.0
-    container_name: gaxdev_backend-1
+    image: gabxdevv/rinha-backend-2025-java:2.0.0
+    container_name: gaxdev-backend-1
     environment:
       RETRY_API_DEFAULT: 14
-      HTTP_CLIENT_WORKER: 21
-      TIMEOUT_DEFAULT: 180
-      TIMEOUT_FALLBACK: 95
-      QUEUE_BUFFER: 9000
-      THREADS_VIRTUAL_ENABLED: true
+      WORKER_POOL_SIZE: 25
       PAYMENT_PROCESSOR_URL_DEFAULT: http://payment-processor-default:8080/payments
       PAYMENT_PROCESSOR_URL_FALLBACK: http://payment-processor-fallback:8080/payments
       LOG_LEVEL: off
-      SERVER_PORT: 8080
       BACK_END_URL: http://backend-2:8080
+      SERVER_PORT: 8080
       JAVA_OPTS: >-
         -server
         -XX:+UseG1GC
@@ -34,21 +30,17 @@ services:
           memory: '116MB'
 
   backend-2:
-    image: gabxdevv/rinha-backend-2025-java-2:1.0.0
-    container_name: gaxdev_backend-2
+    image: gabxdevv/rinha-backend-2025-java:2.0.0
+    container_name: gaxdev-backend-2
     restart: always
     environment:
       RETRY_API_DEFAULT: 14
-      HTTP_CLIENT_WORKER: 21
-      TIMEOUT_DEFAULT: 180
-      TIMEOUT_FALLBACK: 95
-      QUEUE_BUFFER: 9000
-      THREADS_VIRTUAL_ENABLED: true
+      WORKER_POOL_SIZE: 25
       PAYMENT_PROCESSOR_URL_DEFAULT: http://payment-processor-default:8080/payments
       PAYMENT_PROCESSOR_URL_FALLBACK: http://payment-processor-fallback:8080/payments
       LOG_LEVEL: off
-      SERVER_PORT: 8080
       BACK_END_URL: http://backend-1:8080
+      SERVER_PORT: 8080
       JAVA_OPTS: >-
         -server
         -XX:+UseG1GC
@@ -69,9 +61,9 @@ services:
           memory: '116MB'
 
   load-balancer:
-    image: gabxdevv/loud-balance-diferenciado:1.0.O
+    image: gabxdevv/loud-balance-diferenciado:1.0.1
     restart: always
-    container_name: gabxdev-load-balancer
+    container_name: gabxdev-load-balance-bolado
     depends_on:
       - backend-1
       - backend-2

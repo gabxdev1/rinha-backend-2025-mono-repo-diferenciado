@@ -29,7 +29,7 @@ public class PaymentSummaryMapper {
     }
 
     private static String extractField(String json, String section, String field) {
-        String sectionKey = "\"" + section + "\":";
+        var sectionKey = "\"" + section + "\":";
         var sectionStart = json.indexOf(sectionKey);
         if (sectionStart == -1) throw new IllegalArgumentException(section + " not found");
 

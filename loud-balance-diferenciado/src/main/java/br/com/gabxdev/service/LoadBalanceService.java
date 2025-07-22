@@ -1,6 +1,6 @@
 package br.com.gabxdev.service;
 
-import br.com.gabxdev.client.WebSocketRouter;
+import br.com.gabxdev.router.WebSocketRouter;
 import br.com.gabxdev.mapper.EventMapper;
 import org.springframework.stereotype.Service;
 
