@@ -60,4 +60,33 @@ public class JsonParse {
                 .append("}")
                 .toString();
     }
+
+    public static String parseToJsonPaymentSummaryInternal(PaymentSummaryGetResponse paymentSummary) {
+        var totalRequestsDefault = paymentSummary.getDefaultApi().getTotalRequests();
+        var totalRequestsFallback = paymentSummary.getFallbackApi().getTotalRequests();
+
+
+        return buildSummaryJsonInternal(
+                totalRequestsDefault.toString(),
+                paymentSummary.getDefaultApi().getTotalAmount().toPlainString(),
+                totalRequestsFallback.toString(),
+                paymentSummary.getFallbackApi().getTotalAmount().toPlainString()
+        );
+    }
+
+    private static String buildSummaryJsonInternal(String totalRequestsDefault, String totalAmountDefault,
+                                                   String totalRequestsFallback,
+                                                   String amountTotalDefault) {
+
+        var sb = new StringBuilder(100);
+
+        return sb.append(totalRequestsDefault)
+                .append("-")
+                .append(totalAmountDefault)
+                .append("-")
+                .append(totalRequestsFallback)
+                .append("-")
+                .append(amountTotalDefault)
+                .toString();
+    }
 }

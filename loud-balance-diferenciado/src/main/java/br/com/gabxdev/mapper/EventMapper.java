@@ -12,7 +12,7 @@ public class EventMapper {
     public String toPaymentPostRequest(String json) {
         return Event.buildEventDTO(" ",
                 EventType.PAYMENT_POST,
-                PaymentParse.extractUUIDFromRequest(json));
+                PaymentRequestParse.buildPayload(json));
     }
 
     public String toPurgePaymentsPostRequest() {

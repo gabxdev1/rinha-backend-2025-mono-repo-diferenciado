@@ -1,6 +1,6 @@
 services:
   backend-1:
-    image: gabxdevv/rinha-backend-2025-java:2.0.0
+    image: gabxdevv/rinha-backend-2025-java:2.0.1
     container_name: gaxdev-backend-1
     environment:
       RETRY_API_DEFAULT: 14
@@ -30,7 +30,7 @@ services:
           memory: '116MB'
 
   backend-2:
-    image: gabxdevv/rinha-backend-2025-java:2.0.0
+    image: gabxdevv/rinha-backend-2025-java:2.0.1
     container_name: gaxdev-backend-2
     restart: always
     environment:

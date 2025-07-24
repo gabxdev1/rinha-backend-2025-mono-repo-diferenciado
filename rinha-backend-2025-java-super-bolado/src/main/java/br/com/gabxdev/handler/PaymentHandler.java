@@ -57,6 +57,6 @@ public class PaymentHandler {
 
         return ServerResponse.ok()
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(JsonParse.parseToJsonPaymentSummary(paymentSummary));
+                .bodyValue(JsonParse.parseToJsonPaymentSummaryInternal(paymentSummary));
     }
 }

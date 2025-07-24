@@ -9,10 +9,10 @@ import java.util.UUID;
 import static br.com.gabxdev.mapper.JsonParse.buildPaymentDTO;
 
 public class PaymentMapper {
-    private final static BigDecimal amount = new BigDecimal("19.90");
+    public static Payment toPayment(String payload) {
+        var body = payload.split(" ");
 
-    public static Payment toPayment(String uuid) {
-        var paymentPostToProcessorRequest = new Payment(uuid, amount,
+        var paymentPostToProcessorRequest = new Payment(body[0], new BigDecimal(body[1]),
                 Instant.now());
 
         paymentPostToProcessorRequest.json = buildPaymentDTO(paymentPostToProcessorRequest);

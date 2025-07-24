@@ -53,14 +53,13 @@ public class InMemoryPaymentDatabase {
         return new PaymentSummaryGetResponse(defaultSummary, fallbackSummary);
     }
 
-    private PaymentSummary summarize(PaymentProcessorType type, List<Payment> list) {
-        if (list == null || list.isEmpty()) {
+    private PaymentSummary summarize(PaymentProcessorType type, List<Payment> payments) {
+        if (payments == null || payments.isEmpty()) {
             return new PaymentSummary(type, 0, BigDecimal.ZERO);
         }
 
-        var count = list.size();
-        var total = new BigDecimal("19.90")
-                .multiply(BigDecimal.valueOf(count));
+        var count = payments.size();
+        var total = payments.getFirst().getAmount().multiply(BigDecimal.valueOf(count));
 
         return new PaymentSummary(type, count, total);
     }
