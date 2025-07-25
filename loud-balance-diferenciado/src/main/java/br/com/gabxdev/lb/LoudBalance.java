@@ -1,7 +1,7 @@
 package br.com.gabxdev.lb;
 
+import br.com.gabxdev.socket.BackendAddress;
 import org.springframework.stereotype.Component;
-import org.springframework.web.reactive.socket.WebSocketSession;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -11,7 +11,7 @@ public class LoudBalance {
 
     private final AtomicInteger roundRobinIndex = new AtomicInteger(0);
 
-    public WebSocketSession selectBackEnd(List<WebSocketSession> sessions) {
+    public BackendAddress selectBackEnd(List<BackendAddress> sessions) {
         int index = roundRobinIndex.getAndIncrement() % sessions.size();
 
         return sessions.get(index);

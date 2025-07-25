@@ -11,7 +11,7 @@ import reactor.core.publisher.Sinks;
 import reactor.util.concurrent.Queues;
 
 @Component
-public class LoadBalanceHandler implements WebSocketHandler {
+public class LoadBalanceHandler {
 
     private final PaymentHandler paymentHandler;
 
@@ -19,24 +19,8 @@ public class LoadBalanceHandler implements WebSocketHandler {
         this.paymentHandler = paymentHandler;
     }
 
-    @Override
-    public Mono<Void> handle(WebSocketSession session) {
-        Sinks.Many<String> sink = Sinks.many()
-                .multicast()
-                .onBackpressureBuffer(Queues.SMALL_BUFFER_SIZE, false);
+    public void handle(WebSocketSession session) {
 
-        var receive = session.receive()
-                .map(WebSocketMessage::getPayloadAsText)
-                .doOnNext(json -> processEvent(json, sink))
-                .onErrorContinue((err, obj) -> System.out.println(err.getMessage()))
-                .then();
-
-        var send = session.send(sink
-                .asFlux()
-                .map(session::textMessage)
-                .onBackpressureBuffer());
-
-        return Mono.zip(receive, send).then();
     }
 
     private void processEvent(String eventJson, Sinks.Many<String> sink) {

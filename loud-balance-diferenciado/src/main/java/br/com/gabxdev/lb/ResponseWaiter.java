@@ -11,16 +11,13 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 public class ResponseWaiter {
-    private final Map<String, MonoSink<String>> pendingResponses = new ConcurrentHashMap<>();
+    private final Map<String, String> pendingResponses = new ConcurrentHashMap<>();
 
-    public Mono<String> awaitResponse(String correlationId, Duration timeout) {
-        return Mono.<String>create(sink -> pendingResponses.put(correlationId, sink))
-                .timeout(timeout)
-                .doFinally(signal -> pendingResponses.remove(correlationId));
+    public String awaitResponse(String correlationId, Duration timeout) {
+        return "";
     }
 
     public void completeResponse(String correlationId, String responseJson) {
-        Optional.ofNullable(pendingResponses.remove(correlationId))
-                .ifPresent(sink -> sink.success(responseJson));
+
     }
 }
