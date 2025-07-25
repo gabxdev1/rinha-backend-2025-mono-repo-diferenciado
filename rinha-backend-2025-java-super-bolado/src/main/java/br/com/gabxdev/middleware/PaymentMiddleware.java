@@ -4,8 +4,6 @@ import br.com.gabxdev.mapper.PaymentSummaryMapper;
 import br.com.gabxdev.response.PaymentSummaryGetResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
-import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 
 import java.time.Instant;
 
@@ -22,9 +20,8 @@ public class PaymentMiddleware {
         callBackEndToPurgePayments();
     }
 
-    public Mono<PaymentSummaryGetResponse> syncPaymentSummary(Instant from, Instant to) {
-        return Mono.fromCallable(() ->
-                callBackEndSummary(from, to)).subscribeOn(Schedulers.boundedElastic());
+    public PaymentSummaryGetResponse syncPaymentSummary(Instant from, Instant to) {
+        return callBackEndSummary(from, to);
     }
 
     public static PaymentSummaryGetResponse mergeSummary(PaymentSummaryGetResponse summary1,

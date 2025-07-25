@@ -4,14 +4,11 @@ import br.com.gabxdev.mapper.JsonParse;
 import br.com.gabxdev.model.Payment;
 import br.com.gabxdev.service.PaymentService;
 import br.com.gabxdev.worker.PaymentWorker;
-import br.com.gabxdev.ws.Event;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
-import reactor.core.publisher.Sinks;
-import reactor.core.scheduler.Schedulers;
 
 @Component
 public class PaymentHandler {
@@ -32,15 +29,12 @@ public class PaymentHandler {
     }
 
     public void purgePayments() {
-        Mono.fromRunnable(paymentService::purgePayments)
-                .subscribeOn(Schedulers.boundedElastic())
-                .subscribe();
+        paymentService.purgePayments();
     }
 
-    public void paymentSummary(Event event, Sinks.Many<String> sink) {
-        paymentService.getPaymentSummary(event, sink);
+    public void paymentSummary(String payload) {
+        paymentService.getPaymentSummary(payload);
     }
-
 
     public Mono<ServerResponse> purgePaymentsInternal(ServerRequest request) {
         paymentService.purgePaymentsInternal();

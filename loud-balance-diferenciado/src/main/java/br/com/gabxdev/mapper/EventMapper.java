@@ -11,12 +11,12 @@ import java.time.ZoneOffset;
 public class EventMapper {
     public String toPaymentPostRequest(String json) {
         return Event.buildEventDTO(" ",
-                EventType.PAYMENT_POST,
+                EventType.PAYMENT_POST.ordinal(),
                 PaymentRequestParse.buildPayload(json));
     }
 
     public String toPurgePaymentsPostRequest() {
-        return Event.buildEventDTO(" ", EventType.PURGER, " ");
+        return Event.buildEventDTO(" ", EventType.PURGER.ordinal(), " ");
     }
 
     public String toPaymentSummaryGetRequest(String from, String to, String uuid) {
@@ -29,7 +29,7 @@ public class EventMapper {
         }
 
         return Event.buildEventDTO(uuid,
-                EventType.PAYMENT_SUMMARY,
+                EventType.PAYMENT_SUMMARY.ordinal(),
                 from.concat("@").concat(to));
     }
 }

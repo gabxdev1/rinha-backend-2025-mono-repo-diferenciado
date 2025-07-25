@@ -27,7 +27,7 @@ public class Event {
     }
 
 
-    public static String buildEventDTO(String id, EventType type, String payload) {
+    public static String buildEventDTO(String id, int type, String payload) {
         return new StringBuilder(id)
                 .append("&")
                 .append(type)
@@ -36,20 +36,11 @@ public class Event {
                 .toString();
     }
 
-    public static String buildEventDTO(Event event) {
-        return new StringBuilder(event.id)
-                .append("&")
-                .append(event.type)
-                .append("&")
-                .append(event.payload)
-                .toString();
-    }
-
     public static Event parseEvent(String eventDTO) {
         var eventString = eventDTO.split("&");
 
         return new Event(eventString[0],
-                EventType.valueOf(eventString[1]),
+                EventType.values()[Integer.parseInt(eventString[1])],
                 eventString[2]);
     }
 }

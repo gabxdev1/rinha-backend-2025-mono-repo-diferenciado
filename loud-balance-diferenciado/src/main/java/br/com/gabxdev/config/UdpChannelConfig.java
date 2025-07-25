@@ -1,6 +1,5 @@
 package br.com.gabxdev.config;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -11,16 +10,13 @@ import java.nio.channels.DatagramChannel;
 @Configuration
 public class UdpChannelConfig {
 
-    @Value("${rinha.api.udp-channel-port}")
-    private int udpChannelPort;
-
     @Bean
     public  DatagramChannel datagramChannel() throws IOException {
         var channel = DatagramChannel.open();
 
-        channel.configureBlocking(true);
+        channel.configureBlocking(false);
 
-        channel.bind(new InetSocketAddress(udpChannelPort));
+        channel.bind(new InetSocketAddress(4000));
 
         return channel;
     }

@@ -52,7 +52,7 @@ public class Event {
         var eventString = eventDTO.split("&");
 
         return new Event(eventString[0],
-                EventType.valueOf(eventString[1]),
+                EventType.values()[Integer.parseInt(eventString[1])],
                 eventString[2]);
     }
 

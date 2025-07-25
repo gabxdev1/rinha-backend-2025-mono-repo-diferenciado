@@ -16,7 +16,7 @@ public class PaymentWorker {
     @Value("${rinha.payment.processor.use-thread-virtual}")
     private boolean useVirtualThreads;
 
-    @Value("${rinha.server.worker-pool-size}")
+    @Value("${rinha.http-client.worker-pool-size}")
     private Integer workerPoolSize;
 
     @Value("${rinha.queue-buffer}")
