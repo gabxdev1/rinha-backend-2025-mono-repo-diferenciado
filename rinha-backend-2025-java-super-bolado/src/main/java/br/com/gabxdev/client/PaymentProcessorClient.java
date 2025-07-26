@@ -7,35 +7,44 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.time.Duration;
 
 @Component
 public class PaymentProcessorClient {
+    private final HttpClient paymentClient;
 
-    private final WebClient apiPaymentProcessor;
+    private final URI uriDefault;
 
-    private final Duration timeout = Duration.ofSeconds(10);
+    private final URI uriFallback;
 
-    @Value("${rinha.payment.processor.url.default}")
-    private String paymentProcessorUrlDefault;
+    private final Duration timeoutApiDefault;
 
-    @Value("${rinha.payment.processor.url.fallback}")
-    private String paymentProcessorUrlFallBack;
+    private final Duration timeoutApiFallback;
 
     @Value("${rinha.payment.processor.retry-api-default}")
-    private int retryApiDefault;
+    public int retryApiDefault;
 
-    public PaymentProcessorClient(WebClient apiPaymentProcessor) {
-        this.apiPaymentProcessor = apiPaymentProcessor;
+    @Value("${rinha.payment.processor.back-off-api-default}")
+    private int backOfRequestDefault;
+
+    public PaymentProcessorClient(HttpClient paymentClient, URI uriDefault, Duration timeoutApiDefault, Duration timeoutApiFallback, URI uriFallback) {
+        this.paymentClient = paymentClient;
+        this.uriDefault = uriDefault;
+        this.timeoutApiDefault = timeoutApiDefault;
+        this.timeoutApiFallback = timeoutApiFallback;
+        this.uriFallback = uriFallback;
     }
 
     public boolean sendPayment(Payment request) {
-        for (int i = 1; i <= retryApiDefault; i++) {
-            if (callApiDefault(request.getJson())) {
-                request.setType(PaymentProcessorType.DEFAULT);
 
-                return true;
-            }
+        if (sendPaymentDefaultWithRetry(request.getJson())) {
+            request.setType(PaymentProcessorType.DEFAULT);
+
+            return true;
         }
 
         if (callApiFallBack(request.getJson())) {
@@ -47,23 +56,49 @@ public class PaymentProcessorClient {
         return false;
     }
 
-    private Boolean callApiFallBack(String json) {
-        return apiPaymentProcessor.post()
-                .uri(paymentProcessorUrlFallBack)
-                .bodyValue(json)
-                .exchangeToMono(response -> Mono.just(response.statusCode().is2xxSuccessful()))
-                .timeout(timeout)
-                .onErrorReturn(false)
-                .block();
+    private boolean sendPaymentDefaultWithRetry(String json) {
+        var request = buildRequest(json, uriDefault, timeoutApiDefault);
+
+        for (int i = 1; i <= retryApiDefault; i++) {
+            if (sendRequest(request)) {
+                return true;
+            }
+
+            backOff();
+        }
+
+        return false;
     }
 
-    private Boolean callApiDefault(String json) {
-        return apiPaymentProcessor.post()
-                .uri(paymentProcessorUrlDefault)
-                .bodyValue(json)
-                .exchangeToMono(response -> Mono.just(response.statusCode().is2xxSuccessful()))
+    private void backOff() {
+        try {
+            Thread.sleep(backOfRequestDefault);
+        } catch (InterruptedException ignored) {
+        }
+    }
+
+    private boolean callApiFallBack(String json) {
+        var request = buildRequest(json, uriFallback, timeoutApiFallback);
+
+        return sendRequest(request);
+    }
+
+    private boolean sendRequest(HttpRequest request) {
+        try {
+            var response = paymentClient.send(request, HttpResponse.BodyHandlers.discarding());
+
+            return response.statusCode() == 200;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private HttpRequest buildRequest(String body, URI uri, Duration timeout) {
+        return HttpRequest.newBuilder()
+                .uri(uri)
                 .timeout(timeout)
-                .onErrorReturn(false)
-                .block();
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .POST(HttpRequest.BodyPublishers.ofString(body))
+                .build();
     }
 }
