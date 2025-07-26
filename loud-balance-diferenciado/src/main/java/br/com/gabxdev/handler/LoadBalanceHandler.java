@@ -9,8 +9,6 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
-import java.time.Duration;
-import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 
 @Component
@@ -46,13 +44,11 @@ public class LoadBalanceHandler {
         var from = request.queryParam("from").orElse("");
         var to = request.queryParam("to").orElse("");
 
-        var uuid = UUID.randomUUID().toString();
-
-        var eventPayload = eventMapper.toPaymentSummaryGetRequest(from, to, uuid);
+        var eventPayload = eventMapper.toPaymentSummaryGetRequest(from, to);
 
         loadBalanceService.paymentSummaryHandler(eventPayload);
 
-        return responseWaiter.awaitResponse(uuid, Duration.ofSeconds(1))
+        return responseWaiter.awaitResponse()
                 .flatMap(this::buildServerResponse)
                 .onErrorResume(TimeoutException.class, e ->
                         ServerResponse.status(504)

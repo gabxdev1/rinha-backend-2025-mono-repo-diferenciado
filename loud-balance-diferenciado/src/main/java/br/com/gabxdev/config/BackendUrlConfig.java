@@ -10,14 +10,16 @@ import java.util.List;
 @Component
 public class BackendUrlConfig {
 
-    @Value("${rinha.api.back-end-1-url}")
+    @Value("${rinha.api.url.back-end-1}")
     private String backEndUrl1;
 
+    @Value("${rinha.api.port.back-end-1}")
     private int backEndPort1;
 
-    @Value("${rinha.api.back-end-2-url}")
+    @Value("${rinha.api.url.back-end-2}")
     private String backEndUrl2;
 
+    @Value("${rinha.api.port.back-end-2}")
     private int backEndPort2;
 
 

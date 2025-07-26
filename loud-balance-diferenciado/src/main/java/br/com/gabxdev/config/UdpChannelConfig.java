@@ -3,21 +3,24 @@ package br.com.gabxdev.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.nio.channels.DatagramChannel;
+import java.net.DatagramSocket;
+import java.net.SocketException;
 
 @Configuration
 public class UdpChannelConfig {
 
     @Bean
-    public  DatagramChannel datagramChannel() throws IOException {
-        var channel = DatagramChannel.open();
+    public DatagramSocket datagramSocket() throws SocketException {
+        var datagramSocket = new DatagramSocket();
+        startShutdownHook(datagramSocket);
 
-        channel.configureBlocking(false);
+        return datagramSocket;
+    }
 
-        channel.bind(new InetSocketAddress(4000));
 
-        return channel;
+    private void startShutdownHook(DatagramSocket channel) {
+        Runtime.getRuntime().addShutdownHook(
+                Thread.ofVirtual().unstarted(channel::close)
+        );
     }
 }

@@ -14,11 +14,19 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ResponseWaiter {
     private final ArrayBlockingQueue<String> pendingSummaryResponse = new ArrayBlockingQueue<>(1);
 
-    public String awaitResponse(String correlationId, Duration timeout) {
-        return "";
+    public Mono<String> awaitResponse() {
+        return Mono.fromCallable(this::takePendingSummaryResponse);
     }
 
-    public void completeResponse(String correlationId, String responseJson) {
+    public void completeResponse(String response) {
+        pendingSummaryResponse.offer(response);
+    }
 
+    private String takePendingSummaryResponse() {
+        try {
+            return pendingSummaryResponse.take();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

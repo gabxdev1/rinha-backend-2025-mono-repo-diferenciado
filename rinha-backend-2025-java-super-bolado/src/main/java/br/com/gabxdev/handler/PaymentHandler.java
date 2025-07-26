@@ -1,5 +1,6 @@
 package br.com.gabxdev.handler;
 
+import br.com.gabxdev.config.LoadBalanceClient;
 import br.com.gabxdev.mapper.JsonParse;
 import br.com.gabxdev.model.Payment;
 import br.com.gabxdev.service.PaymentService;
@@ -9,6 +10,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
+
+import java.net.SocketAddress;
 
 @Component
 public class PaymentHandler {
@@ -32,8 +35,8 @@ public class PaymentHandler {
         paymentService.purgePayments();
     }
 
-    public void paymentSummary(String payload) {
-        paymentService.getPaymentSummary(payload);
+    public void paymentSummary(String payload, LoadBalanceClient client) {
+        paymentService.getPaymentSummary(payload, client);
     }
 
     public Mono<ServerResponse> purgePaymentsInternal(ServerRequest request) {

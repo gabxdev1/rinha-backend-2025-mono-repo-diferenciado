@@ -4,9 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.nio.channels.DatagramChannel;
+import java.net.*;
 
 @Configuration
 public class UdpChannelConfig {
@@ -15,13 +13,18 @@ public class UdpChannelConfig {
     private int udpChannelPort;
 
     @Bean
-    public  DatagramChannel datagramChannel() throws IOException {
-        var channel = DatagramChannel.open();
+    public DatagramSocket datagramSocket() throws SocketException {
+        var datagramSocket = new DatagramSocket(udpChannelPort);
 
-        channel.configureBlocking(true);
+        startShutdownHook(datagramSocket);
 
-        channel.bind(new InetSocketAddress(udpChannelPort));
+        return datagramSocket;
+    }
 
-        return channel;
+
+    private void startShutdownHook(DatagramSocket channel) {
+        Runtime.getRuntime().addShutdownHook(
+                Thread.ofVirtual().unstarted(channel::close)
+        );
     }
 }

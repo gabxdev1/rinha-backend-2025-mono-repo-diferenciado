@@ -41,12 +41,9 @@ logging:
 rinha:
   api:
     backend: ${BACK_END_URL:http://localhost:8083}
-    udp-channel-port: ${UDP_CHANNEL_PORT:9001}
+    udp-channel-port: ${UDP_CHANNEL_PORT:9002}
   http-client:
     worker-pool-size: ${WORKER_POOL_SIZE:25}
-  lb:
-    url: ${LB_URL:127.0.0.1}
-    port: ${LB_PORT:4000}
   queue-buffer: ${QUEUE_BUFFER:10000}
   payment:
     processor:

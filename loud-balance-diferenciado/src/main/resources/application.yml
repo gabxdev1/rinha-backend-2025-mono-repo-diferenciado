@@ -34,11 +34,15 @@ server:
 
 logging:
   level:
-    root: ${LOG_LEVEL:OFF}
+    root: ${LOG_LEVEL:INFO}
     org:
-      springframework: ${LOG_LEVEL:OFF}
+      springframework: ${LOG_LEVEL:INFO}
 
 rinha:
   api:
-    back-end-1-url: ${BACK_END_1_URL:ws://localhost:8083/backend}
-    back-end-2-url: ${BACK_END_2_URL:ws://localhost:8084/backend}
+    url:
+      back-end-1: ${BACK_END_1_URL:127.0.0.1}
+      back-end-2: ${BACK_END_2_URL:127.0.0.1}
+    port:
+      back-end-1: ${BACK_END_1_PORT:9001}
+      back-end-2: ${BACK_END_2_PORT:9002}

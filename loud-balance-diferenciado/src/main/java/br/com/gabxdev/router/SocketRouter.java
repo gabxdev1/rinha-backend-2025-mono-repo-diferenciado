@@ -1,20 +1,17 @@
 package br.com.gabxdev.router;
 
 import br.com.gabxdev.config.BackendUrlConfig;
-import br.com.gabxdev.lb.Event;
 import br.com.gabxdev.lb.LoudBalance;
 import br.com.gabxdev.lb.ResponseWaiter;
-import br.com.gabxdev.socket.BackendAddress;
-import io.netty.buffer.ByteBuf;
 import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Component;
-import org.springframework.web.reactive.socket.WebSocketSession;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.SocketAddress;
-import java.nio.ByteBuffer;
-import java.nio.channels.DatagramChannel;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -23,7 +20,7 @@ public class SocketRouter {
 
     private final List<SocketAddress> sessions = new CopyOnWriteArrayList<>();
 
-    private final DatagramChannel channel;
+    private final DatagramSocket datagramSocket;
 
     private final LoudBalance loudBalance;
 
@@ -31,47 +28,58 @@ public class SocketRouter {
 
     private final BackendUrlConfig backendUrlConfig;
 
-    public SocketRouter(
-            DatagramChannel channel, LoudBalance loudBalance,
-            ResponseWaiter responseWaiter, BackendUrlConfig backendUrlConfig) {
-        this.channel = channel;
+    public SocketRouter(DatagramSocket datagramSocket, LoudBalance loudBalance,
+                        ResponseWaiter responseWaiter, BackendUrlConfig backendUrlConfig) {
+        this.datagramSocket = datagramSocket;
         this.loudBalance = loudBalance;
         this.responseWaiter = responseWaiter;
         this.backendUrlConfig = backendUrlConfig;
     }
 
     @PostConstruct
-    public void connect() {
-        try {
-            Thread.sleep(300);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-
-        for (BackendAddress address : backendUrlConfig.getBackendsAddresses()) {
-            connectToBackend(address);
-        }
+    public void init() {
+        Thread.startVirtualThread(this::connect);
     }
 
-    private void connectToBackend(BackendAddress address) {
-        var inetSocketAddress = new InetSocketAddress(address.url(), address.port());
+    public void connect() {
+        handleEvents();
+    }
 
-        sessions.add(inetSocketAddress);
+    public void handleEvents() {
+
+
+        while (true) {
+            try {
+                var buffer = new byte[200];
+
+                var datagramPacket = new DatagramPacket(buffer, buffer.length);
+
+                datagramSocket.receive(datagramPacket);
+
+                var event = new String(datagramPacket.getData(), StandardCharsets.UTF_8).trim();
+
+                processEvent(event);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+        }
     }
 
     public void sendToAnyBackend(byte[] eventBytes) {
-        var session = loudBalance.selectBackEnd(sessions);
+        var session = loudBalance.selectBackEnd(backendUrlConfig.getBackendsAddresses());
 
         try {
-            channel.send(ByteBuffer.wrap(eventBytes), session);
+            datagramSocket.send(new DatagramPacket(eventBytes,
+                    eventBytes.length,
+                    InetAddress.getByName(session.url()),
+                    session.port()));
         } catch (IOException e) {
-            throw new RuntimeException("Erro ao enviar", e);
+            throw new RuntimeException(e);
         }
     }
 
     public void processEvent(String json) {
-        var event = Event.parseEvent(json);
-
-        responseWaiter.completeResponse(event.getId(), event.getPayload());
+        responseWaiter.completeResponse(json);
     }
 }

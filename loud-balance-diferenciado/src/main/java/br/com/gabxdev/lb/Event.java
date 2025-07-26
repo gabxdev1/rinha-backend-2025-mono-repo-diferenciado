@@ -26,7 +26,6 @@ public class Event {
         return payload;
     }
 
-
     public static String buildEventDTO(String id, int type, String payload) {
         return new StringBuilder(id)
                 .append("&")
@@ -34,13 +33,5 @@ public class Event {
                 .append("&")
                 .append(payload)
                 .toString();
-    }
-
-    public static Event parseEvent(String eventDTO) {
-        var eventString = eventDTO.split("&");
-
-        return new Event(eventString[0],
-                EventType.values()[Integer.parseInt(eventString[1])],
-                eventString[2]);
     }
 }

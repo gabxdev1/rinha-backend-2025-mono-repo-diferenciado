@@ -19,7 +19,7 @@ public class EventMapper {
         return Event.buildEventDTO(" ", EventType.PURGER.ordinal(), " ");
     }
 
-    public String toPaymentSummaryGetRequest(String from, String to, String uuid) {
+    public String toPaymentSummaryGetRequest(String from, String to) {
         if (from.isEmpty() || to.isEmpty()) {
             var instant = LocalDateTime.of(2000, 1, 1, 0, 0, 0)
                     .toInstant(ZoneOffset.UTC).toString();
@@ -28,7 +28,7 @@ public class EventMapper {
             to = instant;
         }
 
-        return Event.buildEventDTO(uuid,
+        return Event.buildEventDTO(" ",
                 EventType.PAYMENT_SUMMARY.ordinal(),
                 from.concat("@").concat(to));
     }
