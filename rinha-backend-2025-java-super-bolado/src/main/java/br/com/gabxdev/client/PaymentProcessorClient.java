@@ -1,11 +1,13 @@
 package br.com.gabxdev.client;
 
+import br.com.gabxdev.commons.HttpHeaders;
+import br.com.gabxdev.commons.MediaType;
+import br.com.gabxdev.config.HttpClientConfig;
+import br.com.gabxdev.config.PaymentProcessorConfig;
 import br.com.gabxdev.model.Payment;
 import br.com.gabxdev.model.enums.PaymentProcessorType;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
+import br.com.gabxdev.properties.ApplicationProperties;
+import br.com.gabxdev.properties.PropertiesKey;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -13,30 +15,28 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 
-@Component
-public class PaymentProcessorClient {
-    private final HttpClient paymentClient;
+public final class PaymentProcessorClient {
 
-    private final URI uriDefault;
+    private final static PaymentProcessorClient INSTANCE = new PaymentProcessorClient();
 
-    private final URI uriFallback;
+    private final PaymentProcessorConfig paymentProcessorConfig = PaymentProcessorConfig.getInstance();
 
-    private final Duration timeoutApiDefault;
+    private final Duration timeout = Duration.ofSeconds(6);
 
-    private final Duration timeoutApiFallback;
+    private final HttpClient httpClient = HttpClientConfig.httpClient();
 
-    @Value("${rinha.payment.processor.retry-api-default}")
-    public int retryApiDefault;
+    public final int retryApiDefault;
 
-    @Value("${rinha.payment.processor.back-off-api-default}")
-    private int backOfRequestDefault;
+    private PaymentProcessorClient() {
+        var applicationProperties = ApplicationProperties.getInstance();
 
-    public PaymentProcessorClient(HttpClient paymentClient, URI uriDefault, Duration timeoutApiDefault, Duration timeoutApiFallback, URI uriFallback) {
-        this.paymentClient = paymentClient;
-        this.uriDefault = uriDefault;
-        this.timeoutApiDefault = timeoutApiDefault;
-        this.timeoutApiFallback = timeoutApiFallback;
-        this.uriFallback = uriFallback;
+        var retryS = applicationProperties.getProperty(PropertiesKey.RETRY_API_DEFAULT);
+
+        retryApiDefault = Integer.parseInt(retryS);
+    }
+
+    public static PaymentProcessorClient getInstance() {
+        return INSTANCE;
     }
 
     public boolean sendPayment(Payment request) {
@@ -57,35 +57,27 @@ public class PaymentProcessorClient {
     }
 
     private boolean sendPaymentDefaultWithRetry(String json) {
-        var request = buildRequest(json, uriDefault, timeoutApiDefault);
+        var request = buildRequest(json, paymentProcessorConfig.getUriProcessorDefault());
 
         for (int i = 1; i <= retryApiDefault; i++) {
             if (sendRequest(request)) {
                 return true;
             }
-
-            backOff();
         }
 
         return false;
     }
 
-    private void backOff() {
-        try {
-            Thread.sleep(backOfRequestDefault);
-        } catch (InterruptedException ignored) {
-        }
-    }
 
     private boolean callApiFallBack(String json) {
-        var request = buildRequest(json, uriFallback, timeoutApiFallback);
+        var request = buildRequest(json, paymentProcessorConfig.getUriProcessorFallback());
 
         return sendRequest(request);
     }
 
     private boolean sendRequest(HttpRequest request) {
         try {
-            var response = paymentClient.send(request, HttpResponse.BodyHandlers.discarding());
+            var response = httpClient.send(request, HttpResponse.BodyHandlers.discarding());
 
             return response.statusCode() == 200;
         } catch (Exception e) {
@@ -93,11 +85,11 @@ public class PaymentProcessorClient {
         }
     }
 
-    private HttpRequest buildRequest(String body, URI uri, Duration timeout) {
+    private HttpRequest buildRequest(String body, URI uri) {
         return HttpRequest.newBuilder()
                 .uri(uri)
                 .timeout(timeout)
-                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.CONTENT_TYPE.getValue(), MediaType.APPLICATION_JSON.getValue())
                 .POST(HttpRequest.BodyPublishers.ofString(body))
                 .build();
     }

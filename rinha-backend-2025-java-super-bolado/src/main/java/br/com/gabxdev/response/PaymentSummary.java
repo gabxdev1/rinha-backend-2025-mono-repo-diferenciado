@@ -4,14 +4,14 @@ import br.com.gabxdev.model.enums.PaymentProcessorType;
 
 import java.math.BigDecimal;
 
-public class PaymentSummary {
+public final class PaymentSummary {
     PaymentProcessorType type;
 
     int totalRequests;
 
     BigDecimal totalAmount;
 
-    public PaymentSummary() {
+    private PaymentSummary() {
     }
 
     public PaymentSummary(PaymentProcessorType type, int totalRequests, BigDecimal totalAmount) {

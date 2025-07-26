@@ -2,47 +2,43 @@ package br.com.gabxdev.worker;
 
 import br.com.gabxdev.client.PaymentProcessorClient;
 import br.com.gabxdev.model.Payment;
+import br.com.gabxdev.properties.ApplicationProperties;
+import br.com.gabxdev.properties.PropertiesKey;
 import br.com.gabxdev.repository.InMemoryPaymentDatabase;
-import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
-@Component
-public class PaymentWorker {
+public final class PaymentWorker {
 
-    @Value("${rinha.payment.processor.use-thread-virtual}")
-    private boolean useVirtualThreads;
+    private final static PaymentWorker INSTANCE = new PaymentWorker();
 
-    @Value("${rinha.http-client.worker-pool-size}")
-    private Integer workerPoolSize;
+    private final Integer workerPoolSize;
 
-    @Value("${rinha.queue-buffer}")
-    private Integer queueBuffer;
+    private final ArrayBlockingQueue<Payment> queue;
 
-    private ArrayBlockingQueue<Payment> queue;
+    private final InMemoryPaymentDatabase paymentRepository = InMemoryPaymentDatabase.getInstance();
 
-    private final InMemoryPaymentDatabase paymentRepository;
+    private final PaymentProcessorClient processorClient = PaymentProcessorClient.getInstance();
 
-    private final PaymentProcessorClient processorClient;
+    private PaymentWorker() {
+        var applicationProperties = ApplicationProperties.getInstance();
 
-    public PaymentWorker(InMemoryPaymentDatabase paymentRepository, PaymentProcessorClient processorClient) {
-        this.paymentRepository = paymentRepository;
-        this.processorClient = processorClient;
+        var queueBufferS = applicationProperties.getProperty(PropertiesKey.QUEUE_BUFFER);
+        var workerPoolSizeS = applicationProperties.getProperty(PropertiesKey.WORKER_POOL_SIZE);
+
+        this.queue = new ArrayBlockingQueue<>(Integer.parseInt(queueBufferS));
+        this.workerPoolSize = Integer.parseInt(workerPoolSizeS);
+
+        Thread.startVirtualThread(this::start);
     }
 
-    @PostConstruct
-    public void start() {
-        this.queue = new ArrayBlockingQueue<>(queueBuffer);
+    public static PaymentWorker getInstance() {
+        return INSTANCE;
+    }
 
+    private void start() {
         for (int i = 0; i < workerPoolSize; i++) {
-            if (useVirtualThreads) {
-                Thread.startVirtualThread(this::runWorker);
-            } else {
-                new Thread(this::runWorker).start();
-            }
+            Thread.startVirtualThread(this::runWorker);
         }
     }
 
@@ -54,7 +50,7 @@ public class PaymentWorker {
         }
     }
 
-    public Payment takePayment() {
+    private Payment takePayment() {
         try {
             return queue.take();
         } catch (InterruptedException e) {

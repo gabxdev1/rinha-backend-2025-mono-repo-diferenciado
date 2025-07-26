@@ -1,9 +1,8 @@
 package br.com.gabxdev.handler;
 
+import br.com.gabxdev.config.DatagramSocketConfig;
+import br.com.gabxdev.dto.Event;
 import br.com.gabxdev.mapper.PaymentMapper;
-import br.com.gabxdev.ws.Event;
-import jakarta.annotation.PostConstruct;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -14,22 +13,25 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Component
-public class LoadBalanceHandler {
+public final class LoadBalanceHandler {
 
-    private final PaymentHandler paymentHandler;
+    private final static LoadBalanceHandler INSTANCE = new LoadBalanceHandler();
 
-    private final DatagramSocket datagramSocket;
+    private final PaymentHandler paymentHandler = PaymentHandler.getInstance();
+
+    private final DatagramSocket datagramSocket = DatagramSocketConfig.getInstance().getDatagramSocket();
 
     ExecutorService poll = Executors.newFixedThreadPool(3, Thread.ofVirtual().factory());
 
-    public LoadBalanceHandler(PaymentHandler paymentHandler, DatagramSocket datagramSocket) {
-        this.paymentHandler = paymentHandler;
-        this.datagramSocket = datagramSocket;
+    private LoadBalanceHandler() {
+        Thread.startVirtualThread(this::start);
     }
 
-    @PostConstruct
-    public void init() {
+    public static LoadBalanceHandler getInstance() {
+        return INSTANCE;
+    }
+
+    private void start() {
         Thread.startVirtualThread(() -> {
             try {
                 handleEvents();
@@ -39,7 +41,9 @@ public class LoadBalanceHandler {
         });
     }
 
-    public void handleEvents() throws IOException {
+    private void handleEvents() throws IOException {
+
+
         while (true) {
             var buffer = new byte[60];
 

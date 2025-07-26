@@ -3,23 +3,16 @@ package br.com.gabxdev.router;
 import br.com.gabxdev.config.BackendUrlConfig;
 import br.com.gabxdev.lb.LoudBalance;
 import br.com.gabxdev.lb.ResponseWaiter;
-import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.SocketAddress;
-import java.nio.channels.DatagramChannel;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 @Component
 public class SocketRouter {
-
-    private final List<SocketAddress> sessions = new CopyOnWriteArrayList<>();
 
     private final DatagramSocket datagramSocket;
 
@@ -35,18 +28,15 @@ public class SocketRouter {
         this.loudBalance = loudBalance;
         this.responseWaiter = responseWaiter;
         this.backendUrlConfig = backendUrlConfig;
+
+        start();
     }
 
-    @PostConstruct
-    public void init() {
-        Thread.startVirtualThread(this::connect);
+    private void start() {
+        Thread.startVirtualThread(this::handleEvents);
     }
 
-    public void connect() {
-        handleEvents();
-    }
-
-    public void handleEvents() {
+    private void handleEvents() {
         while (true) {
             try {
                 var buffer = new byte[200];

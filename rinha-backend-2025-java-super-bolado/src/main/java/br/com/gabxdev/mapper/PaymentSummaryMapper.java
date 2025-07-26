@@ -21,7 +21,6 @@ public class PaymentSummaryMapper {
         return new PaymentSummaryGetResponse(paymentSummaryDefault, paymentSummaryFallback);
     }
 
-
     private static BigDecimal parseFieldTotalAmount(String field) {
         return new BigDecimal(field);
     }

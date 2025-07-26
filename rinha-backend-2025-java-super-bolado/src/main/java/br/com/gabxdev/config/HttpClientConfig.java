@@ -1,39 +1,16 @@
 package br.com.gabxdev.config;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.client.reactive.ReactorClientHttpConnector;
-import org.springframework.web.client.RestClient;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.netty.http.client.HttpClient;
+import java.net.http.HttpClient;
 
-@Configuration
-public class HttpClientConfig {
+public final class HttpClientConfig {
+    private static final HttpClient INSTANCE = HttpClient.newBuilder()
+//            .connectTimeout(Duration.ofMillis(600))
+            .followRedirects(java.net.http.HttpClient.Redirect.NEVER)
+            .version(java.net.http.HttpClient.Version.HTTP_1_1)
+            .executor(Runnable::run)
+            .build();
 
-    @Value("${rinha.api.backend}")
-    public String apiBackEndClientUrl;
-
-    @Bean
-    public WebClient apiPaymentProcessor(WebClient.Builder webClientBuilder) {
-        var httpClient = HttpClient.create()
-                .keepAlive(true)
-                .compress(false)
-                .wiretap(false);
-
-        return webClientBuilder
-                .clientConnector(new ReactorClientHttpConnector(httpClient))
-                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .build();
-    }
-
-    @Bean
-    public RestClient apiInternalClient() {
-        return RestClient.builder()
-                .baseUrl(apiBackEndClientUrl)
-                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .build();
+    public static HttpClient httpClient() {
+        return INSTANCE;
     }
 }

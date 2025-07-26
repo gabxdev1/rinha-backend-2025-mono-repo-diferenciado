@@ -1,16 +1,37 @@
 package br.com.gabxdev;
 
-import br.com.gabxdev.mapper.PaymentMapper;
-import br.com.gabxdev.ws.Event;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import br.com.gabxdev.client.PaymentProcessorClient;
+import br.com.gabxdev.config.*;
+import br.com.gabxdev.handler.LoadBalanceHandler;
+import br.com.gabxdev.handler.PaymentHandler;
+import br.com.gabxdev.middleware.PaymentMiddleware;
+import br.com.gabxdev.middleware.PaymentSummaryWaiter;
+import br.com.gabxdev.properties.ApplicationProperties;
+import br.com.gabxdev.repository.InMemoryPaymentDatabase;
+import br.com.gabxdev.service.PaymentService;
+import br.com.gabxdev.worker.PaymentWorker;
 
-import java.util.UUID;
-
-@SpringBootApplication
-//@RegisterReflectionForBinding()
 public class RinhaBackend2025JavaApplication {
-    public static void main(String[] args) {
-        SpringApplication.run(RinhaBackend2025JavaApplication.class, args);
+    public static void main(String[] args) throws InterruptedException {
+        start();
+    }
+
+    private static void start() throws InterruptedException {
+        ApplicationProperties.getInstance();
+        BackendExternalHostConfig.getInstance();
+        DatagramSocketConfig.getInstance();
+        DatagramSocketExternalConfig.getInstance();
+        HttpClientConfig.httpClient();
+        PaymentProcessorConfig.getInstance();
+        InMemoryPaymentDatabase.getInstance();
+        PaymentProcessorClient.getInstance();
+        PaymentWorker.getInstance();
+        PaymentSummaryWaiter.getInstance();
+        PaymentMiddleware.getInstance();
+        PaymentService.getInstance();
+        PaymentHandler.getInstance();
+        LoadBalanceHandler.getInstance();
+
+        Thread.currentThread().join();
     }
 }

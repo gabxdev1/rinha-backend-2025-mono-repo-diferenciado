@@ -1,27 +1,40 @@
 package br.com.gabxdev.middleware;
 
+import br.com.gabxdev.config.BackendExternalHostConfig;
+import br.com.gabxdev.config.DatagramSocketExternalConfig;
+import br.com.gabxdev.dto.Event;
+import br.com.gabxdev.mapper.EventMapper;
+import br.com.gabxdev.mapper.PaymentMapper;
 import br.com.gabxdev.mapper.PaymentSummaryMapper;
 import br.com.gabxdev.response.PaymentSummaryGetResponse;
-import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestClient;
 
-import java.time.Instant;
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.nio.charset.StandardCharsets;
 
-@Component
-public class PaymentMiddleware {
+public final class PaymentMiddleware {
 
-    private final RestClient apiInternalClient;
+    private final static PaymentMiddleware INSTANCE = new PaymentMiddleware();
 
-    public PaymentMiddleware(RestClient apiInternalClient) {
-        this.apiInternalClient = apiInternalClient;
+    private final DatagramSocket datagramSocketExternal = DatagramSocketExternalConfig.getInstance().getDatagramSocket();
+
+    private final BackendExternalHostConfig externalHost = BackendExternalHostConfig.getInstance();
+
+    private PaymentMiddleware() {
+    }
+
+    public static PaymentMiddleware getInstance() {
+        return INSTANCE;
     }
 
     public void purgePayments() {
         callBackEndToPurgePayments();
     }
 
-    public PaymentSummaryGetResponse syncPaymentSummary(Instant from, Instant to) {
-        return callBackEndSummary(from, to);
+    public void syncPaymentSummary(String from, String to) {
+        callBackEndSummary(from, to);
     }
 
     public static PaymentSummaryGetResponse mergeSummary(PaymentSummaryGetResponse summary1,
@@ -51,24 +64,26 @@ public class PaymentMiddleware {
     }
 
     private void callBackEndToPurgePayments() {
-        apiInternalClient
-                .post()
-                .uri("/internal/purge-payments")
-                .retrieve()
-                .toBodilessEntity();
+        var request = EventMapper.toPurgePaymentsPostRequest();
+
+        sendEvent(request.getBytes(StandardCharsets.UTF_8));
     }
 
-    private PaymentSummaryGetResponse callBackEndSummary(Instant from, Instant to) {
-        var response = apiInternalClient
-                .get()
-                .uri(uriBuilder -> uriBuilder
-                        .path("/internal/payments-summary")
-                        .queryParam("from", from)
-                        .queryParam("to", to)
-                        .build())
-                .retrieve()
-                .body(String.class);
+    private void callBackEndSummary(String from, String to) {
+        var request = EventMapper.toPaymentSummaryGetRequest(from, to).getBytes(StandardCharsets.UTF_8);
 
-        return PaymentSummaryMapper.toPaymentSummary(response);
+        sendEvent(request);
+    }
+
+
+    private void sendEvent(byte[] request) {
+        try {
+            datagramSocketExternal.send(new DatagramPacket(request,
+                    request.length,
+                    InetAddress.getByName(externalHost.getBackEndExternalHost()),
+                    externalHost.getBackendExternalPort()));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

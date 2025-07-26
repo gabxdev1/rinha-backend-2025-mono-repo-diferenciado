@@ -1,38 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.3</version>
-        <relativePath/>
-    </parent>
+
     <groupId>br.com.gabxdev</groupId>
     <artifactId>rinha-backend-2025-java-super-bolado</artifactId>
-    <version>2.0.2</version>
-    <name>rinha-backend-2025-java-super-bolado</name>
-    <description>rinha-backend-2025-java-super-bolado</description>
+    <version>1.0.0</version>
+
     <properties>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
         <java.version>21</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring-aop</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter-logging</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-    </dependencies>
     <build>
         <plugins>
             <plugin>
@@ -42,13 +24,9 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <image>
-                        <name>gabxdevv/rinha-backend-2025-java:${project.version}</name>
+                        <name>gabxdevv/rinha-backend-2025-java-puro:${project.version}</name>
                         <builder>paketobuildpacks/builder-jammy-java-tiny:latest</builder>
                         <env>
                             <BP_NATIVE_IMAGE>true</BP_NATIVE_IMAGE>
@@ -59,4 +37,10 @@
             </plugin>
         </plugins>
     </build>
+
 </project>
+
+
+
+
+

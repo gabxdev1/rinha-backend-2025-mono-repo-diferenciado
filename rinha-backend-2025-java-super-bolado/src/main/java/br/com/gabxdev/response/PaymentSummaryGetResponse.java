@@ -1,6 +1,6 @@
 package br.com.gabxdev.response;
 
-public class PaymentSummaryGetResponse {
+public final class PaymentSummaryGetResponse {
     private PaymentSummary defaultApi;
 
     private PaymentSummary fallbackApi;

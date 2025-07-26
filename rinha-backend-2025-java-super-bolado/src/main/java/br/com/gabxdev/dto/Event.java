@@ -1,4 +1,4 @@
-package br.com.gabxdev.ws;
+package br.com.gabxdev.dto;
 
 
 public class Event {
@@ -30,21 +30,12 @@ public class Event {
         this.payload = payload;
     }
 
-    public static String buildEventDTO(String id, EventType type, String payload) {
+    public static String buildEventDTO(String id, int type, String payload) {
         return new StringBuilder(id)
                 .append("&")
                 .append(type)
                 .append("&")
                 .append(payload)
-                .toString();
-    }
-
-    public static String buildEventDTO(Event event) {
-        return new StringBuilder(event.id)
-                .append("&")
-                .append(event.type)
-                .append("&")
-                .append(event.payload)
                 .toString();
     }
 

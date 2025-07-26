@@ -1,31 +1,37 @@
 package br.com.gabxdev.handler;
 
-import br.com.gabxdev.config.LoadBalanceClient;
-import br.com.gabxdev.mapper.JsonParse;
+import br.com.gabxdev.config.DatagramSocketExternalConfig;
+import br.com.gabxdev.dto.Event;
+import br.com.gabxdev.middleware.PaymentSummaryWaiter;
 import br.com.gabxdev.model.Payment;
 import br.com.gabxdev.service.PaymentService;
 import br.com.gabxdev.worker.PaymentWorker;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Component;
-import org.springframework.web.reactive.function.server.ServerRequest;
-import org.springframework.web.reactive.function.server.ServerResponse;
-import reactor.core.publisher.Mono;
 
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.SocketAddress;
+import java.nio.charset.StandardCharsets;
 
-@Component
-public class PaymentHandler {
+public final class PaymentHandler {
 
-    private final PaymentService paymentService;
+    private static final PaymentHandler INSTANCE = new PaymentHandler();
 
-    private final PaymentWorker paymentWorker;
+    private final PaymentService paymentService = PaymentService.getInstance();
 
-    private final Mono<ServerResponse> serverResponseOk = ServerResponse.ok().build();
+    private final PaymentWorker paymentWorker = PaymentWorker.getInstance();
 
-    public PaymentHandler(PaymentService paymentService, PaymentWorker paymentWorker) {
-        this.paymentService = paymentService;
-        this.paymentWorker = paymentWorker;
+    private final PaymentSummaryWaiter paymentSummaryWaiter = PaymentSummaryWaiter.getInstance();
+
+    private final DatagramSocket datagramSocketExternal = DatagramSocketExternalConfig.getInstance().getDatagramSocket();
+
+
+    private PaymentHandler() {
+        start();
+    }
+
+    public static PaymentHandler getInstance() {
+        return INSTANCE;
     }
 
     public void receivePayment(Payment payment) {
@@ -40,21 +46,38 @@ public class PaymentHandler {
         paymentService.getPaymentSummary(payload, addressLb, portLb);
     }
 
-    public Mono<ServerResponse> purgePaymentsInternal(ServerRequest request) {
-        paymentService.purgePaymentsInternal();
-
-        return serverResponseOk;
+    private void start() {
+        Thread.startVirtualThread(() -> {
+            try {
+                handleEvents();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
-    public Mono<ServerResponse> paymentSummaryInternal(ServerRequest request) {
-        var from = request.queryParam("from").orElse(null);
-        var to = request.queryParam("to").orElse(null);
+    private void handleEvents() throws IOException {
+        while (true) {
+            var buffer = new byte[60];
 
+            var datagramPacket = new DatagramPacket(buffer, buffer.length);
 
-        var paymentSummary = paymentService.paymentSummaryToMerge(from, to);
+            datagramSocketExternal.receive(datagramPacket);
 
-        return ServerResponse.ok()
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(JsonParse.parseToJsonPaymentSummaryInternal(paymentSummary));
+            var data = new String(datagramPacket.getData(), StandardCharsets.UTF_8).trim();
+
+            Thread.startVirtualThread(() ->
+                    processEvent(data, datagramPacket.getAddress(), datagramPacket.getPort()));
+        }
+    }
+
+    private void processEvent(String eventJson, InetAddress addressLb, int portLb) {
+        var event = Event.parseEvent(eventJson);
+
+        switch (event.getType()) {
+            case PAYMENT_SUMMARY -> paymentService.paymentSummaryToMerge(event.getPayload(), addressLb, portLb);
+            case PAYMENT_SUMMARY_MERGE -> paymentSummaryWaiter.completeResponse(event.getPayload());
+            case PURGER -> paymentService.purgePaymentsInternal();
+        }
     }
 }

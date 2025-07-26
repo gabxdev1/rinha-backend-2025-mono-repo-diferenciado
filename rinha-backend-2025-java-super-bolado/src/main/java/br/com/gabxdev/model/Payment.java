@@ -4,9 +4,8 @@ import br.com.gabxdev.model.enums.PaymentProcessorType;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.UUID;
 
-public class Payment {
+public final class Payment {
     private String correlationId;
 
     private BigDecimal amount;

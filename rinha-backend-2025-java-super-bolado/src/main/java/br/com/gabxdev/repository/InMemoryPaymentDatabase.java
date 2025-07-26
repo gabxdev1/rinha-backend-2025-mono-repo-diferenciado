@@ -4,7 +4,6 @@ import br.com.gabxdev.model.Payment;
 import br.com.gabxdev.model.enums.PaymentProcessorType;
 import br.com.gabxdev.response.PaymentSummary;
 import br.com.gabxdev.response.PaymentSummaryGetResponse;
-import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -14,10 +13,18 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Collectors;
 
-@Component
-public class InMemoryPaymentDatabase {
+public final class InMemoryPaymentDatabase {
+
+    private final static InMemoryPaymentDatabase INSTANCE = new InMemoryPaymentDatabase();
 
     private final ConcurrentLinkedQueue<Payment> payments = new ConcurrentLinkedQueue<>();
+
+    private InMemoryPaymentDatabase() {
+    }
+
+    public static InMemoryPaymentDatabase getInstance() {
+        return INSTANCE;
+    }
 
     public void save(Payment payment) {
         payments.offer(payment);

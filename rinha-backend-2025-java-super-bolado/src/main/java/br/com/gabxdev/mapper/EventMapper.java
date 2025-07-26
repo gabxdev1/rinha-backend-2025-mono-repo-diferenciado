@@ -1,25 +1,19 @@
 package br.com.gabxdev.mapper;
 
-import br.com.gabxdev.lb.Event;
-import br.com.gabxdev.lb.EventType;
-import org.springframework.stereotype.Component;
+import br.com.gabxdev.dto.Event;
+import br.com.gabxdev.dto.EventType;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
-@Component
-public class EventMapper {
-    public String toPaymentPostRequest(String json) {
-        return Event.buildEventDTO("id",
-                EventType.PAYMENT_POST.ordinal(),
-                PaymentRequestParse.buildPayload(json));
-    }
+public final class EventMapper {
 
-    public String toPurgePaymentsPostRequest() {
+
+    public static String toPurgePaymentsPostRequest() {
         return Event.buildEventDTO("id", EventType.PURGER.ordinal(), "payload");
     }
 
-    public String toPaymentSummaryGetRequest(String from, String to) {
+    public static String toPaymentSummaryGetRequest(String from, String to) {
         if (from.isEmpty() || to.isEmpty()) {
             var instant = LocalDateTime.of(2000, 1, 1, 0, 0, 0)
                     .toInstant(ZoneOffset.UTC).toString();
