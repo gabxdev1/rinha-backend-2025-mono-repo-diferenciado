@@ -4,7 +4,7 @@ services:
     container_name: gaxdev-backend-1
     environment:
       RETRY_API_DEFAULT: 15
-      WORKER_POOL_SIZE: 25
+      WORKER_POOL_SIZE: 21
       URL_PROCESSOR_DEFAULT: http://payment-processor-default:8080/payments
       URL_PROCESSOR_FALLBACK: http://payment-processor-fallback:8080/payments
       LOG_LEVEL: off
@@ -14,7 +14,7 @@ services:
       UDP_CHANNEL_INTERNAL_PORT: 9003
       EXTERNAL_UDP_HOST: backend-2
       EXTERNAL_UDP_PORT: 9004
-      HANDLER_UDP_POOL_SIZE: 3
+      HANDLER_UDP_POOL_SIZE: 4
       JAVA_OPTS: >-
         -server
         -XX:+UseG1GC
@@ -40,7 +40,7 @@ services:
     restart: always
     environment:
       RETRY_API_DEFAULT: 15
-      WORKER_POOL_SIZE: 25
+      WORKER_POOL_SIZE: 21
       URL_PROCESSOR_DEFAULT: http://payment-processor-default:8080/payments
       URL_PROCESSOR_FALLBACK: http://payment-processor-fallback:8080/payments
       LOG_LEVEL: off
@@ -50,7 +50,7 @@ services:
       UDP_CHANNEL_INTERNAL_PORT: 9004
       EXTERNAL_UDP_HOST: backend-1
       EXTERNAL_UDP_PORT: 9003
-      HANDLER_UDP_POOL_SIZE: 3
+      HANDLER_UDP_POOL_SIZE: 4
       JAVA_OPTS: >-
         -server
         -XX:+UseG1GC
