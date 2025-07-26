@@ -11,6 +11,7 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
+import java.net.InetAddress;
 import java.net.SocketAddress;
 
 @Component
@@ -35,8 +36,8 @@ public class PaymentHandler {
         paymentService.purgePayments();
     }
 
-    public void paymentSummary(String payload, LoadBalanceClient client) {
-        paymentService.getPaymentSummary(payload, client);
+    public void paymentSummary(String payload, InetAddress addressLb, int portLb) {
+        paymentService.getPaymentSummary(payload, addressLb, portLb);
     }
 
     public Mono<ServerResponse> purgePaymentsInternal(ServerRequest request) {

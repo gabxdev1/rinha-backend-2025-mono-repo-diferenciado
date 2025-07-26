@@ -1,6 +1,5 @@
 package br.com.gabxdev.handler;
 
-import br.com.gabxdev.config.LoadBalanceClient;
 import br.com.gabxdev.mapper.PaymentMapper;
 import br.com.gabxdev.ws.Event;
 import jakarta.annotation.PostConstruct;
@@ -10,7 +9,6 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.SocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -49,20 +47,20 @@ public class LoadBalanceHandler {
 
             datagramSocket.receive(datagramPacket);
 
+            var data = new String(datagramPacket.getData(), StandardCharsets.UTF_8).trim();
+
             CompletableFuture.runAsync(() -> {
-                processEvent(new String(datagramPacket.getData(),
-                                StandardCharsets.UTF_8).trim(),
-                        new LoadBalanceClient(datagramPacket.getAddress(), datagramPacket.getPort()));
+                processEvent(data, datagramPacket.getAddress(), datagramPacket.getPort());
             }, poll);
         }
     }
 
-    private void processEvent(String eventJson, LoadBalanceClient client) {
+    private void processEvent(String eventJson, InetAddress addressLb, int portLb) {
         var event = Event.parseEvent(eventJson);
 
         switch (event.getType()) {
             case PAYMENT_POST -> paymentHandler.receivePayment(PaymentMapper.toPayment(event.getPayload()));
-            case PAYMENT_SUMMARY -> paymentHandler.paymentSummary(event.getPayload(), client);
+            case PAYMENT_SUMMARY -> paymentHandler.paymentSummary(event.getPayload(), addressLb, portLb);
             case PURGER -> paymentHandler.purgePayments();
         }
     }

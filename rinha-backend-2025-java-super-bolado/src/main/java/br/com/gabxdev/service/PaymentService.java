@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.SocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
@@ -51,7 +52,7 @@ public class PaymentService {
         }
     }
 
-    public void getPaymentSummary(String payload, LoadBalanceClient client) {
+    public void getPaymentSummary(String payload, InetAddress addressLb, int portLb) {
         var instants = payload.split("@");
         var from = parseInstant(instants[0]);
         var to = parseInstant(instants[1]);
@@ -63,7 +64,7 @@ public class PaymentService {
         var paymentSummary2 = internalGetPaymentSummary(from, to);
         var paymentSummary1 = takeSummary();
 
-        sendSummary(PaymentMiddleware.mergeSummary(paymentSummary1, paymentSummary2), client);
+        sendSummary(PaymentMiddleware.mergeSummary(paymentSummary1, paymentSummary2), addressLb, portLb);
     }
 
     private PaymentSummaryGetResponse takeSummary() {
@@ -82,12 +83,10 @@ public class PaymentService {
         }
     }
 
-    private void sendSummary(PaymentSummaryGetResponse response, LoadBalanceClient client) {
+    private void sendSummary(PaymentSummaryGetResponse response, InetAddress addressLb, int portLb) {
         var payload = JsonParse.parseToJsonPaymentSummary(response).getBytes(StandardCharsets.UTF_8);
 
-        System.out.println(payload.length);
-
-        var datagramPacket = new DatagramPacket(payload, payload.length, client.ip(), client.port());
+        var datagramPacket = new DatagramPacket(payload, payload.length, addressLb, portLb);
 
         try {
             datagramSocket.send(datagramPacket);
