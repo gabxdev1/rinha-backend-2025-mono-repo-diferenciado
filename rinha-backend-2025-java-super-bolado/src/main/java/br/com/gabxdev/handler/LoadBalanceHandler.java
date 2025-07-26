@@ -3,6 +3,8 @@ package br.com.gabxdev.handler;
 import br.com.gabxdev.config.DatagramSocketConfig;
 import br.com.gabxdev.dto.Event;
 import br.com.gabxdev.mapper.PaymentMapper;
+import br.com.gabxdev.properties.ApplicationProperties;
+import br.com.gabxdev.properties.PropertiesKey;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -20,8 +22,6 @@ public final class LoadBalanceHandler {
     private final PaymentHandler paymentHandler = PaymentHandler.getInstance();
 
     private final DatagramSocket datagramSocket = DatagramSocketConfig.getInstance().getDatagramSocket();
-
-    ExecutorService poll = Executors.newFixedThreadPool(3, Thread.ofVirtual().factory());
 
     private LoadBalanceHandler() {
         Thread.startVirtualThread(this::start);
@@ -42,7 +42,9 @@ public final class LoadBalanceHandler {
     }
 
     private void handleEvents() throws IOException {
+        var poolSize = ApplicationProperties.getInstance().getProperty(PropertiesKey.HANDLER_UDP_POOL_SIZE);
 
+        var poll = Executors.newFixedThreadPool(Integer.parseInt(poolSize), Thread.ofVirtual().factory());
 
         while (true) {
             var buffer = new byte[60];

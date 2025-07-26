@@ -1,16 +1,20 @@
 services:
   backend-1:
-    image: gabxdevv/rinha-backend-2025-java:2.0.2
+    image: gabxdevv/rinha-backend-2025-java-puro:1.0.0
     container_name: gaxdev-backend-1
     environment:
-      RETRY_API_DEFAULT: 14
-      WORKER_POOL_SIZE: 21
-      PAYMENT_PROCESSOR_URL_DEFAULT: http://payment-processor-default:8080/payments
-      PAYMENT_PROCESSOR_URL_FALLBACK: http://payment-processor-fallback:8080/payments
+      RETRY_API_DEFAULT: 15
+      WORKER_POOL_SIZE: 25
+      URL_PROCESSOR_DEFAULT: http://payment-processor-default:8080/payments
+      URL_PROCESSOR_FALLBACK: http://payment-processor-fallback:8080/payments
       LOG_LEVEL: off
       BACK_END_URL: http://backend-2:8080
       SERVER_PORT: 8080
       UDP_CHANNEL_PORT: 9001
+      UDP_CHANNEL_INTERNAL_PORT: 9003
+      EXTERNAL_UDP_HOST: backend-2
+      EXTERNAL_UDP_PORT: 9004
+      HANDLER_UDP_POOL_SIZE: 3
       JAVA_OPTS: >-
         -server
         -XX:+UseG1GC
@@ -31,18 +35,22 @@ services:
           memory: '120MB'
 
   backend-2:
-    image: gabxdevv/rinha-backend-2025-java:2.0.2
+    image: gabxdevv/rinha-backend-2025-java-puro:1.0.0
     container_name: gaxdev-backend-2
     restart: always
     environment:
-      RETRY_API_DEFAULT: 14
-      WORKER_POOL_SIZE: 21
-      PAYMENT_PROCESSOR_URL_DEFAULT: http://payment-processor-default:8080/payments
-      PAYMENT_PROCESSOR_URL_FALLBACK: http://payment-processor-fallback:8080/payments
+      RETRY_API_DEFAULT: 15
+      WORKER_POOL_SIZE: 25
+      URL_PROCESSOR_DEFAULT: http://payment-processor-default:8080/payments
+      URL_PROCESSOR_FALLBACK: http://payment-processor-fallback:8080/payments
       LOG_LEVEL: off
       BACK_END_URL: http://backend-1:8080
       SERVER_PORT: 8080
       UDP_CHANNEL_PORT: 9002
+      UDP_CHANNEL_INTERNAL_PORT: 9004
+      EXTERNAL_UDP_HOST: backend-1
+      EXTERNAL_UDP_PORT: 9003
+      HANDLER_UDP_POOL_SIZE: 3
       JAVA_OPTS: >-
         -server
         -XX:+UseG1GC
@@ -63,7 +71,7 @@ services:
           memory: '120MB'
 
   load-balancer:
-    image: gabxdevv/loud-balance-diferenciado:1.0.3
+    image: gabxdevv/loud-balance-diferenciado-puro:1.0.0
     restart: always
     container_name: gabxdev-load-balance-bolado
     depends_on:
