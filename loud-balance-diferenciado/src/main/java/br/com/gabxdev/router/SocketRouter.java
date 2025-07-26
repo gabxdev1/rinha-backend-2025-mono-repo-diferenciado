@@ -46,8 +46,6 @@ public class SocketRouter {
     }
 
     public void handleEvents() {
-
-
         while (true) {
             try {
                 var buffer = new byte[200];
