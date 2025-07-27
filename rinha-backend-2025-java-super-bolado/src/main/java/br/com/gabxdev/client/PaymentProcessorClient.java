@@ -58,7 +58,7 @@ public final class PaymentProcessorClient {
 
     private boolean sendPaymentDefaultWithRetry(String json) {
         var request = buildRequest(json, paymentProcessorConfig.getUriProcessorDefault(),
-                paymentProcessorConfig.getTimeoutDefault());
+                this.timeout);
 
         for (int i = 1; i <= retryApiDefault; i++) {
             if (sendRequest(request)) {
@@ -68,7 +68,6 @@ public final class PaymentProcessorClient {
 
         return false;
     }
-
 
     private boolean callApiFallBack(String json) {
         var request = buildRequest(json, paymentProcessorConfig.getUriProcessorFallback(), this.timeout);
