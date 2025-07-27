@@ -17,7 +17,6 @@ public class UdpChannelConfig {
         return datagramSocket;
     }
 
-
     private void startShutdownHook(DatagramSocket channel) {
         Runtime.getRuntime().addShutdownHook(
                 Thread.ofVirtual().unstarted(channel::close)

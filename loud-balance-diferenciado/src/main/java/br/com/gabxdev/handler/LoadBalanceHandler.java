@@ -9,8 +9,6 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
-import java.util.concurrent.TimeoutException;
-
 @Component
 public class LoadBalanceHandler {
 
@@ -48,13 +46,7 @@ public class LoadBalanceHandler {
 
         loadBalanceService.paymentSummaryHandler(eventPayload);
 
-        return responseWaiter.awaitResponse()
-                .flatMap(this::buildServerResponse)
-                .onErrorResume(TimeoutException.class, e ->
-                        ServerResponse.status(504)
-                                .contentType(MediaType.TEXT_PLAIN)
-                                .bodyValue("Timeout")
-                );
+        return responseWaiter.awaitResponse().flatMap(this::buildServerResponse);
     }
 
     private Mono<ServerResponse> buildServerResponse(String body) {

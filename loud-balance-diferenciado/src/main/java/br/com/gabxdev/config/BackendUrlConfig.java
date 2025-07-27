@@ -5,9 +5,7 @@ import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.sql.SQLOutput;
 import java.util.List;
-
 
 @Component
 public class BackendUrlConfig {

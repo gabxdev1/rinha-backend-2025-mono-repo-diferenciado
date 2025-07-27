@@ -1,6 +1,5 @@
 package br.com.gabxdev.lb;
 
-import br.com.gabxdev.config.BackendUrlConfig;
 import br.com.gabxdev.socket.BackendAddress;
 import org.springframework.stereotype.Component;
 

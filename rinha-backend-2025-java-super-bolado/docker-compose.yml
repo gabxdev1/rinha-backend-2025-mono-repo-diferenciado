@@ -1,6 +1,6 @@
 services:
   backend-1:
-    image: gabxdevv/rinha-backend-2025-java-puro:1.0.0
+    image: gabxdevv/rinha-backend-2025-java-puro:1.0.1
     container_name: gaxdev-backend-1
     environment:
       RETRY_API_DEFAULT: 15
@@ -35,7 +35,7 @@ services:
           memory: '120MB'
 
   backend-2:
-    image: gabxdevv/rinha-backend-2025-java-puro:1.0.0
+    image: gabxdevv/rinha-backend-2025-java-puro:1.0.1
     container_name: gaxdev-backend-2
     restart: always
     environment:
@@ -71,7 +71,7 @@ services:
           memory: '120MB'
 
   load-balancer:
-    image: gabxdevv/loud-balance-diferenciado-puro:1.0.0
+    image: gabxdevv/loud-balance-diferenciado-puro:1.0.1
     restart: always
     container_name: gabxdev-load-balance-bolado
     depends_on:

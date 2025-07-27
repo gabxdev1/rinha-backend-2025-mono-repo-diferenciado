@@ -10,7 +10,8 @@ public enum PropertiesKey {
     RETRY_API_DEFAULT("retry.api.default"),
     URL_PROCESSOR_DEFAULT("url.processor.default"),
     URL_PROCESSOR_FALLBACK("url.processor.fallback"),
-    HANDLER_UDP_POOL_SIZE("handler.udp.pool-size");
+    HANDLER_UDP_POOL_SIZE("handler.udp.pool-size"),
+    TIMEOUT_PROFESSOR_DEFAULT("timeout.processor.default");
 
     private final String key;
 

@@ -34,9 +34,9 @@ server:
 
 logging:
   level:
-    root: ${LOG_LEVEL:INFO}
+    root: ${LOG_LEVEL:OFF}
     org:
-      springframework: ${LOG_LEVEL:INFO}
+      springframework: ${LOG_LEVEL:OFF}
 
 rinha:
   api:

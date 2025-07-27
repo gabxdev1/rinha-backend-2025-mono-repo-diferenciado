@@ -4,6 +4,7 @@ import br.com.gabxdev.properties.ApplicationProperties;
 import br.com.gabxdev.properties.PropertiesKey;
 
 import java.net.URI;
+import java.time.Duration;
 
 public final class PaymentProcessorConfig {
     private final static PaymentProcessorConfig INSTANCE = new PaymentProcessorConfig();
@@ -12,12 +13,18 @@ public final class PaymentProcessorConfig {
 
     private final URI uriProcessorFallback;
 
+    private final Duration timeoutDefault;
+
     private PaymentProcessorConfig() {
         var properties = ApplicationProperties.getInstance();
 
         this.uriProcessorDefault = URI.create(properties.getProperty(PropertiesKey.URL_PROCESSOR_DEFAULT));
 
         this.uriProcessorFallback = URI.create(properties.getProperty(PropertiesKey.URL_PROCESSOR_FALLBACK));
+
+        var value = Integer.parseInt(properties.getProperty(PropertiesKey.TIMEOUT_PROFESSOR_DEFAULT));
+
+        this.timeoutDefault = Duration.ofMillis(value);
     }
 
     public static PaymentProcessorConfig getInstance() {
@@ -30,5 +37,9 @@ public final class PaymentProcessorConfig {
 
     public URI getUriProcessorFallback() {
         return uriProcessorFallback;
+    }
+
+    public Duration getTimeoutDefault() {
+        return timeoutDefault;
     }
 }
