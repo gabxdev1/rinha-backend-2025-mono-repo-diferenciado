@@ -4,6 +4,8 @@ import br.com.gabxdev.config.SocketInternalConfig;
 import br.com.gabxdev.mapper.PaymentMapper;
 import br.com.gabxdev.middleware.PaymentSummaryWaiter;
 import br.com.gabxdev.model.Event;
+import br.com.gabxdev.properties.ApplicationProperties;
+import br.com.gabxdev.properties.PropertiesKey;
 import br.com.gabxdev.service.PaymentService;
 import br.com.gabxdev.worker.PaymentWorker;
 
