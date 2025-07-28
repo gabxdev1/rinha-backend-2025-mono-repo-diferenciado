@@ -13,20 +13,32 @@
         <maven.compiler.target>21</maven.compiler.target>
         <java.version>21</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <undertow-core.version>2.3.18.Final</undertow-core.version>
+        <native-maven-plugin.version>0.11.0</native-maven-plugin.version>
+        <spring-boot-maven-plugin.version>3.5.4</spring-boot-maven-plugin.version>
     </properties>
+
+
+    <dependencies>
+        <dependency>
+            <groupId>io.undertow</groupId>
+            <artifactId>undertow-core</artifactId>
+            <version>${undertow-core.version}</version>
+        </dependency>
+    </dependencies>
 
     <build>
         <plugins>
             <plugin>
                 <groupId>org.graalvm.buildtools</groupId>
                 <artifactId>native-maven-plugin</artifactId>
-                <version>0.11.0</version>
+                <version>${native-maven-plugin.version}</version>
             </plugin>
 
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>3.5.4</version>
+                <version>${spring-boot-maven-plugin.version}</version>
                 <configuration>
                     <mainClass>br.com.gabxdev.RinhaBackend2025JavaApplication</mainClass>
                     <image>

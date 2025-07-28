@@ -8,9 +8,9 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
-public final class DatagramSocketExternalConfig {
+public final class SocketInternalConfig {
 
-    private final static DatagramSocketExternalConfig INSTANCE = new DatagramSocketExternalConfig();
+    private final static SocketInternalConfig INSTANCE = new SocketInternalConfig();
 
     private final DatagramSocket datagramSocket;
 
@@ -20,9 +20,9 @@ public final class DatagramSocketExternalConfig {
 
     private final int portApi2;
 
-    private DatagramSocketExternalConfig() {
+    private SocketInternalConfig() {
         var applicationProperties = ApplicationProperties.getInstance();
-        var externalHost = BackendExternalHostConfig.getInstance();
+        var externalHost = BackendInternalHostConfig.getInstance();
 
         hostApi2 = externalHost.getBackEndExternalHost();
         portApi2 = externalHost.getBackendExternalPort();
@@ -56,7 +56,7 @@ public final class DatagramSocketExternalConfig {
         );
     }
 
-    public static DatagramSocketExternalConfig getInstance() {
+    public static SocketInternalConfig getInstance() {
         return INSTANCE;
     }
 

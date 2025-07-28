@@ -1,5 +1,7 @@
 package br.com.gabxdev.mapper;
 
+import java.time.Instant;
+
 public class PaymentRequestParse {
     private static String KEY_UUID = "\"correlationId\":";
     private static String KEY_AMOUNT = "\"amount\":";
@@ -9,10 +11,12 @@ public class PaymentRequestParse {
         return new StringBuilder(extractUUIDFromRequest(json))
                 .append(" ")
                 .append(extractAmountFromRequest(json))
+                .append(" ")
+                .append(Instant.now().toString())
                 .toString();
     }
 
-    private static String extractUUIDFromRequest(String json) {
+    public static String extractUUIDFromRequest(String json) {
         int idx = json.indexOf(KEY_UUID);
 
         var start = json.indexOf('"', idx + KEY_UUID.length()) + 1;
@@ -20,7 +24,7 @@ public class PaymentRequestParse {
         return json.substring(start, end);
     }
 
-    private static String extractAmountFromRequest(String json) {
+    public static String extractAmountFromRequest(String json) {
         var idx = json.indexOf(KEY_AMOUNT);
         var start = idx + KEY_AMOUNT.length();
 

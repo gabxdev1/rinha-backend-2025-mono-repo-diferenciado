@@ -1,8 +1,7 @@
 package br.com.gabxdev.service;
 
 import br.com.gabxdev.client.UdpClient;
-import br.com.gabxdev.config.DatagramSocketConfig;
-import br.com.gabxdev.config.DatagramSocketExternalConfig;
+import br.com.gabxdev.config.SocketInternalConfig;
 import br.com.gabxdev.mapper.JsonParse;
 import br.com.gabxdev.middleware.PaymentMiddleware;
 import br.com.gabxdev.middleware.PaymentSummaryWaiter;
@@ -13,7 +12,6 @@ import br.com.gabxdev.response.PaymentSummaryGetResponse;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.ZoneOffset;
@@ -26,9 +24,7 @@ public final class PaymentService {
 
     private final UdpClient udpClient = UdpClient.getInstance();
 
-    private final DatagramSocket datagramSocket = DatagramSocketConfig.getInstance().getDatagramSocket();
-
-    private final DatagramSocket datagramSocketExternal = DatagramSocketExternalConfig.getInstance().getDatagramSocket();
+    private final DatagramSocket datagramSocketExternal = SocketInternalConfig.getInstance().getDatagramSocket();
 
     private final InMemoryPaymentDatabase paymentRepository = InMemoryPaymentDatabase.getInstance();
 
@@ -44,7 +40,6 @@ public final class PaymentService {
     }
 
     public void paymentSummaryToMerge(String eventJson) {
-
         var instants = eventJson.split("@");
         var from = parseInstant(instants[0]);
         var to = parseInstant(instants[1]);
@@ -63,20 +58,18 @@ public final class PaymentService {
         sendSummary(datagramSocketExternal, new DatagramPacket(payload, payload.length));
     }
 
-    public void getPaymentSummary(String payload, InetAddress addressLb, int portLb) {
-        var instants = payload.split("@");
-        var from = parseInstant(instants[0]);
-        var to = parseInstant(instants[1]);
+    public String getPaymentSummary(String fromS, String toS) {
+        var from = parseInstant(fromS);
+        var to = parseInstant(toS);
 
-        paymentMiddleware.syncPaymentSummary(instants[0], instants[1]);
+        paymentMiddleware.syncPaymentSummary(from.toString(), to.toString());
 
         var paymentSummary2 = internalGetPaymentSummary(from, to);
         var paymentSummary1 = paymentSummaryWaiter.awaitResponse();
 
         var paymentSummaryMerged = PaymentMiddleware.mergeSummary(paymentSummary1, paymentSummary2);
-        var response = JsonParse.parseToJsonPaymentSummary(paymentSummaryMerged).getBytes(StandardCharsets.UTF_8);
 
-        sendSummary(datagramSocket, new DatagramPacket(response, response.length, addressLb, portLb));
+        return JsonParse.parseToJsonPaymentSummary(paymentSummaryMerged);
     }
 
     private PaymentSummaryGetResponse internalGetPaymentSummary(Instant from, Instant to) {
@@ -92,12 +85,16 @@ public final class PaymentService {
     }
 
     public void purgePayments() {
+        System.out.println("purging payments");
+
         paymentRepository.deleteAll();
 
         paymentMiddleware.purgePayments();
     }
 
     public void purgePaymentsInternal() {
+        System.out.println("purging payments internal");
+
         paymentRepository.deleteAll();
     }
 }
