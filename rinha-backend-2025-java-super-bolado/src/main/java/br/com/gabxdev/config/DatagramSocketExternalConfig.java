@@ -4,8 +4,9 @@ import br.com.gabxdev.properties.ApplicationProperties;
 import br.com.gabxdev.properties.PropertiesKey;
 
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.SocketException;
-
+import java.net.UnknownHostException;
 
 public final class DatagramSocketExternalConfig {
 
@@ -15,8 +16,16 @@ public final class DatagramSocketExternalConfig {
 
     private final int udpChannelPort;
 
+    private final String hostApi2;
+
+    private final int portApi2;
+
     private DatagramSocketExternalConfig() {
         var applicationProperties = ApplicationProperties.getInstance();
+        var externalHost = BackendExternalHostConfig.getInstance();
+
+        hostApi2 = externalHost.getBackEndExternalHost();
+        portApi2 = externalHost.getBackendExternalPort();
 
         var udpChannelPortS = applicationProperties.getProperty(PropertiesKey.UDP_CHANNEL_INTERNAL_PORT);
 
@@ -30,7 +39,9 @@ public final class DatagramSocketExternalConfig {
 
         try {
             datagramSocket = new DatagramSocket(udpChannelPort);
-        } catch (SocketException e) {
+            datagramSocket.setBroadcast(false);
+            datagramSocket.connect(InetAddress.getByName(this.hostApi2), this.portApi2);
+        } catch (SocketException | UnknownHostException e) {
             throw new RuntimeException(e);
         }
 
@@ -51,9 +62,5 @@ public final class DatagramSocketExternalConfig {
 
     public DatagramSocket getDatagramSocket() {
         return datagramSocket;
-    }
-
-    public int getUdpChannelPort() {
-        return udpChannelPort;
     }
 }

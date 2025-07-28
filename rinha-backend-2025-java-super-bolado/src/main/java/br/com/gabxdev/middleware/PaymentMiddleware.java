@@ -1,18 +1,16 @@
 package br.com.gabxdev.middleware;
 
-import br.com.gabxdev.config.BackendExternalHostConfig;
+import br.com.gabxdev.client.UdpClient;
 import br.com.gabxdev.config.DatagramSocketExternalConfig;
-import br.com.gabxdev.dto.Event;
 import br.com.gabxdev.mapper.EventMapper;
-import br.com.gabxdev.mapper.PaymentMapper;
-import br.com.gabxdev.mapper.PaymentSummaryMapper;
 import br.com.gabxdev.response.PaymentSummaryGetResponse;
 
-import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public final class PaymentMiddleware {
 
@@ -20,7 +18,9 @@ public final class PaymentMiddleware {
 
     private final DatagramSocket datagramSocketExternal = DatagramSocketExternalConfig.getInstance().getDatagramSocket();
 
-    private final BackendExternalHostConfig externalHost = BackendExternalHostConfig.getInstance();
+    private final ExecutorService pool = Executors.newFixedThreadPool(1, Thread.ofVirtual().factory());
+
+    private final UdpClient udpClient = UdpClient.getInstance();
 
     private PaymentMiddleware() {
     }
@@ -34,7 +34,9 @@ public final class PaymentMiddleware {
     }
 
     public void syncPaymentSummary(String from, String to) {
-        callBackEndSummary(from, to);
+        CompletableFuture.runAsync(() -> {
+            callBackEndSummary(from, to);
+        }, pool);
     }
 
     public static PaymentSummaryGetResponse mergeSummary(PaymentSummaryGetResponse summary1,
@@ -75,15 +77,7 @@ public final class PaymentMiddleware {
         sendEvent(request);
     }
 
-
     private void sendEvent(byte[] request) {
-        try {
-            datagramSocketExternal.send(new DatagramPacket(request,
-                    request.length,
-                    InetAddress.getByName(externalHost.getBackEndExternalHost()),
-                    externalHost.getBackendExternalPort()));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        udpClient.send(new DatagramPacket(request, request.length), datagramSocketExternal);
     }
 }

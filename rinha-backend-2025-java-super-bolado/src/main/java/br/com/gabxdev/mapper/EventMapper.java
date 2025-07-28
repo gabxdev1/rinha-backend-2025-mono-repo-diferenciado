@@ -1,7 +1,8 @@
 package br.com.gabxdev.mapper;
 
-import br.com.gabxdev.dto.Event;
-import br.com.gabxdev.dto.EventType;
+
+import br.com.gabxdev.model.Event;
+import br.com.gabxdev.model.enums.EventType;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -10,7 +11,7 @@ public final class EventMapper {
 
 
     public static String toPurgePaymentsPostRequest() {
-        return Event.buildEventDTO("id", EventType.PURGER.ordinal(), "payload");
+        return Event.buildEventDTO(EventType.PURGER.ordinal(), "payload");
     }
 
     public static String toPaymentSummaryGetRequest(String from, String to) {
@@ -22,7 +23,7 @@ public final class EventMapper {
             to = instant;
         }
 
-        return Event.buildEventDTO("id",
+        return Event.buildEventDTO(
                 EventType.PAYMENT_SUMMARY.ordinal(),
                 from.concat("@").concat(to));
     }

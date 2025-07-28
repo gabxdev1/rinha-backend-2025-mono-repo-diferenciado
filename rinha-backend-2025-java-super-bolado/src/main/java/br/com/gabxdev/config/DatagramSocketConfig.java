@@ -29,6 +29,8 @@ public final class DatagramSocketConfig {
 
         try {
             datagramSocket = new DatagramSocket(udpChannelPort);
+            datagramSocket.setReceiveBufferSize(4 * 1024 * 1024);
+            datagramSocket.setBroadcast(false);
         } catch (SocketException e) {
             throw new RuntimeException(e);
         }
@@ -50,9 +52,5 @@ public final class DatagramSocketConfig {
 
     public DatagramSocket getDatagramSocket() {
         return datagramSocket;
-    }
-
-    public int getUdpChannelPort() {
-        return udpChannelPort;
     }
 }

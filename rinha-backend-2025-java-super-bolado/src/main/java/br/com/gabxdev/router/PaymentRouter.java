@@ -1,6 +1,7 @@
-package br.com.gabxdev.handler;
+package br.com.gabxdev.router;
 
 import br.com.gabxdev.config.DatagramSocketConfig;
+import br.com.gabxdev.handler.PaymentHandler;
 import br.com.gabxdev.mapper.PaymentMapper;
 import br.com.gabxdev.model.Event;
 import br.com.gabxdev.properties.ApplicationProperties;
@@ -14,19 +15,20 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 
-public final class LoadBalanceHandler {
+public final class PaymentRouter {
 
-    private final static LoadBalanceHandler INSTANCE = new LoadBalanceHandler();
+    private static final PaymentRouter INSTANCE = new PaymentRouter();
 
     private final PaymentHandler paymentHandler = PaymentHandler.getInstance();
 
     private final DatagramSocket datagramSocket = DatagramSocketConfig.getInstance().getDatagramSocket();
 
-    private LoadBalanceHandler() {
-        Thread.startVirtualThread(this::start);
+
+    private PaymentRouter() {
+        start();
     }
 
-    public static LoadBalanceHandler getInstance() {
+    public static PaymentRouter getInstance() {
         return INSTANCE;
     }
 
@@ -42,7 +44,6 @@ public final class LoadBalanceHandler {
 
     private void handleEvents() throws IOException {
         var poolSize = ApplicationProperties.getInstance().getProperty(PropertiesKey.HANDLER_UDP_POOL_SIZE);
-
         var poll = Executors.newFixedThreadPool(Integer.parseInt(poolSize), Thread.ofVirtual().factory());
 
         while (true) {
@@ -52,17 +53,19 @@ public final class LoadBalanceHandler {
 
             datagramSocket.receive(datagramPacket);
 
-            var data = new String(datagramPacket.getData(), StandardCharsets.UTF_8).trim();
-
             CompletableFuture.runAsync(() -> {
-                processEvent(data, datagramPacket.getAddress(), datagramPacket.getPort());
+                mapperEvent(datagramPacket.getData(), datagramPacket.getAddress(), datagramPacket.getPort());
             }, poll);
         }
     }
 
-    private void processEvent(String eventJson, InetAddress addressLb, int portLb) {
-        var event = Event.parseEvent(eventJson);
+    private void mapperEvent(byte[] data, InetAddress addressLb, int portLb) {
+        var event = Event.parseEvent(new String(data, StandardCharsets.UTF_8).trim());
 
+        routerEvent(event, addressLb,  portLb);
+    }
+
+    private void routerEvent(Event event, InetAddress addressLb, int portLb) {
         switch (event.getType()) {
             case PAYMENT_POST -> paymentHandler.receivePayment(PaymentMapper.toPayment(event.getPayload()));
             case PAYMENT_SUMMARY -> paymentHandler.paymentSummary(event.getPayload(), addressLb, portLb);

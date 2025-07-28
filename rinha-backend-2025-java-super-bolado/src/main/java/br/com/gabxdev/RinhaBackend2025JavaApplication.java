@@ -2,12 +2,13 @@ package br.com.gabxdev;
 
 import br.com.gabxdev.client.PaymentProcessorClient;
 import br.com.gabxdev.config.*;
-import br.com.gabxdev.handler.LoadBalanceHandler;
 import br.com.gabxdev.handler.PaymentHandler;
 import br.com.gabxdev.middleware.PaymentMiddleware;
 import br.com.gabxdev.middleware.PaymentSummaryWaiter;
 import br.com.gabxdev.properties.ApplicationProperties;
 import br.com.gabxdev.repository.InMemoryPaymentDatabase;
+import br.com.gabxdev.router.ApiRouter;
+import br.com.gabxdev.router.PaymentRouter;
 import br.com.gabxdev.service.PaymentService;
 import br.com.gabxdev.worker.PaymentWorker;
 
@@ -30,7 +31,8 @@ public class RinhaBackend2025JavaApplication {
         PaymentMiddleware.getInstance();
         PaymentService.getInstance();
         PaymentHandler.getInstance();
-        LoadBalanceHandler.getInstance();
+        ApiRouter.getInstance();
+        PaymentRouter.getInstance();
 
         Thread.currentThread().join();
     }

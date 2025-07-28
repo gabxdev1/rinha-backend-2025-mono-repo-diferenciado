@@ -12,6 +12,8 @@ public class UdpChannelConfig {
     @Bean
     public DatagramSocket datagramSocket() throws SocketException {
         var datagramSocket = new DatagramSocket();
+        datagramSocket.setSendBufferSize(4 * 1024 * 1024);
+        datagramSocket.setBroadcast(false);
         startShutdownHook(datagramSocket);
 
         return datagramSocket;

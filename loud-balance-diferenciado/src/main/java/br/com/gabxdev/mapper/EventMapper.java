@@ -10,13 +10,12 @@ import java.time.ZoneOffset;
 @Component
 public class EventMapper {
     public String toPaymentPostRequest(String json) {
-        return Event.buildEventDTO("id",
-                EventType.PAYMENT_POST.ordinal(),
+        return Event.buildEventDTO(EventType.PAYMENT_POST.ordinal(),
                 PaymentRequestParse.buildPayload(json));
     }
 
     public String toPurgePaymentsPostRequest() {
-        return Event.buildEventDTO("id", EventType.PURGER.ordinal(), "payload");
+        return Event.buildEventDTO(EventType.PURGER.ordinal(), "payload");
     }
 
     public String toPaymentSummaryGetRequest(String from, String to) {
@@ -28,8 +27,7 @@ public class EventMapper {
             to = instant;
         }
 
-        return Event.buildEventDTO("id",
-                EventType.PAYMENT_SUMMARY.ordinal(),
+        return Event.buildEventDTO(EventType.PAYMENT_SUMMARY.ordinal(),
                 from.concat("@").concat(to));
     }
 }
