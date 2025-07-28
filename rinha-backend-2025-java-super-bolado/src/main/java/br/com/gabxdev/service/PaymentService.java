@@ -2,8 +2,8 @@ package br.com.gabxdev.service;
 
 import br.com.gabxdev.config.DatagramSocketConfig;
 import br.com.gabxdev.config.DatagramSocketExternalConfig;
-import br.com.gabxdev.dto.Event;
-import br.com.gabxdev.dto.EventType;
+import br.com.gabxdev.model.Event;
+import br.com.gabxdev.model.enums.EventType;
 import br.com.gabxdev.mapper.EventMapper;
 import br.com.gabxdev.mapper.JsonParse;
 import br.com.gabxdev.middleware.PaymentMiddleware;
@@ -18,7 +18,6 @@ import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.ZoneOffset;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

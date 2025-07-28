@@ -1,4 +1,4 @@
-package br.com.gabxdev.dto;
+package br.com.gabxdev.model.enums;
 
 public enum EventType {
     PAYMENT_SUMMARY,

@@ -1,5 +1,6 @@
-package br.com.gabxdev.dto;
+package br.com.gabxdev.model;
 
+import br.com.gabxdev.model.enums.EventType;
 
 public class Event {
     private final String id;

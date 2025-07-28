@@ -1,8 +1,8 @@
 package br.com.gabxdev.handler;
 
 import br.com.gabxdev.config.DatagramSocketConfig;
-import br.com.gabxdev.dto.Event;
 import br.com.gabxdev.mapper.PaymentMapper;
+import br.com.gabxdev.model.Event;
 import br.com.gabxdev.properties.ApplicationProperties;
 import br.com.gabxdev.properties.PropertiesKey;
 

@@ -1,7 +1,7 @@
 package br.com.gabxdev.handler;
 
 import br.com.gabxdev.config.DatagramSocketExternalConfig;
-import br.com.gabxdev.dto.Event;
+import br.com.gabxdev.model.Event;
 import br.com.gabxdev.middleware.PaymentSummaryWaiter;
 import br.com.gabxdev.model.Payment;
 import br.com.gabxdev.service.PaymentService;
