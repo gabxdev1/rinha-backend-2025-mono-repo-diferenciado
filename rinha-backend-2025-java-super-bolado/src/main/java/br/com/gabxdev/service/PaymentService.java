@@ -45,7 +45,6 @@ public final class PaymentService {
 
     public void paymentSummaryToMerge(String eventJson) {
 
-        System.out.println("paymentSummaryToMerge eventJson: " + eventJson);
         var instants = eventJson.split("@");
         var from = parseInstant(instants[0]);
         var to = parseInstant(instants[1]);
@@ -77,8 +76,6 @@ public final class PaymentService {
         var paymentSummaryMerged = PaymentMiddleware.mergeSummary(paymentSummary1, paymentSummary2);
         var response = JsonParse.parseToJsonPaymentSummary(paymentSummaryMerged).getBytes(StandardCharsets.UTF_8);
 
-        System.out.println("PaymentSummary merged");
-
         sendSummary(datagramSocket, new DatagramPacket(response, response.length, addressLb, portLb));
     }
 
@@ -101,8 +98,6 @@ public final class PaymentService {
     }
 
     public void purgePaymentsInternal() {
-        System.out.println("purgePaymentsInternal");
-
         paymentRepository.deleteAll();
     }
 }
