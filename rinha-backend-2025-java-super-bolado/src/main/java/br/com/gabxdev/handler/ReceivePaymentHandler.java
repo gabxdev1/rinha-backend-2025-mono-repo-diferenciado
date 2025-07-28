@@ -45,14 +45,11 @@ public class ReceivePaymentHandler implements HttpHandler {
     private void handleReceivePayment(HttpServerExchange exchange) {
         exchange.getRequestReceiver().receiveFullString((httpServerExchange, payload) -> {
             CompletableFuture.runAsync(() -> {
-
                 if (loudBalance.selectBackEnd() == 1) {
                     processPaymentInternal(payload);
                 } else {
                     processPaymentExternal(payload);
                 }
-
-//                httpServerExchange.setStatusCode(200);
             }, threadPool);
         });
     }
