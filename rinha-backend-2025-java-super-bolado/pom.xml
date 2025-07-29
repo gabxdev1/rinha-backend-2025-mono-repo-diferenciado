@@ -18,50 +18,35 @@
         <docker.repo.url>gabxdevv</docker.repo.url>
         <docker.repo.project>${project.artifactId}</docker.repo.project>
         <docker.image.name>${docker.repo.url}/${docker.repo.project}</docker.image.name>
+        <jib-maven-plugin.version>3.4.5</jib-maven-plugin.version>
     </properties>
 
 
     <build>
         <plugins>
             <plugin>
-                <groupId>com.google.cloud.tools</groupId>
-                <artifactId>jib-maven-plugin</artifactId>
-                <version>${jib-maven-plugin.version}</version>
+                <groupId>org.graalvm.buildtools</groupId>
+                <artifactId>native-maven-plugin</artifactId>
+                <version>0.11.0</version>
+            </plugin>
+
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>3.5.4</version>
                 <configuration>
-                    <from>
-                        <image>eclipse-temurin:21-jre-alpine</image>
-                    </from>
-                    <to>
-                        <image>${docker.image.name}:${project.version}</image>
-                    </to>
-                    <container>
-                        <format>OCI</format>
-                    </container>
+                    <mainClass>br.com.gabxdev.RinhaBackend2025JavaApplication</mainClass>
+                    <image>
+                        <name>${docker.image.name}:${project.version}</name>
+                        <builder>paketobuildpacks/builder-jammy-java-tiny:latest</builder>
+                        <env>
+                            <BP_NATIVE_IMAGE>true</BP_NATIVE_IMAGE>
+                            <BP_JVM_VERSION>21</BP_JVM_VERSION>
+                            <BP_NATIVE_IMAGE_BUILD_ARGUMENTS>-H:IncludeResources=".*\.properties$"</BP_NATIVE_IMAGE_BUILD_ARGUMENTS>
+                        </env>
+                    </image>
                 </configuration>
             </plugin>
-<!--            <plugin>-->
-<!--                <groupId>org.graalvm.buildtools</groupId>-->
-<!--                <artifactId>native-maven-plugin</artifactId>-->
-<!--                <version>0.11.0</version>-->
-<!--            </plugin>-->
-
-<!--            <plugin>-->
-<!--                <groupId>org.springframework.boot</groupId>-->
-<!--                <artifactId>spring-boot-maven-plugin</artifactId>-->
-<!--                <version>3.5.4</version>-->
-<!--                <configuration>-->
-<!--                    <mainClass>br.com.gabxdev.RinhaBackend2025JavaApplication</mainClass>-->
-<!--                    <image>-->
-<!--                        <name>${docker.image.name}:${project.version}</name>-->
-<!--                        <builder>paketobuildpacks/builder-jammy-java-tiny:latest</builder>-->
-<!--                        <env>-->
-<!--                            <BP_NATIVE_IMAGE>true</BP_NATIVE_IMAGE>-->
-<!--                            <BP_JVM_VERSION>21</BP_JVM_VERSION>-->
-<!--                            <BP_NATIVE_IMAGE_BUILD_ARGUMENTS>-H:IncludeResources=".*\.properties$"</BP_NATIVE_IMAGE_BUILD_ARGUMENTS>-->
-<!--                        </env>-->
-<!--                    </image>-->
-<!--                </configuration>-->
-<!--            </plugin>-->
         </plugins>
     </build>
 </project>
