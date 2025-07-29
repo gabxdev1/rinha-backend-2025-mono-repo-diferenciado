@@ -50,6 +50,8 @@ public final class SocketInternalConfig {
         try {
             datagramSocket = new DatagramSocket(udpChannelPort);
             datagramSocket.setBroadcast(false);
+            datagramSocket.setSendBufferSize(4 * 1024 * 1024);
+            datagramSocket.setReceiveBufferSize(4 * 1024 * 1024);
             datagramSocket.connect(InetAddress.getByName(this.hostApi2), this.portApi2);
         } catch (SocketException | UnknownHostException e) {
             throw new RuntimeException(e);
