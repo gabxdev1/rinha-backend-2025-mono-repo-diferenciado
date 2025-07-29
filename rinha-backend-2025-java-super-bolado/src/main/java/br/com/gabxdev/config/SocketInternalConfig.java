@@ -7,6 +7,8 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public final class SocketInternalConfig {
 
@@ -20,18 +22,26 @@ public final class SocketInternalConfig {
 
     private final int portApi2;
 
+    private ExecutorService pool = null;
+
     private SocketInternalConfig() {
-        var applicationProperties = ApplicationProperties.getInstance();
+        var properties = ApplicationProperties.getInstance();
         var externalHost = BackendInternalHostConfig.getInstance();
 
         hostApi2 = externalHost.getBackEndExternalHost();
         portApi2 = externalHost.getBackendExternalPort();
 
-        var udpChannelPortS = applicationProperties.getProperty(PropertiesKey.UDP_CHANNEL_INTERNAL_PORT);
+        var udpChannelPortS = properties.getProperty(PropertiesKey.UDP_CHANNEL_INTERNAL_PORT);
 
         this.udpChannelPort = Integer.parseInt(udpChannelPortS);
 
         this.datagramSocket = loadDatagramSocket();
+
+        var isServer = Boolean.parseBoolean(properties.getProperty(PropertiesKey.USER_SERVER));
+        var workersThreadPoolSize = Integer.parseInt(properties.getProperty(PropertiesKey.API_ROUTER_POOL_SIZE));
+        if (!isServer) {
+            this.pool = Executors.newFixedThreadPool(workersThreadPoolSize, Thread.ofVirtual().factory());
+        }
     }
 
     private DatagramSocket loadDatagramSocket() {
@@ -52,8 +62,17 @@ public final class SocketInternalConfig {
 
     private void startShutdownHook(DatagramSocket channel) {
         Runtime.getRuntime().addShutdownHook(
-                Thread.ofVirtual().unstarted(channel::close)
+                Thread.ofVirtual().unstarted(() -> {
+                    channel.close();
+                    if (this.pool != null) {
+                        this.pool.shutdown();
+                    }
+                })
         );
+    }
+
+    public ExecutorService getPool() {
+        return pool;
     }
 
     public static SocketInternalConfig getInstance() {

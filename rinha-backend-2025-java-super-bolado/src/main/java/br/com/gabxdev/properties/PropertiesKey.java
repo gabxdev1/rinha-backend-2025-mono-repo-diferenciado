@@ -13,7 +13,8 @@ public enum PropertiesKey {
     TIMEOUT_PROFESSOR_DEFAULT("timeout.processor.default"),
     WORKERS_THREAD_POOL_SIZE("workers.thread.pool.size"),
     IO_THREAD_POOL_SIZE("io.thread.pool.size"),
-    USER_SERVER("use.server");
+    USER_SERVER("use.server"),
+    API_ROUTER_POOL_SIZE("api.router.pool.size");
 
     private final String key;
 

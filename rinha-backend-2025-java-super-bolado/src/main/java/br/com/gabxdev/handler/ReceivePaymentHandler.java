@@ -1,6 +1,7 @@
 package br.com.gabxdev.handler;
 
 import br.com.gabxdev.client.UdpClient;
+import br.com.gabxdev.config.ServerConfig;
 import br.com.gabxdev.config.SocketInternalConfig;
 import br.com.gabxdev.lb.LoudBalance;
 import br.com.gabxdev.mapper.EventMapper;
@@ -10,12 +11,10 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
+import java.util.concurrent.ExecutorService;
 
 public class ReceivePaymentHandler implements HttpHandler {
 
@@ -46,7 +45,6 @@ public class ReceivePaymentHandler implements HttpHandler {
         } else {
             processPaymentExternal(payload);
         }
-
     }
 
     private String readRequestBody(HttpExchange exchange) throws IOException {

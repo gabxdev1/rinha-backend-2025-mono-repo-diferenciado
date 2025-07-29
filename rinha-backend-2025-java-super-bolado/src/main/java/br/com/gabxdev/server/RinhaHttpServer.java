@@ -18,13 +18,12 @@ public class RinhaHttpServer {
 
     public void start() {
         try {
-            var server = HttpServer.create(new InetSocketAddress(9999), 0);
+            var server = HttpServer.create(new InetSocketAddress(9999), 10000);
             server.setExecutor(serverConfig.getWorkersThreadPool());
 
             server.createContext("/payments-summary", new PaymentSummaryHandler());
             server.createContext("/payments", new ReceivePaymentHandler());
             server.createContext("/purge-payments", new PurgePaymentHandler());
-
 
             server.start();
             System.out.println("Server started on port " + 9999);

@@ -13,6 +13,10 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.nio.charset.StandardCharsets;
+import java.util.IllegalFormatCodePointException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public final class ApiRouter {
 
@@ -45,14 +49,28 @@ public final class ApiRouter {
     }
 
     private void handleEvents() throws IOException {
-        while (true) {
-            var buffer = new byte[210];
+        var pool = SocketInternalConfig.getInstance().getPool();
 
-            var datagramPacket = new DatagramPacket(buffer, buffer.length);
+        if (pool != null) {
+            while (true) {
+                var buffer = new byte[210];
 
-            datagramSocketExternal.receive(datagramPacket);
+                var datagramPacket = new DatagramPacket(buffer, buffer.length);
 
-            mapperEvent(datagramPacket.getData());
+                datagramSocketExternal.receive(datagramPacket);
+
+                CompletableFuture.runAsync(() -> mapperEvent(datagramPacket.getData()), pool);
+            }
+        } else {
+            while (true) {
+                var buffer = new byte[210];
+
+                var datagramPacket = new DatagramPacket(buffer, buffer.length);
+
+                datagramSocketExternal.receive(datagramPacket);
+
+                mapperEvent(datagramPacket.getData());
+            }
         }
     }
 

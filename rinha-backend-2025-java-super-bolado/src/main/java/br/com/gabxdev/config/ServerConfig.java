@@ -22,7 +22,7 @@ public class ServerConfig {
         ioThreadPoolSize = Integer.parseInt(applicationProperties.getProperty(PropertiesKey.IO_THREAD_POOL_SIZE));
         workersThreadPoolSize = Integer.parseInt(applicationProperties.getProperty(PropertiesKey.WORKERS_THREAD_POOL_SIZE));
 
-        workersThreadPool = Executors.newFixedThreadPool(workersThreadPoolSize, Thread.ofVirtual().factory());
+        workersThreadPool = Executors.newFixedThreadPool(workersThreadPoolSize,  Thread.ofVirtual().factory());
     }
 
     public static ServerConfig getInstance() {
