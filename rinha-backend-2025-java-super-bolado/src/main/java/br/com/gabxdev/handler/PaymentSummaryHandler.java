@@ -71,7 +71,6 @@ public final class PaymentSummaryHandler implements HttpHandler {
 
     private void sendJsonResponse(HttpExchange exchange, int statusCode, String response) throws IOException {
         exchange.getResponseHeaders().set(HttpHeaders.CONTENT_TYPE.getValue(), MediaType.APPLICATION_JSON.getValue());
-        exchange.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
 
         byte[] responseBytes = response.getBytes(StandardCharsets.UTF_8);
         exchange.sendResponseHeaders(statusCode, responseBytes.length);

@@ -19,6 +19,7 @@ public class ServerConfig {
     private ServerConfig() {
         var applicationProperties = ApplicationProperties.getInstance();
 
+        System.out.println("test");
         ioThreadPoolSize = Integer.parseInt(applicationProperties.getProperty(PropertiesKey.IO_THREAD_POOL_SIZE));
         workersThreadPoolSize = Integer.parseInt(applicationProperties.getProperty(PropertiesKey.WORKERS_THREAD_POOL_SIZE));
 
