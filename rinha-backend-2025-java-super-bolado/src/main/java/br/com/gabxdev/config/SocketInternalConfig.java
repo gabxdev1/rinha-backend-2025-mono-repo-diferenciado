@@ -37,11 +37,11 @@ public final class SocketInternalConfig {
 
         this.datagramSocket = loadDatagramSocket();
 
-        var isServer = Boolean.parseBoolean(properties.getProperty(PropertiesKey.USER_SERVER));
-        var workersThreadPoolSize = Integer.parseInt(properties.getProperty(PropertiesKey.API_ROUTER_POOL_SIZE));
-        if (!isServer) {
-            this.pool = Executors.newFixedThreadPool(workersThreadPoolSize, Thread.ofVirtual().factory());
-        }
+//        var isServer = Boolean.parseBoolean(properties.getProperty(PropertiesKey.USER_SERVER));
+//        var workersThreadPoolSize = Integer.parseInt(properties.getProperty(PropertiesKey.API_ROUTER_POOL_SIZE));
+//        if (!isServer) {
+//            this.pool = Executors.newFixedThreadPool(workersThreadPoolSize, Thread.ofVirtual().factory());
+//        }
     }
 
     private DatagramSocket loadDatagramSocket() {
