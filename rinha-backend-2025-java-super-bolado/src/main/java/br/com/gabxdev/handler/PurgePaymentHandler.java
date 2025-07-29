@@ -1,34 +1,32 @@
 package br.com.gabxdev.handler;
 
-import br.com.gabxdev.config.ServerConfig;
 import br.com.gabxdev.service.PaymentService;
-import io.undertow.server.HttpHandler;
-import io.undertow.server.HttpServerExchange;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
+import java.io.IOException;
 
 public class PurgePaymentHandler implements HttpHandler {
 
     private final PaymentService paymentService = PaymentService.getInstance();
 
-    private final ExecutorService threadPool = ServerConfig.getInstance().getWorkersThreadPool();
-
     @Override
-    public void handleRequest(HttpServerExchange exchange) {
-        if (exchange.isInIoThread()) {
-            exchange.dispatch(this);
-            return;
-        }
+    public void handle(HttpExchange exchange) throws IOException {
+        var method = exchange.getRequestMethod();
 
-        var method = exchange.getRequestMethod().toString();
-
-        if (method.equals("POST")) {
+        if ("POST".equals(method)) {
             handlePurgePayment(exchange);
         }
     }
 
-    private void handlePurgePayment(HttpServerExchange exchange) {
-        CompletableFuture.runAsync(paymentService::purgePayments, threadPool);
+    private void handlePurgePayment(HttpExchange exchange) throws IOException {
+        sendResponse(exchange, 200);
+
+        paymentService.purgePayments();
+    }
+
+    private void sendResponse(HttpExchange exchange, int statusCode) throws IOException {
+        exchange.sendResponseHeaders(statusCode, 0);
+        exchange.getResponseBody().close();
     }
 }

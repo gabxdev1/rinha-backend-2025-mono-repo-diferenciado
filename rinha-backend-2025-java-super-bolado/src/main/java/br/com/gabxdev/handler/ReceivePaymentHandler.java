@@ -1,26 +1,25 @@
 package br.com.gabxdev.handler;
 
 import br.com.gabxdev.client.UdpClient;
-import br.com.gabxdev.config.ServerConfig;
 import br.com.gabxdev.config.SocketInternalConfig;
 import br.com.gabxdev.lb.LoudBalance;
 import br.com.gabxdev.mapper.EventMapper;
 import br.com.gabxdev.mapper.PaymentMapper;
 import br.com.gabxdev.worker.PaymentWorker;
-import io.undertow.server.HttpHandler;
-import io.undertow.server.HttpServerExchange;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.nio.charset.StandardCharsets;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
+import java.util.Arrays;
 
 public class ReceivePaymentHandler implements HttpHandler {
 
     private final LoudBalance loudBalance = LoudBalance.getInstance();
-
-    private final ExecutorService threadPool = ServerConfig.getInstance().getWorkersThreadPool();
 
     private final PaymentWorker paymentWorker = PaymentWorker.getInstance();
 
@@ -29,29 +28,33 @@ public class ReceivePaymentHandler implements HttpHandler {
     private final DatagramSocket socket = SocketInternalConfig.getInstance().getDatagramSocket();
 
     @Override
-    public void handleRequest(HttpServerExchange exchange) {
-        if (exchange.isInIoThread()) {
-            exchange.dispatch(this);
-            return;
-        }
+    public void handle(HttpExchange exchange) throws IOException {
+        var method = exchange.getRequestMethod();
 
-        var method = exchange.getRequestMethod().toString();
-
-        if (method.equals("POST")) {
+        if ("POST".equals(method)) {
             handleReceivePayment(exchange);
         }
     }
 
-    private void handleReceivePayment(HttpServerExchange exchange) {
-        exchange.getRequestReceiver().receiveFullString((httpServerExchange, payload) -> {
-            CompletableFuture.runAsync(() -> {
-                if (loudBalance.selectBackEnd() == 1) {
-                    processPaymentInternal(payload);
-                } else {
-                    processPaymentExternal(payload);
-                }
-            }, threadPool);
-        });
+    private void handleReceivePayment(HttpExchange exchange) throws IOException {
+        var payload = readRequestBody(exchange);
+
+        sendResponse(exchange, 200);
+
+        if (loudBalance.selectBackEnd() == 1) {
+            processPaymentInternal(payload);
+        } else {
+            processPaymentExternal(payload);
+        }
+
+    }
+
+    private String readRequestBody(HttpExchange exchange) throws IOException {
+        try (var is = exchange.getRequestBody()) {
+            return new String(is.readAllBytes(), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void processPaymentInternal(String payload) {
@@ -63,5 +66,10 @@ public class ReceivePaymentHandler implements HttpHandler {
                 .getBytes(StandardCharsets.UTF_8);
 
         udpClient.send(new DatagramPacket(body, body.length), socket);
+    }
+
+    private void sendResponse(HttpExchange exchange, int statusCode) throws IOException {
+        exchange.sendResponseHeaders(statusCode, 0);
+        exchange.getResponseBody().close();
     }
 }

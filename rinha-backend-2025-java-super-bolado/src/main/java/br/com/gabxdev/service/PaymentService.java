@@ -85,7 +85,6 @@ public final class PaymentService {
     }
 
     public void purgePayments() {
-        System.out.println("purging payments");
 
         paymentRepository.deleteAll();
 
@@ -93,8 +92,6 @@ public final class PaymentService {
     }
 
     public void purgePaymentsInternal() {
-        System.out.println("purging payments internal");
-
         paymentRepository.deleteAll();
     }
 }

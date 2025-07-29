@@ -3,7 +3,7 @@ package br.com.gabxdev;
 import br.com.gabxdev.properties.ApplicationProperties;
 import br.com.gabxdev.properties.PropertiesKey;
 import br.com.gabxdev.router.ApiRouter;
-import br.com.gabxdev.server.UndertowServer;
+import br.com.gabxdev.server.RinhaHttpServer;
 import br.com.gabxdev.worker.PaymentWorker;
 
 public class RinhaBackend2025JavaApplication {
@@ -18,9 +18,9 @@ public class RinhaBackend2025JavaApplication {
         PaymentWorker.getInstance();
 
         if (Boolean.parseBoolean(useServer)) {
-            UndertowServer.getInstance().start();
+            RinhaHttpServer.getInstance().start();
+        } else {
+            Thread.currentThread().join();
         }
-
-        Thread.currentThread().join();
     }
 }

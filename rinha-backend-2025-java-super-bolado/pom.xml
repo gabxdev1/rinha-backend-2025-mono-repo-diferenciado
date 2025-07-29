@@ -20,38 +20,12 @@
         <docker.repo.url>gabxdevv</docker.repo.url>
         <docker.repo.project>${project.artifactId}</docker.repo.project>
         <docker.image.name>${docker.repo.url}/${docker.repo.project}</docker.image.name>
-        <jib.maven-plugin.image>eclipse-temurin:21-jre</jib.maven-plugin.image>
-        <jib-maven-plugin.version>3.4.5</jib-maven-plugin.version>
     </properties>
 
 
-    <dependencies>
-        <dependency>
-            <groupId>io.undertow</groupId>
-            <artifactId>undertow-core</artifactId>
-            <version>${undertow-core.version}</version>
-        </dependency>
-    </dependencies>
-
     <build>
-        <plugins>
-                <plugin>
-                    <groupId>com.google.cloud.tools</groupId>
-                    <artifactId>jib-maven-plugin</artifactId>
-                    <version>${jib-maven-plugin.version}</version>
-                    <configuration>
-                        <from>
-                            <image>eclipse-temurin:21-jre-alpine</image>
-                        </from>
-                        <to>
-                            <image>${docker.image.name}:${project.version}</image>
-                        </to>
-                        <container>
-                            <format>OCI</format>
-                        </container>
-                    </configuration>
-                </plugin>
-        </plugins>
+
+
     </build>
 
 </project>
