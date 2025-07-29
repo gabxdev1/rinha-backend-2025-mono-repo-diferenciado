@@ -26,6 +26,7 @@ services:
         -XX:-PrintGCDetails
         -XX:-FlightRecorder
         -XX:+DisableExplicitGC
+        -agentlib:native-image-agent=config-output-dir=config/META-INF/native-image
     networks:
       - backend
       - payment-processor
@@ -64,6 +65,7 @@ services:
         -XX:-PrintGCDetails
         -XX:-FlightRecorder
         -XX:+DisableExplicitGC
+        -agentlib:native-image-agent=config-output-dir=config/META-INF/native-image
     networks:
       - backend
       - payment-processor

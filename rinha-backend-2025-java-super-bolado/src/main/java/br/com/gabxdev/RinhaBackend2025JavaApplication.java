@@ -8,6 +8,7 @@ import br.com.gabxdev.worker.PaymentWorker;
 
 public class RinhaBackend2025JavaApplication {
     public static void main(String[] args) throws InterruptedException {
+        System.setProperty("jboss.threads.eqe.disable", Boolean.toString(true));
         start();
     }
 
