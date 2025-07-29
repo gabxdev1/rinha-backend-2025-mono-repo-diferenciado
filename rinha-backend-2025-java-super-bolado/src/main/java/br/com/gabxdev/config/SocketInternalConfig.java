@@ -37,11 +37,11 @@ public final class SocketInternalConfig {
 
         this.datagramSocket = loadDatagramSocket();
 
-//        var isServer = Boolean.parseBoolean(properties.getProperty(PropertiesKey.USER_SERVER));
-//        var workersThreadPoolSize = Integer.parseInt(properties.getProperty(PropertiesKey.API_ROUTER_POOL_SIZE));
-//        if (!isServer) {
-//            this.pool = Executors.newFixedThreadPool(workersThreadPoolSize, Thread.ofVirtual().factory());
-//        }
+        var isServer = Boolean.parseBoolean(properties.getProperty(PropertiesKey.USER_SERVER));
+        var workersThreadPoolSize = Integer.parseInt(properties.getProperty(PropertiesKey.API_ROUTER_POOL_SIZE));
+        if (!isServer) {
+            this.pool = Executors.newFixedThreadPool(workersThreadPoolSize, Thread.ofVirtual().factory());
+        }
     }
 
     private DatagramSocket loadDatagramSocket() {
@@ -50,6 +50,8 @@ public final class SocketInternalConfig {
         try {
             datagramSocket = new DatagramSocket(udpChannelPort);
             datagramSocket.setBroadcast(false);
+            datagramSocket.setReceiveBufferSize(4 * 1024 * 1024);
+            datagramSocket.setSendBufferSize(4 * 1024 * 1024);
             datagramSocket.connect(InetAddress.getByName(this.hostApi2), this.portApi2);
         } catch (SocketException | UnknownHostException e) {
             throw new RuntimeException(e);

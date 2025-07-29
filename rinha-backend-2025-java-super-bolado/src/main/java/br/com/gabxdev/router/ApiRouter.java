@@ -4,8 +4,6 @@ import br.com.gabxdev.config.SocketInternalConfig;
 import br.com.gabxdev.mapper.PaymentMapper;
 import br.com.gabxdev.middleware.PaymentSummaryWaiter;
 import br.com.gabxdev.model.Event;
-import br.com.gabxdev.properties.ApplicationProperties;
-import br.com.gabxdev.properties.PropertiesKey;
 import br.com.gabxdev.service.PaymentService;
 import br.com.gabxdev.worker.PaymentWorker;
 
@@ -46,19 +44,19 @@ public final class ApiRouter {
     }
 
     private void handleEvents() throws IOException {
-//        var pool = SocketInternalConfig.getInstance().getPool();
-//
-//        if (pool != null) {
-//            while (true) {
-//                var buffer = new byte[210];
-//
-//                var datagramPacket = new DatagramPacket(buffer, buffer.length);
-//
-//                datagramSocketExternal.receive(datagramPacket);
-//
-//                CompletableFuture.runAsync(() -> mapperEvent(datagramPacket.getData()), pool);
-//            }
-//        } else {
+        var pool = SocketInternalConfig.getInstance().getPool();
+
+        if (pool != null) {
+            while (true) {
+                var buffer = new byte[210];
+
+                var datagramPacket = new DatagramPacket(buffer, buffer.length);
+
+                datagramSocketExternal.receive(datagramPacket);
+
+                CompletableFuture.runAsync(() -> mapperEvent(datagramPacket.getData()), pool);
+            }
+        } else {
             while (true) {
                 var buffer = new byte[210];
 
@@ -68,7 +66,7 @@ public final class ApiRouter {
 
                 mapperEvent(datagramPacket.getData());
             }
-//        }
+        }
     }
 
     private void mapperEvent(byte[] data) {

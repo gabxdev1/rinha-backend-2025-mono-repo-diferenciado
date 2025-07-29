@@ -1,13 +1,13 @@
 package br.com.gabxdev.client;
 
-import br.com.gabxdev.commons.HttpHeaders;
-import br.com.gabxdev.commons.MediaType;
 import br.com.gabxdev.config.HttpClientConfig;
 import br.com.gabxdev.config.PaymentProcessorConfig;
 import br.com.gabxdev.model.Payment;
 import br.com.gabxdev.model.enums.PaymentProcessorType;
 import br.com.gabxdev.properties.ApplicationProperties;
 import br.com.gabxdev.properties.PropertiesKey;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -89,7 +89,7 @@ public final class PaymentProcessorClient {
         return HttpRequest.newBuilder()
                 .uri(uri)
                 .timeout(timeout)
-                .header(HttpHeaders.CONTENT_TYPE.getValue(), MediaType.APPLICATION_JSON.getValue())
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .POST(HttpRequest.BodyPublishers.ofString(body))
                 .build();
     }

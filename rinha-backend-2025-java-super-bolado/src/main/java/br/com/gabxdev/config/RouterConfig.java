@@ -1,32 +1,21 @@
 package br.com.gabxdev.config;
 
-import br.com.gabxdev.handler.PaymentSummaryHandler;
-import br.com.gabxdev.handler.PurgePaymentHandler;
-import br.com.gabxdev.handler.ReceivePaymentHandler;
-import io.undertow.server.HttpHandler;
-import io.undertow.server.handlers.PathHandler;
+import br.com.gabxdev.handler.PaymentHandler;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.reactive.function.server.RouterFunction;
+import org.springframework.web.reactive.function.server.RouterFunctions;
+import org.springframework.web.reactive.function.server.ServerResponse;
 
+@Configuration
 public class RouterConfig {
-    private static final RouterConfig INSTANCE = new RouterConfig();
 
-    private final HttpHandler routes;
-
-    private RouterConfig() {
-        this.routes = createRoutes();
-    }
-
-    public static RouterConfig getInstance() {
-        return INSTANCE;
-    }
-
-    private HttpHandler createRoutes() {
-        return new PathHandler()
-                .addExactPath("/payments", new ReceivePaymentHandler())
-                .addPrefixPath("/purger-payments", new PurgePaymentHandler())
-                .addPrefixPath("/payments-summary", new PaymentSummaryHandler());
-    }
-
-    public HttpHandler getRoutes() {
-        return routes;
+    @Bean
+    public RouterFunction<ServerResponse> route(PaymentHandler handler) {
+        return RouterFunctions.route()
+                .POST("/payments", handler::receivePayment)
+                .POST("/purge-payments", handler::purgePayments)
+                .GET("/payments-summary", handler::paymentSummary)
+                .build();
     }
 }

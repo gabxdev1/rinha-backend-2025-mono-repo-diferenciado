@@ -18,6 +18,7 @@ public final class BackendInternalHostConfig {
 
         var portS = applicationProperties.getProperty(PropertiesKey.EXTERNAL_UDP_PORT);
 
+
         this.backendExternalPort = Integer.parseInt(portS);
     }
 
