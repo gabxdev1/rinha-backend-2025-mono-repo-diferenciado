@@ -39,39 +39,33 @@ public final class PaymentProcessorClient {
         return INSTANCE;
     }
 
-    public boolean sendPayment(Payment request) {
-
-        if (sendPaymentDefaultWithRetry(request.getJson())) {
-            request.setType(PaymentProcessorType.DEFAULT);
-
-            return true;
-        }
-
-        if (callApiFallBack(request.getJson())) {
-            request.setType(PaymentProcessorType.FALLBACK);
-
-            return true;
-        }
-
-        return false;
-    }
-
-    private boolean sendPaymentDefaultWithRetry(String json) {
-        var request = buildRequest(json, paymentProcessorConfig.getUriProcessorDefault(),
+    public void sendPayment(Payment request) {
+        var requestDefault = buildRequest(request.json, paymentProcessorConfig.getUriProcessorDefault(),
                 this.timeout);
 
-        for (int i = 1; i <= retryApiDefault; i++) {
-            if (sendRequest(request)) {
-                return true;
+        var requestFallback = buildRequest(request.json, paymentProcessorConfig.getUriProcessorFallback(),
+                this.timeout);
+
+        while (true) {
+            if (callApiDefault(requestDefault)) {
+                request.setType(PaymentProcessorType.DEFAULT);
+
+                break;
+            }
+
+            if (callApiFallBack(requestFallback)) {
+                request.setType(PaymentProcessorType.FALLBACK);
+
+                break;
             }
         }
-
-        return false;
     }
 
-    private boolean callApiFallBack(String json) {
-        var request = buildRequest(json, paymentProcessorConfig.getUriProcessorFallback(), this.timeout);
+    private boolean callApiDefault(HttpRequest request) {
+        return sendRequest(request);
+    }
 
+    private boolean callApiFallBack(HttpRequest request) {
         return sendRequest(request);
     }
 

@@ -6,7 +6,7 @@
 
     <groupId>br.com.gabxdev</groupId>
     <artifactId>rinha-backend-2025-java-super-bolado-native</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>

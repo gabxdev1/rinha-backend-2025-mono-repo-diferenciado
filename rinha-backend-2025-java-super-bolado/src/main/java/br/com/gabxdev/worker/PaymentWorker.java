@@ -63,12 +63,8 @@ public final class PaymentWorker {
     }
 
     private void processPayment(Payment payment) {
-        if (processorClient.sendPayment(payment)) {
-            paymentRepository.save(payment);
+        processorClient.sendPayment(payment);
 
-            return;
-        }
-
-        enqueue(payment);
+        paymentRepository.save(payment);
     }
 }
