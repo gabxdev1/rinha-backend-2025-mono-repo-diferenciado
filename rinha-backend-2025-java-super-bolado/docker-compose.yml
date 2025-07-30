@@ -1,10 +1,11 @@
 services:
   api-1:
-    image: gabxdevv/rinha-backend-2025-java-super-bolado:1.0.0
+    image: gabxdevv/rinha-backend-2025-java-super-bolado-native:1.0.0
     container_name: gaxdev-backend-1
     environment:
       RETRY_API_DEFAULT: 15
       WORKER_POOL_SIZE: 21
+      WORKERS_THREAD_POOL_SIZE: 16
       USER_SERVER: true
       URL_PROCESSOR_DEFAULT: http://payment-processor-default:8080/payments
       URL_PROCESSOR_FALLBACK: http://payment-processor-fallback:8080/payments
@@ -14,7 +15,6 @@ services:
       UDP_CHANNEL_INTERNAL_PORT: 9003
       EXTERNAL_UDP_HOST: api-2
       EXTERNAL_UDP_PORT: 9004
-
       JAVA_OPTS: >-
         -server
         -XX:+UseG1GC
@@ -38,19 +38,18 @@ services:
           memory: '175MB'
 
   api-2:
-    image: gabxdevv/rinha-backend-2025-java-super-bolado:1.0.0
+    image: gabxdevv/rinha-backend-2025-java-super-bolado-native:1.0.0
     container_name: gaxdev-backend-2
     restart: always
     environment:
       RETRY_API_DEFAULT: 15
       WORKER_POOL_SIZE: 21
-      API_ROUTER_POOL_SIZE: 2
+      API_ROUTER_POOL_SIZE: 6
       URL_PROCESSOR_DEFAULT: http://payment-processor-default:8080/payments
       URL_PROCESSOR_FALLBACK: http://payment-processor-fallback:8080/payments
       USER_SERVER: false
       BACK_END_URL: http://backend-1:8080
       SERVER_PORT: 8080
-      UDP_CHANNEL_PORT: 9002
       UDP_CHANNEL_INTERNAL_PORT: 9004
       EXTERNAL_UDP_HOST: api-1
       EXTERNAL_UDP_PORT: 9003
