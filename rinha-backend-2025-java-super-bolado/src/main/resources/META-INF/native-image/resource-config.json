@@ -1,0 +1,33 @@
+{
+  "resources":{
+  "includes":[{
+    "pattern":"\\QMETA-INF/services/java.lang.System$LoggerFinder\\E"
+  }, {
+    "pattern":"\\QMETA-INF/services/java.net.spi.InetAddressResolverProvider\\E"
+  }, {
+    "pattern":"\\QMETA-INF/services/java.net.spi.URLStreamHandlerProvider\\E"
+  }, {
+    "pattern":"\\QMETA-INF/services/java.nio.channels.spi.SelectorProvider\\E"
+  }, {
+    "pattern":"\\QMETA-INF/services/java.rmi.server.RMIClassLoaderSpi\\E"
+  }, {
+    "pattern":"\\QMETA-INF/services/java.time.zone.ZoneRulesProvider\\E"
+  }, {
+    "pattern":"\\QMETA-INF/services/org.jboss.logging.LoggerProvider\\E"
+  }, {
+    "pattern":"\\QMETA-INF/services/org.xnio.XnioProvider\\E"
+  }, {
+    "pattern":"\\Qapplication.properties\\E"
+  }, {
+    "pattern":"\\Qio/undertow/version.properties\\E"
+  }, {
+    "pattern":"\\Qorg/jboss/threads/Version.properties\\E"
+  }, {
+    "pattern":"\\Qorg/xnio/Version.properties\\E"
+  }, {
+    "pattern":"\\Qorg/xnio/nio/Version.properties\\E"
+  }, {
+    "pattern":"jdk.jfr:\\Qjdk/jfr/internal/query/view.ini\\E"
+  }]},
+  "bundles":[]
+}
