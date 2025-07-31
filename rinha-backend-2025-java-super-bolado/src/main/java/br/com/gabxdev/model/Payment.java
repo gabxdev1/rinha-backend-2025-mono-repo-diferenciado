@@ -8,9 +8,9 @@ import java.time.Instant;
 public final class Payment {
     private String correlationId;
 
-    private BigDecimal amount;
+    private String amount;
 
-    private Instant requestedAt;
+    private long requestedAt;
 
     public String json;
 
@@ -19,7 +19,7 @@ public final class Payment {
     public Payment() {
     }
 
-    public Payment(String correlationId, BigDecimal amount, Instant requestedAt) {
+    public Payment(String correlationId, String amount, long requestedAt) {
         this.correlationId = correlationId;
         this.amount = amount;
         this.requestedAt = requestedAt;
@@ -34,19 +34,12 @@ public final class Payment {
     }
 
     public BigDecimal getAmount() {
-        return amount;
+        return new BigDecimal(amount);
     }
 
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
-    }
 
     public Instant getRequestedAt() {
-        return requestedAt;
-    }
-
-    public void setRequestedAt(Instant requestedAt) {
-        this.requestedAt = requestedAt;
+        return Instant.ofEpochMilli(requestedAt);
     }
 
     public String getJson() {

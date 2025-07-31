@@ -13,7 +13,7 @@ public class UndertowServer {
         var serverConfig = ServerConfig.getInstance();
 
         this.server = Undertow.builder()
-                .addHttpListener(9999, "0.0.0.0")
+                .addHttpListener(Integer.parseInt(System.getenv("SERVER_PORT")), "0.0.0.0")
                 .setIoThreads(serverConfig.getIoThreadPoolSize())
                 .setWorkerThreads(serverConfig.getWorkersThreadPoolSize())
                 .setHandler(RouterConfig.getInstance().getRoutes())

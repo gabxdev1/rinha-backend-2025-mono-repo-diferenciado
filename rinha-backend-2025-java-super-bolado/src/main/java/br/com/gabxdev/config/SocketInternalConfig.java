@@ -22,8 +22,6 @@ public final class SocketInternalConfig {
 
     private final int portApi2;
 
-    private ExecutorService pool = null;
-
     private SocketInternalConfig() {
         var properties = ApplicationProperties.getInstance();
         var externalHost = BackendInternalHostConfig.getInstance();
@@ -36,12 +34,6 @@ public final class SocketInternalConfig {
         this.udpChannelPort = Integer.parseInt(udpChannelPortS);
 
         this.datagramSocket = loadDatagramSocket();
-
-        var isServer = Boolean.parseBoolean(properties.getProperty(PropertiesKey.USER_SERVER));
-        var workersThreadPoolSize = Integer.parseInt(properties.getProperty(PropertiesKey.API_ROUTER_POOL_SIZE));
-        if (!isServer) {
-            this.pool = Executors.newFixedThreadPool(workersThreadPoolSize, Thread.ofVirtual().factory());
-        }
     }
 
     private DatagramSocket loadDatagramSocket() {
@@ -58,10 +50,6 @@ public final class SocketInternalConfig {
         startShutdownHook(datagramSocket);
 
         return datagramSocket;
-    }
-
-    public ExecutorService getPool() {
-        return pool;
     }
 
     private void startShutdownHook(DatagramSocket channel) {

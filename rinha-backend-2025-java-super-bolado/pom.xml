@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>br.com.gabxdev</groupId>
-    <artifactId>rinha-backend-2025-java-super-bolado-native</artifactId>
-    <version>1.0.2</version>
+    <artifactId>rinha-backend-2025-java-super-bolado-native-nginx</artifactId>
+    <version>1.0.0</version>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
@@ -20,8 +20,6 @@
         <docker.repo.url>gabxdevv</docker.repo.url>
         <docker.repo.project>${project.artifactId}</docker.repo.project>
         <docker.image.name>${docker.repo.url}/${docker.repo.project}</docker.image.name>
-        <jib.maven-plugin.image>eclipse-temurin:21-jre</jib.maven-plugin.image>
-        <jib-maven-plugin.version>3.4.5</jib-maven-plugin.version>
     </properties>
 
 

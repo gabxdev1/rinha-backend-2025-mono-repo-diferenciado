@@ -1,11 +1,8 @@
 package br.com.gabxdev.router;
 
 import br.com.gabxdev.config.SocketInternalConfig;
-import br.com.gabxdev.mapper.PaymentMapper;
 import br.com.gabxdev.middleware.PaymentSummaryWaiter;
 import br.com.gabxdev.model.Event;
-import br.com.gabxdev.properties.ApplicationProperties;
-import br.com.gabxdev.properties.PropertiesKey;
 import br.com.gabxdev.service.PaymentService;
 import br.com.gabxdev.worker.PaymentWorker;
 
@@ -13,7 +10,6 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.nio.charset.StandardCharsets;
-import java.util.concurrent.CompletableFuture;
 
 public final class ApiRouter {
 
@@ -46,28 +42,14 @@ public final class ApiRouter {
     }
 
     private void handleEvents() throws IOException {
-        var pool = SocketInternalConfig.getInstance().getPool();
+        while (true) {
+            var buffer = new byte[210];
 
-        if (pool != null) {
-            while (true) {
-                var buffer = new byte[210];
+            var datagramPacket = new DatagramPacket(buffer, buffer.length);
 
-                var datagramPacket = new DatagramPacket(buffer, buffer.length);
+            datagramSocketExternal.receive(datagramPacket);
 
-                datagramSocketExternal.receive(datagramPacket);
-
-                CompletableFuture.runAsync(() -> mapperEvent(datagramPacket.getData()), pool);
-            }
-        } else {
-            while (true) {
-                var buffer = new byte[210];
-
-                var datagramPacket = new DatagramPacket(buffer, buffer.length);
-
-                datagramSocketExternal.receive(datagramPacket);
-
-                mapperEvent(datagramPacket.getData());
-            }
+            mapperEvent(datagramPacket.getData());
         }
     }
 
@@ -79,7 +61,6 @@ public final class ApiRouter {
 
     private void routerEvent(Event event) {
         switch (event.getType()) {
-            case PAYMENT_POST -> paymentWorker.enqueue(PaymentMapper.toPaymentExternal(event.getPayload()));
             case PAYMENT_SUMMARY -> paymentService.paymentSummaryToMerge(event.getPayload());
             case PAYMENT_SUMMARY_MERGE -> paymentSummaryWaiter.completeResponse(event.getPayload());
             case PURGER -> paymentService.purgePaymentsInternal();
