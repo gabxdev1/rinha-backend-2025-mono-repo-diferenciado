@@ -43,25 +43,32 @@ public class ReceivePaymentHandler implements HttpHandler {
     }
 
     private void handleReceivePayment(HttpServerExchange exchange) {
-        exchange.getRequestReceiver().receiveFullString((httpServerExchange, payload) -> {
-            CompletableFuture.runAsync(() -> {
-                if (loudBalance.selectBackEnd() == 1) {
-                    processPaymentInternal(payload);
-                } else {
-                    processPaymentExternal(payload);
-                }
-            }, threadPool);
+        exchange.getRequestReceiver().receiveFullBytes((httpServerExchange, payload) -> {
+
+
+            for (int i = 0; i < payload.length; i++) {
+                System.out.println(i + ": " + ((char)payload[i]));
+            }
+
+            System.out.println("-----------------------------------------------------------------");
+//            CompletableFuture.runAsync(() -> {
+//                if (loudBalance.selectBackEnd() == 1) {
+//                    processPaymentInternal(payload);
+//                } else {
+//                    processPaymentExternal(payload);
+//                }
+//            }, threadPool);
         });
     }
 
-    private void processPaymentInternal(String payload) {
+    private void processPaymentInternal(byte[] payload) {
         paymentWorker.enqueue(PaymentMapper.toPaymentInternal(payload));
     }
 
-    private void processPaymentExternal(String payload) {
-        var body = EventMapper.toPaymentPostRequest(payload)
-                .getBytes(StandardCharsets.UTF_8);
-
-        udpClient.send(new DatagramPacket(body, body.length), socket);
+    private void processPaymentExternal(byte[] payload) {
+//        var body = EventMapper.toPaymentPostRequest(payload)
+//                .getBytes(StandardCharsets.UTF_8);
+//
+//        udpClient.send(new DatagramPacket(body, body.length), socket);
     }
 }

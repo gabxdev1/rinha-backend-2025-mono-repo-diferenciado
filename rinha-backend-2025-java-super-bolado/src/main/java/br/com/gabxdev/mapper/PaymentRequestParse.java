@@ -16,6 +16,14 @@ public class PaymentRequestParse {
                 .toString();
     }
 
+    public static byte[] extractUUIDFromRequest(byte[] json) {
+        return null;
+    }
+
+    public static byte[] extractAmountFromRequest(byte[] json) {
+        return null;
+    }
+
     public static String extractUUIDFromRequest(String json) {
         int idx = json.indexOf(KEY_UUID);
 
