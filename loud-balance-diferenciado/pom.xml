@@ -2,12 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.3</version>
-        <relativePath/>
-    </parent>
+
     <groupId>br.com.gabxdev</groupId>
     <artifactId>loud-balance-diferenciado</artifactId>
     <version>1.0.2</version>
@@ -15,33 +10,23 @@
     <description>loud-balance-diferenciado</description>
 
     <properties>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
         <java.version>21</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <undertow-core.version>2.3.18.Final</undertow-core.version>
+        <native-maven-plugin.version>0.11.0</native-maven-plugin.version>
+        <spring-boot-maven-plugin.version>3.5.4</spring-boot-maven-plugin.version>
+
+        <docker.repo.url>gabxdevv</docker.repo.url>
+        <docker.repo.project>${project.artifactId}</docker.repo.project>
+        <docker.image.name>${docker.repo.url}/${docker.repo.project}</docker.image.name>
     </properties>
     <dependencies>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-webflux</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter-logging</artifactId>
-                </exclusion>
-
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>jackson-databind</artifactId>
-                </exclusion>
-
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>jackson-core</artifactId>
-                </exclusion>
-
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>jackson-annotations</artifactId>
-                </exclusion>
-            </exclusions>
+            <groupId>io.undertow</groupId>
+            <artifactId>undertow-core</artifactId>
+            <version>${undertow-core.version}</version>
         </dependency>
     </dependencies>
 
@@ -50,6 +35,7 @@
             <plugin>
                 <groupId>org.graalvm.buildtools</groupId>
                 <artifactId>native-maven-plugin</artifactId>
+                <version>0.11.0</version>
             </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -58,13 +44,16 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>3.5.4</version>
                 <configuration>
                     <image>
+                        <mainClass>br.com.gabxdev.LoudBalanceDiferenciadoApplication</mainClass>
                         <name>gabxdevv/loud-balance-diferenciado-puro:${project.version}</name>
                         <builder>paketobuildpacks/builder-jammy-java-tiny:latest</builder>
                         <env>
                             <BP_NATIVE_IMAGE>true</BP_NATIVE_IMAGE>
                             <BP_JVM_VERSION>21</BP_JVM_VERSION>
+                            <BP_NATIVE_IMAGE_BUILD_ARGUMENTS>-H:IncludeResources=".*"</BP_NATIVE_IMAGE_BUILD_ARGUMENTS>
                         </env>
                     </image>
                 </configuration>

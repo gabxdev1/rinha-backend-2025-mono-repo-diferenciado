@@ -35,7 +35,7 @@
                         <env>
                             <BP_NATIVE_IMAGE>true</BP_NATIVE_IMAGE>
                             <BP_JVM_VERSION>21</BP_JVM_VERSION>
-                            <BP_NATIVE_IMAGE_BUILD_ARGUMENTS>-H:IncludeResources=".*\.properties$"</BP_NATIVE_IMAGE_BUILD_ARGUMENTS>
+                            <BP_NATIVE_IMAGE_BUILD_ARGUMENTS>-H:IncludeResources=".*"</BP_NATIVE_IMAGE_BUILD_ARGUMENTS>
                         </env>
                     </image>
                 </configuration>

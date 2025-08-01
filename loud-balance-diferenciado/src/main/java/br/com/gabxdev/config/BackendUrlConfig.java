@@ -1,35 +1,46 @@
 package br.com.gabxdev.config;
 
+import br.com.gabxdev.properties.ApplicationProperties;
+import br.com.gabxdev.properties.PropertiesKey;
 import br.com.gabxdev.socket.BackendAddress;
-import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Component
 public class BackendUrlConfig {
 
-    @Value("${rinha.api.url.back-end-1}")
-    private String backEndUrl1;
+    private final static BackendUrlConfig INSTANCE = new BackendUrlConfig();
 
-    @Value("${rinha.api.port.back-end-1}")
-    private int backEndPort1;
+    private final String backEndUrl1;
 
-    @Value("${rinha.api.url.back-end-2}")
-    private String backEndUrl2;
+    private final int backEndPort1;
 
-    @Value("${rinha.api.port.back-end-2}")
-    private int backEndPort2;
+    private final String backEndUrl2;
+
+    private final int backEndPort2;
 
     private List<BackendAddress> backendAddresses;
 
-    @PostConstruct
+    public static BackendUrlConfig getInstance() {
+        return INSTANCE;
+    }
+
+    private BackendUrlConfig() {
+        var properties = ApplicationProperties.getInstance();
+
+        backEndUrl1 = properties.getProperty(PropertiesKey.BACK_END_1_URL);
+        backEndPort1 = Integer.parseInt(properties.getProperty(PropertiesKey.BACK_END_1_PORT));
+
+        backEndUrl2 = properties.getProperty(PropertiesKey.BACK_END_2_URL);
+        backEndPort2 = Integer.parseInt(properties.getProperty(PropertiesKey.BACK_END_2_PORT));
+
+        start();
+    }
+
     private void start() {
         var socketAddress1 = new BackendAddress(backEndUrl1, backEndPort1);
         var socketAddress2 = new BackendAddress(backEndUrl2, backEndPort2);
 
-        this.backendAddresses = List.of(socketAddress1, socketAddress2);
+        this.backendAddresses = java.util.List.of(socketAddress1, socketAddress2);
     }
 
     public List<BackendAddress> getBackendsAddresses() {

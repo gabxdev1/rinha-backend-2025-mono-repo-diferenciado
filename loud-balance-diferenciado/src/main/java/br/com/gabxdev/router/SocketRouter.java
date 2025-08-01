@@ -1,9 +1,9 @@
 package br.com.gabxdev.router;
 
 import br.com.gabxdev.config.BackendUrlConfig;
+import br.com.gabxdev.config.UdpChannelConfig;
 import br.com.gabxdev.lb.LoudBalance;
-import br.com.gabxdev.lb.ResponseWaiter;
-import org.springframework.stereotype.Component;
+import br.com.gabxdev.lb.PaymentSummaryWaiter;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -11,25 +11,24 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 
-@Component
 public class SocketRouter {
 
-    private final DatagramSocket datagramSocket;
+    private final static SocketRouter INSTANCE = new SocketRouter();
 
-    private final LoudBalance loudBalance;
+    private final DatagramSocket datagramSocket = UdpChannelConfig.getInstance().getDatagramSocket();
 
-    private final ResponseWaiter responseWaiter;
+    private final LoudBalance loudBalance = LoudBalance.getInstance();
 
-    private final BackendUrlConfig backendUrlConfig;
+    private final PaymentSummaryWaiter paymentSummaryWaiter = PaymentSummaryWaiter.getInstance();
 
-    public SocketRouter(DatagramSocket datagramSocket, LoudBalance loudBalance,
-                        ResponseWaiter responseWaiter, BackendUrlConfig backendUrlConfig) {
-        this.datagramSocket = datagramSocket;
-        this.loudBalance = loudBalance;
-        this.responseWaiter = responseWaiter;
-        this.backendUrlConfig = backendUrlConfig;
+    private final BackendUrlConfig backendUrlConfig = BackendUrlConfig.getInstance();
 
+    private SocketRouter() {
         start();
+    }
+
+    public static SocketRouter getInstance() {
+        return INSTANCE;
     }
 
     private void start() {
@@ -69,6 +68,6 @@ public class SocketRouter {
     }
 
     public void processEvent(String json) {
-        responseWaiter.completeResponse(json);
+        paymentSummaryWaiter.completeResponse(json);
     }
 }

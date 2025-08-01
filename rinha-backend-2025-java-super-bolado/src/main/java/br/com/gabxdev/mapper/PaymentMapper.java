@@ -12,8 +12,8 @@ public class PaymentMapper {
     public static Payment toPayment(String payload) {
         var body = payload.split(" ");
 
-        var paymentPostToProcessorRequest = new Payment(body[0], new BigDecimal(body[1]),
-                Instant.now());
+        var paymentPostToProcessorRequest = new Payment(body[0], body[1],
+                System.currentTimeMillis());
 
         paymentPostToProcessorRequest.json = buildPaymentDTO(paymentPostToProcessorRequest);
 

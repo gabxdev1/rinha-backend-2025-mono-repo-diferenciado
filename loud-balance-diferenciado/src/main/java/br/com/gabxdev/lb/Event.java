@@ -1,6 +1,8 @@
 package br.com.gabxdev.lb;
 
 
+import java.nio.charset.StandardCharsets;
+
 public class Event {
     private final EventType type;
 
@@ -19,11 +21,12 @@ public class Event {
         return payload;
     }
 
-    public static String buildEventDTO(int type, String payload) {
+    public static byte[] buildEventDTO(int type, String payload) {
         return new StringBuilder(50)
                 .append(type)
                 .append("&")
                 .append(payload)
-                .toString();
+                .toString()
+                .getBytes(StandardCharsets.UTF_8);
     }
 }

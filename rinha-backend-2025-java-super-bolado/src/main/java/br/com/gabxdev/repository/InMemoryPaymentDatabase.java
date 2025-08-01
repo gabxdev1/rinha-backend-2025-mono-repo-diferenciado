@@ -43,11 +43,11 @@ public final class InMemoryPaymentDatabase {
         return toPaymentSummaryGetResponse(grouped);
     }
 
-    public PaymentSummaryGetResponse getSummaryByTimeRange(Instant from, Instant to) {
+    public PaymentSummaryGetResponse getSummaryByTimeRange(long from, long to) {
         var snapshot = getSnapshot();
 
         var grouped = snapshot.stream()
-                .filter(p -> !p.getRequestedAt().isBefore(from) && !p.getRequestedAt().isAfter(to))
+                .filter(p -> p.getRequestedAt() >= from && p.getRequestedAt() <= to)
                 .collect(Collectors.groupingBy(p -> p.type));
 
         return toPaymentSummaryGetResponse(grouped);

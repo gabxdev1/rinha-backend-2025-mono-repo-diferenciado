@@ -2,36 +2,31 @@ package br.com.gabxdev.service;
 
 import br.com.gabxdev.mapper.EventMapper;
 import br.com.gabxdev.router.SocketRouter;
-import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
 
-@Service
 public class LoadBalanceService {
 
-    private final SocketRouter socketRouter;
+    private final static LoadBalanceService INSTANCE = new LoadBalanceService();
 
-    private final EventMapper eventMapper;
-
-    public LoadBalanceService(SocketRouter socketRouter, EventMapper eventMapper) {
-        this.socketRouter = socketRouter;
-        this.eventMapper = eventMapper;
-
+    private LoadBalanceService() {
     }
 
-    public void receivePaymentHandler(String payload) {
-        var event = eventMapper.toPaymentPostRequest(payload);
+    public static LoadBalanceService getInstance() {
+        return INSTANCE;
+    }
 
-        socketRouter.sendToAnyBackend(event.getBytes(StandardCharsets.UTF_8));
+    private final SocketRouter socketRouter = SocketRouter.getInstance();
+
+    public void receivePaymentHandler(String payload) {
+        socketRouter.sendToAnyBackend(EventMapper.toPaymentPostRequest(payload));
     }
 
     public void purgePaymentsHandler() {
-        var event = eventMapper.toPurgePaymentsPostRequest();
-
-        socketRouter.sendToAnyBackend(event.getBytes(StandardCharsets.UTF_8));
+        socketRouter.sendToAnyBackend(EventMapper.toPurgePaymentsPostRequest());
     }
 
-    public void paymentSummaryHandler(String payload) {
-        socketRouter.sendToAnyBackend(payload.getBytes(StandardCharsets.UTF_8));
+    public void paymentSummaryHandler(byte[] payload) {
+        socketRouter.sendToAnyBackend(payload);
     }
 }

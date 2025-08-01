@@ -9,15 +9,15 @@ import java.time.ZoneOffset;
 
 public class JsonParse {
 
-    public static Instant parseInstant(String str) {
+    public static long parseInstant(String str) {
         try {
-            return Instant.parse(str);
+            return Instant.parse(str).toEpochMilli();
         } catch (Exception ex) {
             try {
-                return LocalDateTime.parse(str).toInstant(ZoneOffset.UTC);
+                return LocalDateTime.parse(str).toInstant(ZoneOffset.UTC).toEpochMilli();
             } catch (Exception e) {
                 return LocalDateTime.of(2000, 1, 1, 0, 0, 0)
-                        .toInstant(ZoneOffset.UTC);
+                        .toInstant(ZoneOffset.UTC).toEpochMilli();
             }
         }
     }
