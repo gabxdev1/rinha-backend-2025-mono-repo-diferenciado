@@ -26,7 +26,7 @@ public class JsonParse {
         return new StringBuilder("{")
                 .append("\"correlationId\":\"").append(payment.getCorrelationId()).append("\",")
                 .append("\"amount\":").append(payment.getAmount().toPlainString()).append(",")
-                .append("\"requestedAt\":\"").append(payment.getRequestedAt().toString()).append("\"")
+                .append("\"requestedAt\":\"").append(Instant.ofEpochMilli(payment.getRequestedAt()).toString()).append("\"")
                 .append("}")
                 .toString();
     }
