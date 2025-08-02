@@ -13,10 +13,10 @@ public class PaymentMapper {
         var amount = PaymentRequestParse.extractAmountFromRequest(payload);
         var uuid = PaymentRequestParse.extractUUIDFromRequest(payload);
 
-        var paymentPostToProcessorRequest = new Payment(uuid, amount,
+        var paymentPostToProcessorRequest = new Payment(amount,
                 System.currentTimeMillis());
 
-        paymentPostToProcessorRequest.json = buildPaymentDTO(paymentPostToProcessorRequest);
+        paymentPostToProcessorRequest.json = buildPaymentDTO(uuid, paymentPostToProcessorRequest);
 
         return paymentPostToProcessorRequest;
     }

@@ -47,11 +47,11 @@ public final class PaymentProcessorClient {
             return true;
         }
 
-        if (callApiFallBack(request.getJson())) {
-            request.setType(PaymentProcessorType.FALLBACK);
-
-            return true;
-        }
+//        if (callApiFallBack(request.getJson())) {
+//            request.setType(PaymentProcessorType.FALLBACK);
+//
+//            return true;
+//        }
 
         return false;
     }

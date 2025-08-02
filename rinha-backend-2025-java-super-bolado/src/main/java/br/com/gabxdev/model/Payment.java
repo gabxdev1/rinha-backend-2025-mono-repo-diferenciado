@@ -6,8 +6,6 @@ import java.math.BigDecimal;
 import java.time.Instant;
 
 public final class Payment {
-    private String correlationId;
-
     private String amount;
 
     private long requestedAt;
@@ -19,18 +17,9 @@ public final class Payment {
     public Payment() {
     }
 
-    public Payment(String correlationId, String amount, long requestedAt) {
-        this.correlationId = correlationId;
+    public Payment(String amount, long requestedAt) {
         this.amount = amount;
         this.requestedAt = requestedAt;
-    }
-
-    public String getCorrelationId() {
-        return correlationId;
-    }
-
-    public void setCorrelationId(String correlationId) {
-        this.correlationId = correlationId;
     }
 
     public BigDecimal getAmount() {
