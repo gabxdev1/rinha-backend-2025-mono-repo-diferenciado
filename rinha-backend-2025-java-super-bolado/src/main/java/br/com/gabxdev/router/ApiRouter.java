@@ -18,8 +18,6 @@ public final class ApiRouter {
 
     private final PaymentSummaryWaiter paymentSummaryWaiter = PaymentSummaryWaiter.getInstance();
 
-    private final DatagramSocket datagramSocketExternal = DatagramSocketExternalConfig.getInstance().getDatagramSocket();
-
     private ApiRouter() {
         start();
     }
@@ -39,6 +37,8 @@ public final class ApiRouter {
     }
 
     private void handleEvents() throws IOException {
+        var datagramSocketExternal = DatagramSocketExternalConfig.getInstance().getDatagramSocket();
+
         while (true) {
             var buffer = new byte[60];
 

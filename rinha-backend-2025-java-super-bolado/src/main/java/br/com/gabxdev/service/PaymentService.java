@@ -11,6 +11,7 @@ import br.com.gabxdev.model.enums.EventType;
 import br.com.gabxdev.repository.InMemoryPaymentDatabase;
 import br.com.gabxdev.response.PaymentSummaryGetResponse;
 
+import java.io.Serializable;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;

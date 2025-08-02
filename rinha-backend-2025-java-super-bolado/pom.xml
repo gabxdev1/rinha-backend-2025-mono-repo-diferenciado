@@ -5,14 +5,18 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>br.com.gabxdev</groupId>
-    <artifactId>rinha-backend-2025-java-super-bolado</artifactId>
-    <version>1.0.5</version>
+    <artifactId>rinha-backend-2025-java-super-bolado-arq</artifactId>
+    <version>3.0.0</version>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <java.version>21</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <docker.repo.url>gabxdevv</docker.repo.url>
+        <docker.repo.project>${project.artifactId}</docker.repo.project>
+        <docker.image.name>${docker.repo.url}/${docker.repo.project}</docker.image.name>
     </properties>
 
     <build>
@@ -30,12 +34,20 @@
                 <configuration>
                     <mainClass>br.com.gabxdev.RinhaBackend2025JavaApplication</mainClass>
                     <image>
-                        <name>gabxdevv/rinha-backend-2025-java-puro:${project.version}</name>
+                        <name>${docker.image.name}:${project.version}</name>
                         <builder>paketobuildpacks/builder-jammy-java-tiny:latest</builder>
                         <env>
                             <BP_NATIVE_IMAGE>true</BP_NATIVE_IMAGE>
                             <BP_JVM_VERSION>21</BP_JVM_VERSION>
-                            <BP_NATIVE_IMAGE_BUILD_ARGUMENTS>-H:IncludeResources=".*"</BP_NATIVE_IMAGE_BUILD_ARGUMENTS>
+                            <BP_NATIVE_IMAGE_BUILD_ARGUMENTS>
+                                -H:IncludeResources=".*"
+                                -march=skylake
+                                --native-compiler-options=-march=skylake
+                                --native-compiler-options=-mtune=skylake
+                                --no-fallback
+                                -O3
+                                --gc=serial
+                            </BP_NATIVE_IMAGE_BUILD_ARGUMENTS>
                         </env>
                     </image>
                 </configuration>

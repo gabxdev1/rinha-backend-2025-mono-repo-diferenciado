@@ -4,6 +4,7 @@ import br.com.gabxdev.config.ServerConfig;
 import br.com.gabxdev.service.LoadBalanceService;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
+import io.undertow.util.StatusCodes;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -21,14 +22,12 @@ public class PurgePaymentHandler implements HttpHandler {
             return;
         }
 
-        var method = exchange.getRequestMethod().toString();
-
-        if (method.equals("POST")) {
-            handlePurgePayment(exchange);
-        }
+        handlePurgePayment(exchange);
     }
 
     private void handlePurgePayment(HttpServerExchange exchange) {
+        exchange.setStatusCode(StatusCodes.OK);
+        exchange.endExchange();
         CompletableFuture.runAsync(loadBalanceService::purgePaymentsHandler, threadPool);
     }
 }

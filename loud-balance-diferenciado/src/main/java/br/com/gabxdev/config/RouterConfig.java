@@ -22,7 +22,7 @@ public class RouterConfig {
     private HttpHandler createRoutes() {
         return new PathHandler()
                 .addExactPath("/payments", new ReceivePaymentHandler())
-                .addPrefixPath("/purger-payments", new PurgePaymentHandler())
+                .addPrefixPath("/purge-payments", new PurgePaymentHandler())
                 .addPrefixPath("/payments-summary", new PaymentSummaryHandler());
     }
 

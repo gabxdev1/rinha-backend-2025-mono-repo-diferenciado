@@ -1,20 +1,18 @@
 services:
   backend-1:
-    image: gabxdevv/rinha-backend-2025-java-puro:1.0.1
-    container_name: gaxdev-backend-1
+    image: gabxdevv/rinha-backend-2025-java-super-bolado-arq:1.0.0
+    restart: always
     environment:
       RETRY_API_DEFAULT: 15
-      WORKER_POOL_SIZE: 21
+      WORKER_POOL_SIZE: 16
       URL_PROCESSOR_DEFAULT: http://payment-processor-default:8080/payments
       URL_PROCESSOR_FALLBACK: http://payment-processor-fallback:8080/payments
-      LOG_LEVEL: off
       BACK_END_URL: http://backend-2:8080
-      SERVER_PORT: 8080
       UDP_CHANNEL_PORT: 9001
       UDP_CHANNEL_INTERNAL_PORT: 9003
       EXTERNAL_UDP_HOST: backend-2
       EXTERNAL_UDP_PORT: 9004
-      HANDLER_UDP_POOL_SIZE: 4
+      HANDLER_UDP_POOL_SIZE: 7
       JAVA_OPTS: >-
         -server
         -XX:+UseG1GC
@@ -31,26 +29,23 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.61'
-          memory: '120MB'
+          cpus: '0.6'
+          memory: '125MB'
 
   backend-2:
-    image: gabxdevv/rinha-backend-2025-java-puro:1.0.1
-    container_name: gaxdev-backend-2
+    image: gabxdevv/rinha-backend-2025-java-super-bolado-arq:1.0.0
     restart: always
     environment:
       RETRY_API_DEFAULT: 15
-      WORKER_POOL_SIZE: 21
+      WORKER_POOL_SIZE: 16
       URL_PROCESSOR_DEFAULT: http://payment-processor-default:8080/payments
       URL_PROCESSOR_FALLBACK: http://payment-processor-fallback:8080/payments
-      LOG_LEVEL: off
       BACK_END_URL: http://backend-1:8080
-      SERVER_PORT: 8080
       UDP_CHANNEL_PORT: 9002
       UDP_CHANNEL_INTERNAL_PORT: 9004
       EXTERNAL_UDP_HOST: backend-1
       EXTERNAL_UDP_PORT: 9003
-      HANDLER_UDP_POOL_SIZE: 4
+      HANDLER_UDP_POOL_SIZE: 7
       JAVA_OPTS: >-
         -server
         -XX:+UseG1GC
@@ -67,13 +62,12 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.61'
-          memory: '120MB'
+          cpus: '0.6'
+          memory: '125MB'
 
   load-balancer:
-    image: gabxdevv/loud-balance-diferenciado-puro:1.0.1
+    image: gabxdevv/loud-balance-diferenciado-native:1.0.0
     restart: always
-    container_name: gabxdev-load-balance-bolado
     depends_on:
       - backend-1
       - backend-2
@@ -84,8 +78,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.28"
-          memory: "110MB"
+          cpus: "0.30"
+          memory: "100MB"
     environment:
       BACK_END_1_URL: backend-1
       BACK_END_2_URL: backend-2

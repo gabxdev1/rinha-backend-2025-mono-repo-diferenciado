@@ -21,8 +21,6 @@ public final class PaymentRouter {
 
     private final PaymentHandler paymentHandler = PaymentHandler.getInstance();
 
-    private final DatagramSocket datagramSocket = DatagramSocketConfig.getInstance().getDatagramSocket();
-
 
     private PaymentRouter() {
         start();
@@ -45,6 +43,7 @@ public final class PaymentRouter {
     private void handleEvents() throws IOException {
         var poolSize = ApplicationProperties.getInstance().getProperty(PropertiesKey.HANDLER_UDP_POOL_SIZE);
         var poll = Executors.newFixedThreadPool(Integer.parseInt(poolSize), Thread.ofVirtual().factory());
+        var datagramSocket = DatagramSocketConfig.getInstance().getDatagramSocket();
 
         while (true) {
             var buffer = new byte[60];

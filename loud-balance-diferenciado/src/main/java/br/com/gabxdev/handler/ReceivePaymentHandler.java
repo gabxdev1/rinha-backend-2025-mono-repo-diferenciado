@@ -4,6 +4,7 @@ import br.com.gabxdev.config.ServerConfig;
 import br.com.gabxdev.service.LoadBalanceService;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
+import io.undertow.util.StatusCodes;
 
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletableFuture;
@@ -21,15 +22,14 @@ public class ReceivePaymentHandler implements HttpHandler {
             return;
         }
 
-        var method = exchange.getRequestMethod().toString();
-
-        if (method.equals("POST")) {
-            handleReceivePayment(exchange);
-        }
+        handleReceivePayment(exchange);
     }
 
     private void handleReceivePayment(HttpServerExchange exchange) {
         exchange.getRequestReceiver().receiveFullBytes((httpServerExchange, payload) -> {
+            exchange.setStatusCode(StatusCodes.OK);
+            exchange.endExchange();
+
             CompletableFuture.runAsync(() -> {
                 loadBalanceService.receivePaymentHandler(new String(payload, StandardCharsets.UTF_8));
             }, threadPool);

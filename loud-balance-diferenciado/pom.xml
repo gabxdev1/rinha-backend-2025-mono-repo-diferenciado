@@ -4,8 +4,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>br.com.gabxdev</groupId>
-    <artifactId>loud-balance-diferenciado</artifactId>
-    <version>1.0.2</version>
+    <artifactId>loud-balance-diferenciado-native</artifactId>
+    <version>3.0.0</version>
     <name>loud-balance-diferenciado</name>
     <description>loud-balance-diferenciado</description>
 
@@ -40,20 +40,24 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>3.5.4</version>
                 <configuration>
                     <image>
-                        <mainClass>br.com.gabxdev.LoudBalanceDiferenciadoApplication</mainClass>
-                        <name>gabxdevv/loud-balance-diferenciado-puro:${project.version}</name>
+                        <name>${docker.image.name}:${project.version}</name>
                         <builder>paketobuildpacks/builder-jammy-java-tiny:latest</builder>
                         <env>
                             <BP_NATIVE_IMAGE>true</BP_NATIVE_IMAGE>
                             <BP_JVM_VERSION>21</BP_JVM_VERSION>
-                            <BP_NATIVE_IMAGE_BUILD_ARGUMENTS>-H:IncludeResources=".*"</BP_NATIVE_IMAGE_BUILD_ARGUMENTS>
+                            <BP_NATIVE_IMAGE_BUILD_ARGUMENTS>
+                                -H:IncludeResources=".*"
+                                -march=skylake
+                                --native-compiler-options=-march=skylake
+                                --native-compiler-options=-mtune=skylake
+                                -Djava.util.logging.config.file=classpath:logging.properties
+                                --no-fallback
+                                -O3
+                                --gc=serial
+                            </BP_NATIVE_IMAGE_BUILD_ARGUMENTS>
                         </env>
                     </image>
                 </configuration>

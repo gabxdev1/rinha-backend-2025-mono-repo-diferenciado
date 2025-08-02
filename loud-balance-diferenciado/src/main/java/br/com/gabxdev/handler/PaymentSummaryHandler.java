@@ -29,11 +29,7 @@ public final class PaymentSummaryHandler implements HttpHandler {
             return;
         }
 
-        var method = exchange.getRequestMethod().toString();
-
-        if (method.equals("GET")) {
-            handlePaymentSummary(exchange);
-        }
+        handlePaymentSummary(exchange);
     }
 
     private void handlePaymentSummary(HttpServerExchange exchange) {
@@ -48,7 +44,6 @@ public final class PaymentSummaryHandler implements HttpHandler {
 
             loadBalanceService.paymentSummaryHandler(EventMapper.toPaymentSummaryGetRequest(from, to));
 
-            exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
             exchange.setStatusCode(StatusCodes.OK);
             exchange.getResponseSender().send(paymentSummaryWaiter.awaitResponse());
         });
