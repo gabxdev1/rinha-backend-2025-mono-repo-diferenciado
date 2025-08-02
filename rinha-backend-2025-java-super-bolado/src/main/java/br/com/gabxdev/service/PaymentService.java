@@ -49,7 +49,12 @@ public final class PaymentService {
         var from = parseInstant(instants[0]);
         var to = parseInstant(instants[1]);
 
-        var paymentSummary = paymentRepository.getSummaryByTimeRange(from, to);
+        PaymentSummaryGetResponse paymentSummary;
+        if (from == 946684800000L) {
+            paymentSummary = paymentRepository.getTotalSummary();
+        } else {
+            paymentSummary = paymentRepository.getSummaryByTimeRange(from, to);
+        }
 
         var payload = Event.buildEventDTO(EventType.PAYMENT_SUMMARY_MERGE.ordinal(),
                 JsonParse.parseToJsonPaymentSummaryInternal(paymentSummary)).getBytes(StandardCharsets.UTF_8);
@@ -64,7 +69,13 @@ public final class PaymentService {
 
         paymentMiddleware.syncPaymentSummary(instants[0], instants[1]);
 
-        var paymentSummary2 = paymentRepository.getSummaryByTimeRange(from, to);
+        PaymentSummaryGetResponse paymentSummary2;
+        if (from == 946684800000L) {
+            paymentSummary2 = paymentRepository.getTotalSummary();
+        } else {
+            paymentSummary2 = paymentRepository.getSummaryByTimeRange(from, to);
+        }
+
         var paymentSummary1 = paymentSummaryWaiter.awaitResponse();
 
         var paymentSummaryMerged = PaymentMiddleware.mergeSummary(paymentSummary1, paymentSummary2);

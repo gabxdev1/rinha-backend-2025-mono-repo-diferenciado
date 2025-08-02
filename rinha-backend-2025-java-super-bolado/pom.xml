@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>br.com.gabxdev</groupId>
-    <artifactId>rinha-backend-2025-java-super-bolado-arq</artifactId>
-    <version>3.0.0</version>
+    <artifactId>rinha-backend-2025-java-gabx</artifactId>
+    <version>2.0.0</version>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
