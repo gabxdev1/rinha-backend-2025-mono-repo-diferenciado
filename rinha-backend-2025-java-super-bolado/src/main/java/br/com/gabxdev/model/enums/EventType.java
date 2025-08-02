@@ -1,11 +1,42 @@
 package br.com.gabxdev.model.enums;
 
 public enum EventType {
-    PAYMENT_SUMMARY,
+    PAYMENT_SUMMARY('a'),
 
-    PAYMENT_SUMMARY_MERGE,
+    PAYMENT_SUMMARY_MERGE('b'),
 
-    PAYMENT_POST,
+    PAYMENT_POST('c'),
 
-    PURGER
+    PURGE( 'd');
+
+    private final char value;
+
+    EventType(char value) {
+        this.value = value;
+    }
+
+    public char getValue() {
+        return value;
+    }
+
+    public static EventType valueOf(char value) {
+        if (value == 'a') {
+            return EventType.PAYMENT_SUMMARY;
+        }
+
+        if (value == 'b') {
+            return EventType.PAYMENT_SUMMARY_MERGE;
+        }
+
+        if (value == 'c') {
+            return EventType.PAYMENT_POST;
+        }
+
+        if (value == 'd') {
+            return EventType.PURGE;
+        }
+
+        throw new IllegalArgumentException();
+    }
+
 }

@@ -529,8 +529,7 @@
 },
 {
   "name":"sun.misc.Unsafe",
-  "fields":[{"name":"theUnsafe"}],
-  "methods":[{"name":"invokeCleaner","parameterTypes":["java.nio.ByteBuffer"] }]
+  "fields":[{"name":"theUnsafe"}]
 },
 {
   "name":"sun.rmi.registry.RegistryImpl_Stub"

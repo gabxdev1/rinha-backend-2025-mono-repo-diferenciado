@@ -3,13 +3,12 @@ package br.com.gabxdev.router;
 import br.com.gabxdev.config.DatagramSocketConfig;
 import br.com.gabxdev.handler.PaymentHandler;
 import br.com.gabxdev.mapper.PaymentMapper;
-import br.com.gabxdev.model.Event;
+import br.com.gabxdev.model.enums.EventType;
 import br.com.gabxdev.properties.ApplicationProperties;
 import br.com.gabxdev.properties.PropertiesKey;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletableFuture;
@@ -46,7 +45,7 @@ public final class PaymentRouter {
         var datagramSocket = DatagramSocketConfig.getInstance().getDatagramSocket();
 
         while (true) {
-            var buffer = new byte[60];
+            var buffer = new byte[200];
 
             var datagramPacket = new DatagramPacket(buffer, buffer.length);
 
@@ -59,16 +58,22 @@ public final class PaymentRouter {
     }
 
     private void mapperEvent(byte[] data, InetAddress addressLb, int portLb) {
-        var event = Event.parseEvent(new String(data, StandardCharsets.UTF_8).trim());
-
-        routerEvent(event, addressLb,  portLb);
+        routerEvent(new String(data, StandardCharsets.UTF_8).trim(), addressLb,  portLb);
     }
 
-    private void routerEvent(Event event, InetAddress addressLb, int portLb) {
-        switch (event.getType()) {
-            case PAYMENT_POST -> paymentHandler.receivePayment(PaymentMapper.toPayment(event.getPayload()));
-            case PAYMENT_SUMMARY -> paymentHandler.paymentSummary(event.getPayload(), addressLb, portLb);
-            case PURGER -> paymentHandler.purgePayments();
+    private void routerEvent(String event, InetAddress addressLb, int portLb) {
+        var key = event.toCharArray()[event.length() - 1];
+
+        if (EventType.valueOf(key).equals(EventType.PAYMENT_POST)) {
+            paymentHandler.receivePayment(PaymentMapper.toPayment(event));
+        }
+
+        if (EventType.valueOf(key).equals(EventType.PAYMENT_SUMMARY)) {
+            paymentHandler.paymentSummary(event.replace("a", ""), addressLb, portLb);
+        }
+
+        if (EventType.valueOf(key).equals(EventType.PURGE)) {
+            paymentHandler.purgePayments();
         }
     }
 }

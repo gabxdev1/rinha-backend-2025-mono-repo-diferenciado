@@ -7,6 +7,8 @@ import io.undertow.server.HttpServerExchange;
 import io.undertow.util.StatusCodes;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 
@@ -31,7 +33,7 @@ public class ReceivePaymentHandler implements HttpHandler {
             exchange.endExchange();
 
             CompletableFuture.runAsync(() -> {
-                loadBalanceService.receivePaymentHandler(new String(payload, StandardCharsets.UTF_8));
+                loadBalanceService.receivePaymentHandler(payload);
             }, threadPool);
         });
     }

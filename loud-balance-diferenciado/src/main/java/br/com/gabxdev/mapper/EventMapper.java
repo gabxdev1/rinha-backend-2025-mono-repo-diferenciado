@@ -1,23 +1,34 @@
 package br.com.gabxdev.mapper;
 
-import br.com.gabxdev.lb.Event;
 import br.com.gabxdev.lb.EventType;
 
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 public class EventMapper {
-    public static byte[] toPaymentPostRequest(String json) {
-        return Event.buildEventDTO(EventType.PAYMENT_POST.ordinal(),
-                PaymentRequestParse.buildPayload(json));
+    public static byte[] toPaymentPostRequest(byte[] json) {
+        var body = Arrays.copyOf(json, json.length + 1);
+
+        body[json.length] = EventType.PAYMENT_POST.getValue();
+
+        return body;
     }
 
     public static byte[] toPurgePaymentsPostRequest() {
-        return Event.buildEventDTO(EventType.PURGER.ordinal(), "payload");
+        var bytes = new byte[1];
+
+        bytes[0] = EventType.PURGE.getValue();
+
+        return bytes;
     }
 
     public static byte[] toPaymentSummaryGetRequest(String from, String to) {
-        return Event.buildEventDTO(EventType.PAYMENT_SUMMARY.ordinal(),
-                from.concat("@").concat(to));
+        var payload = from.concat("@").concat(to).getBytes(StandardCharsets.UTF_8);
+
+        var body = Arrays.copyOf(payload, payload.length + 1);
+
+        body[body.length - 1] = EventType.PAYMENT_SUMMARY.getValue();
+
+        return body;
     }
 }

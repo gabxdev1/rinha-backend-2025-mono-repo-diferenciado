@@ -11,7 +11,7 @@ public final class EventMapper {
 
 
     public static String toPurgePaymentsPostRequest() {
-        return Event.buildEventDTO(EventType.PURGER.ordinal(), "payload");
+        return Event.buildEventDTO(EventType.PURGE.ordinal(), "payload");
     }
 
     public static String toPaymentSummaryGetRequest(String from, String to) {

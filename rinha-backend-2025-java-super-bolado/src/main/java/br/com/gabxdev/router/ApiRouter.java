@@ -61,7 +61,7 @@ public final class ApiRouter {
         switch (event.getType()) {
             case PAYMENT_SUMMARY -> paymentService.paymentSummaryToMerge(event.getPayload());
             case PAYMENT_SUMMARY_MERGE -> paymentSummaryWaiter.completeResponse(event.getPayload());
-            case PURGER -> paymentService.purgePaymentsInternal();
+            case PURGE -> paymentService.purgePaymentsInternal();
         }
     }
 }

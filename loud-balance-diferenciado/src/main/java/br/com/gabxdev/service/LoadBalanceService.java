@@ -18,7 +18,7 @@ public class LoadBalanceService {
 
     private final SocketRouter socketRouter = SocketRouter.getInstance();
 
-    public void receivePaymentHandler(String payload) {
+    public void receivePaymentHandler(byte[] payload) {
         socketRouter.sendToAnyBackend(EventMapper.toPaymentPostRequest(payload));
     }
 

@@ -4,10 +4,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>br.com.gabxdev</groupId>
-    <artifactId>loud-balance-diferenciado-java-gabx</artifactId>
-    <version>2.0.0</version>
+    <artifactId>loud-balance-diferenciado-java-gabxv</artifactId>
+    <version>2.0.1</version>
     <name>loud-balance-diferenciado</name>
-    <description>loud-balance-diferenciado-java-gabx</description>
+    <description>loud-balance-diferenciado-java-gabxv</description>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
@@ -42,6 +42,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>3.5.4</version>
                 <configuration>
+                    <mainClass>br.com.gabxdev.LoudBalanceDiferenciadoApplication</mainClass>
                     <image>
                         <name>${docker.image.name}:${project.version}</name>
                         <builder>paketobuildpacks/builder-jammy-java-tiny:latest</builder>

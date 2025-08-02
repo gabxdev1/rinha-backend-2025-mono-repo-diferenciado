@@ -10,9 +10,10 @@ import static br.com.gabxdev.mapper.JsonParse.buildPaymentDTO;
 
 public class PaymentMapper {
     public static Payment toPayment(String payload) {
-        var body = payload.split(" ");
+        var amount = PaymentRequestParse.extractAmountFromRequest(payload);
+        var uuid = PaymentRequestParse.extractUUIDFromRequest(payload);
 
-        var paymentPostToProcessorRequest = new Payment(body[0], body[1],
+        var paymentPostToProcessorRequest = new Payment(uuid, amount,
                 System.currentTimeMillis());
 
         paymentPostToProcessorRequest.json = buildPaymentDTO(paymentPostToProcessorRequest);

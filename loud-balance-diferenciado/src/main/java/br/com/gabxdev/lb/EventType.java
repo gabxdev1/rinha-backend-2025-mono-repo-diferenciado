@@ -1,11 +1,21 @@
 package br.com.gabxdev.lb;
 
 public enum EventType {
-    PAYMENT_SUMMARY,
+    PAYMENT_SUMMARY('a'),
 
-    PAYMENT_SUMMARY_MERGE,
+    PAYMENT_SUMMARY_MERGE('b'),
 
-    PAYMENT_POST,
+    PAYMENT_POST('c'),
 
-    PURGER
+    PURGE( 'd');
+
+    private final char value;
+
+    EventType(char value) {
+        this.value = value;
+    }
+
+    public byte getValue() {
+        return (byte) value;
+    }
 }
