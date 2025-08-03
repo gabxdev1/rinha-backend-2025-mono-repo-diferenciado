@@ -6,8 +6,6 @@ import java.math.BigDecimal;
 import java.time.Instant;
 
 public final class Payment {
-    private String amount;
-
     private long requestedAt;
 
     public String json;
@@ -17,13 +15,8 @@ public final class Payment {
     public Payment() {
     }
 
-    public Payment(String amount, long requestedAt) {
-        this.amount = amount;
+    public Payment(long requestedAt) {
         this.requestedAt = requestedAt;
-    }
-
-    public BigDecimal getAmount() {
-        return new BigDecimal(amount);
     }
 
     public long getRequestedAt() {

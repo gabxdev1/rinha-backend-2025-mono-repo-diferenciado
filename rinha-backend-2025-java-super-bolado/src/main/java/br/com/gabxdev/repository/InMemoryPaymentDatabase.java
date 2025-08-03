@@ -6,7 +6,6 @@ import br.com.gabxdev.response.PaymentSummary;
 import br.com.gabxdev.response.PaymentSummaryGetResponse;
 
 import java.math.BigDecimal;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +16,9 @@ public final class InMemoryPaymentDatabase {
 
     private final static InMemoryPaymentDatabase INSTANCE = new InMemoryPaymentDatabase();
 
-    private final ConcurrentLinkedQueue<Payment> payments = new ConcurrentLinkedQueue<>();
+    private final ConcurrentLinkedQueue<Payment> paymentsDefault = new ConcurrentLinkedQueue<>();
+
+    private final ConcurrentLinkedQueue<Payment> paymentsFallback = new ConcurrentLinkedQueue<>();
 
     private InMemoryPaymentDatabase() {
     }
@@ -27,37 +28,41 @@ public final class InMemoryPaymentDatabase {
     }
 
     public void save(Payment payment) {
-        payments.offer(payment);
+        if (payment.type.equals(PaymentProcessorType.DEFAULT)) {
+            paymentsDefault.offer(payment);
+        } else {
+            paymentsFallback.offer(payment);
+        }
     }
 
     public void deleteAll() {
-        payments.clear();
+        paymentsDefault.clear();
+        paymentsFallback.clear();
     }
 
     public PaymentSummaryGetResponse getTotalSummary() {
-        var snapshot = getSnapshot();
+        var summaryDefault = summarize(PaymentProcessorType.DEFAULT, getSnapshotDefault());
+        var summaryFallback = summarize(PaymentProcessorType.FALLBACK, getSnapshotFallback());
 
-        var grouped = snapshot.stream()
-                .collect(Collectors.groupingBy(p -> p.type));
-
-        return toPaymentSummaryGetResponse(grouped);
+        return new PaymentSummaryGetResponse(summaryDefault, summaryFallback);
     }
 
     public PaymentSummaryGetResponse getSummaryByTimeRange(long from, long to) {
-        var snapshot = getSnapshot();
+        var snapshotDefault = getSnapshotDefault();
+        var snapshotFallback = getSnapshotFallback();
 
-        var grouped = snapshot.stream()
+        var defaultList = snapshotDefault.stream()
                 .filter(p -> p.getRequestedAt() >= from && p.getRequestedAt() <= to)
-                .collect(Collectors.groupingBy(p -> p.type));
+                .toList();
 
-        return toPaymentSummaryGetResponse(grouped);
-    }
+        var fallbackList = snapshotFallback.stream()
+                .filter(p -> p.getRequestedAt() >= from && p.getRequestedAt() <= to)
+                .toList();
 
-    private PaymentSummaryGetResponse toPaymentSummaryGetResponse(Map<PaymentProcessorType, List<Payment>> grouped) {
-        var defaultSummary = summarize(PaymentProcessorType.DEFAULT, grouped.get(PaymentProcessorType.DEFAULT));
-        var fallbackSummary = summarize(PaymentProcessorType.FALLBACK, grouped.get(PaymentProcessorType.FALLBACK));
+        var summaryDefault = summarize(PaymentProcessorType.DEFAULT, defaultList);
+        var summaryFallback = summarize(PaymentProcessorType.FALLBACK, fallbackList);
 
-        return new PaymentSummaryGetResponse(defaultSummary, fallbackSummary);
+        return new PaymentSummaryGetResponse(summaryDefault, summaryFallback);
     }
 
     private PaymentSummary summarize(PaymentProcessorType type, List<Payment> payments) {
@@ -66,12 +71,16 @@ public final class InMemoryPaymentDatabase {
         }
 
         var count = payments.size();
-        var total = payments.getFirst().getAmount().multiply(BigDecimal.valueOf(count));
+        var total = Amount.getAmount().multiply(BigDecimal.valueOf(count));
 
         return new PaymentSummary(type, count, total);
     }
 
-    private List<Payment> getSnapshot() {
-        return new ArrayList<>(payments);
+    private List<Payment> getSnapshotDefault() {
+        return new ArrayList<>(paymentsDefault);
+    }
+
+    private List<Payment> getSnapshotFallback() {
+        return new ArrayList<>(paymentsFallback);
     }
 }

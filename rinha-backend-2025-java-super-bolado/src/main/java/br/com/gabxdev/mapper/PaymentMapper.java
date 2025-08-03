@@ -1,22 +1,18 @@
 package br.com.gabxdev.mapper;
 
 import br.com.gabxdev.model.Payment;
-
-import java.math.BigDecimal;
-import java.time.Instant;
-import java.util.UUID;
+import br.com.gabxdev.repository.Amount;
 
 import static br.com.gabxdev.mapper.JsonParse.buildPaymentDTO;
 
 public class PaymentMapper {
     public static Payment toPayment(String payload) {
-        var amount = PaymentRequestParse.extractAmountFromRequest(payload);
-        var uuid = PaymentRequestParse.extractUUIDFromRequest(payload);
+        var paymentPostToProcessorRequest = new Payment(System.currentTimeMillis());
 
-        var paymentPostToProcessorRequest = new Payment(amount,
-                System.currentTimeMillis());
+        Amount.saveAmount(PaymentRequestParse.extractAmountFromRequest(payload));
 
-        paymentPostToProcessorRequest.json = buildPaymentDTO(uuid, paymentPostToProcessorRequest);
+        paymentPostToProcessorRequest.json = buildPaymentDTO(PaymentRequestParse.extractUUIDFromRequest(payload),
+                paymentPostToProcessorRequest);
 
         return paymentPostToProcessorRequest;
     }
