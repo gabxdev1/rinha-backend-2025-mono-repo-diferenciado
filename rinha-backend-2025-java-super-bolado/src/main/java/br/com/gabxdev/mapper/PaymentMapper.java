@@ -9,10 +9,10 @@ public class PaymentMapper {
     public static Payment toPayment(String payload) {
         var paymentPostToProcessorRequest = new Payment(System.currentTimeMillis());
 
-        Amount.saveAmount(PaymentRequestParse.extractAmountFromRequest(payload));
+        Amount.saveAmount(payload);
 
         paymentPostToProcessorRequest.json = buildPaymentDTO(PaymentRequestParse.extractUUIDFromRequest(payload),
-                paymentPostToProcessorRequest);
+                paymentPostToProcessorRequest.getRequestedAt());
 
         return paymentPostToProcessorRequest;
     }

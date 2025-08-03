@@ -23,11 +23,11 @@ public class JsonParse {
         }
     }
 
-    public static String buildPaymentDTO(String uuid, Payment payment) {
+    public static String buildPaymentDTO(String uuid, long requestedAt) {
         return new StringBuilder("{")
                 .append("\"correlationId\":\"").append(uuid).append("\",")
                 .append("\"amount\":").append(Amount.getAmount().toPlainString()).append(",")
-                .append("\"requestedAt\":\"").append(Instant.ofEpochMilli(payment.getRequestedAt()).toString()).append("\"")
+                .append("\"requestedAt\":\"").append(Instant.ofEpochMilli(requestedAt).toString()).append("\"")
                 .append("}")
                 .toString();
     }

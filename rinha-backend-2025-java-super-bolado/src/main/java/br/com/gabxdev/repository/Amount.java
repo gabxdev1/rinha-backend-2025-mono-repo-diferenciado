@@ -1,5 +1,7 @@
 package br.com.gabxdev.repository;
 
+import br.com.gabxdev.mapper.PaymentRequestParse;
+
 import java.math.BigDecimal;
 
 public class Amount {
@@ -7,9 +9,11 @@ public class Amount {
 
     private static final BigDecimal bigDecimal0 = BigDecimal.ZERO;
 
-    public static void saveAmount(String amountS) {
+    public static void saveAmount(String payload) {
         if (amount.equals(bigDecimal0)) {
-            amount = new BigDecimal(amountS);
+            PaymentRequestParse.extractAmountFromRequest(payload);
+
+            amount = new BigDecimal(payload);
         }
     }
 
