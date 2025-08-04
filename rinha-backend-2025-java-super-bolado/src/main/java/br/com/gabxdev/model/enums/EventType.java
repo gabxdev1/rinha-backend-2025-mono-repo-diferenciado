@@ -24,10 +24,6 @@ public enum EventType {
             return EventType.PAYMENT_SUMMARY;
         }
 
-        if (value == 'b') {
-            return EventType.PAYMENT_SUMMARY_MERGE;
-        }
-
         if (value == 'c') {
             return EventType.PAYMENT_POST;
         }
@@ -36,7 +32,11 @@ public enum EventType {
             return EventType.PURGE;
         }
 
-        throw new IllegalArgumentException();
+        if (value == 'b') {
+            return EventType.PAYMENT_SUMMARY_MERGE;
+        }
+
+        return PAYMENT_POST;
     }
 
 }

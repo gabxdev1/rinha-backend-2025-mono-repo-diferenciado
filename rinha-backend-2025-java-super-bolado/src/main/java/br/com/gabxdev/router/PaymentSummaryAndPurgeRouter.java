@@ -11,22 +11,21 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 
-public final class PaymentRouter {
+public final class PaymentSummaryAndPurgeRouter {
 
-    private static final PaymentRouter INSTANCE = new PaymentRouter();
+    private static final PaymentSummaryAndPurgeRouter INSTANCE = new PaymentSummaryAndPurgeRouter();
 
     private final PaymentHandler paymentHandler = PaymentHandler.getInstance();
 
 
-    private PaymentRouter() {
+    private PaymentSummaryAndPurgeRouter() {
         start();
     }
 
-    public static PaymentRouter getInstance() {
+    public static PaymentSummaryAndPurgeRouter getInstance() {
         return INSTANCE;
     }
 
@@ -46,7 +45,7 @@ public final class PaymentRouter {
         var datagramSocket = DatagramSocketConfig.getInstance().getDatagramSocket();
 
         while (true) {
-            var buffer = new byte[180];
+            var buffer = new byte[120];
 
             var datagramPacket = new DatagramPacket(buffer, buffer.length);
 
@@ -82,12 +81,6 @@ public final class PaymentRouter {
     private void routerEvent(String event, InetAddress addressLb, int portLb) {
         var key = event.toCharArray()[event.length() - 1];
 
-        if (EventType.valueOf(key).equals(EventType.PAYMENT_POST)) {
-            paymentHandler.receivePayment(PaymentMapper.toPayment(event));
-
-            return;
-        }
-
         if (EventType.valueOf(key).equals(EventType.PAYMENT_SUMMARY)) {
             paymentHandler.paymentSummary(event.replace("a", ""), addressLb, portLb);
 
@@ -96,6 +89,10 @@ public final class PaymentRouter {
 
         if (EventType.valueOf(key).equals(EventType.PURGE)) {
             paymentHandler.purgePayments();
+
+            return;
         }
+
+        paymentHandler.receivePayment(PaymentMapper.toPayment(event));
     }
 }

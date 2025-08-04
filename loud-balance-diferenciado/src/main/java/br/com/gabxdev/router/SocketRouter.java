@@ -1,6 +1,7 @@
 package br.com.gabxdev.router;
 
 import br.com.gabxdev.config.BackendUrlConfig;
+import br.com.gabxdev.config.PaymentPostChannelConfig;
 import br.com.gabxdev.config.UdpChannelConfig;
 import br.com.gabxdev.lb.LoudBalance;
 import br.com.gabxdev.lb.PaymentSummaryWaiter;
@@ -10,18 +11,19 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 public class SocketRouter {
 
     private final static SocketRouter INSTANCE = new SocketRouter();
 
-    private final DatagramSocket datagramSocket = UdpChannelConfig.getInstance().getDatagramSocket();
+    private final DatagramSocket socketSummaryAndPurge = UdpChannelConfig.getInstance().getDatagramSocket();
+
+    private final List<DatagramSocket> sockets = PaymentPostChannelConfig.getInstance().getDatagramSockets();
 
     private final LoudBalance loudBalance = LoudBalance.getInstance();
 
     private final PaymentSummaryWaiter paymentSummaryWaiter = PaymentSummaryWaiter.getInstance();
-
-    private final BackendUrlConfig backendUrlConfig = BackendUrlConfig.getInstance();
 
     private SocketRouter() {
         start();
@@ -38,11 +40,11 @@ public class SocketRouter {
     private void handleEvents() {
         while (true) {
             try {
-                var buffer = new byte[200];
+                var buffer = new byte[180];
 
                 var datagramPacket = new DatagramPacket(buffer, buffer.length);
 
-                datagramSocket.receive(datagramPacket);
+                socketSummaryAndPurge.receive(datagramPacket);
 
                 var event = new String(datagramPacket.getData(), StandardCharsets.UTF_8).trim();
 
@@ -54,16 +56,19 @@ public class SocketRouter {
         }
     }
 
-    public void sendToAnyBackend(byte[] eventBytes) {
-        var session = loudBalance.selectBackEnd(backendUrlConfig.getBackendsAddresses());
-
+    public void sendEventPost(byte[] eventBytes) {
         try {
-            datagramSocket.send(new DatagramPacket(eventBytes,
-                    eventBytes.length,
-                    InetAddress.getByName(session.url()),
-                    session.port()));
+            loudBalance.selectBackEnd(sockets).send(new DatagramPacket(eventBytes, eventBytes.length));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
+        }
+    }
+
+    public void sendEvent(byte[] eventBytes) {
+        try {
+            socketSummaryAndPurge.send(new DatagramPacket(eventBytes, eventBytes.length));
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

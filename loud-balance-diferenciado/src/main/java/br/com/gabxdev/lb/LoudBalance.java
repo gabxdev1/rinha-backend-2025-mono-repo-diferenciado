@@ -1,6 +1,8 @@
 package br.com.gabxdev.lb;
 
 import br.com.gabxdev.socket.BackendAddress;
+
+import java.net.DatagramSocket;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -13,10 +15,10 @@ public class LoudBalance {
     private LoudBalance() {
     }
 
-    public BackendAddress selectBackEnd(List<BackendAddress> sessions) {
-        int index = roundRobinIndex.getAndIncrement() % sessions.size();
+    public DatagramSocket selectBackEnd(List<DatagramSocket> sockets) {
+        int index = roundRobinIndex.getAndIncrement() % sockets.size();
 
-        return sessions.get(index);
+        return sockets.get(index);
     }
 
     public static LoudBalance getInstance() {

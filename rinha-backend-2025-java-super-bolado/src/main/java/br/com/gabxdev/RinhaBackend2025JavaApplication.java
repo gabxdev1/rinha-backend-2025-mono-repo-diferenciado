@@ -8,7 +8,7 @@ import br.com.gabxdev.middleware.PaymentSummaryWaiter;
 import br.com.gabxdev.properties.ApplicationProperties;
 import br.com.gabxdev.repository.InMemoryPaymentDatabase;
 import br.com.gabxdev.router.ApiRouter;
-import br.com.gabxdev.router.PaymentRouter;
+import br.com.gabxdev.router.PaymentSummaryAndPurgeRouter;
 import br.com.gabxdev.service.PaymentService;
 import br.com.gabxdev.worker.PaymentWorker;
 
@@ -32,7 +32,7 @@ public class RinhaBackend2025JavaApplication {
         PaymentService.getInstance();
         PaymentHandler.getInstance();
         ApiRouter.getInstance();
-        PaymentRouter.getInstance();
+        PaymentSummaryAndPurgeRouter.getInstance();
 
         Thread.currentThread().join();
     }

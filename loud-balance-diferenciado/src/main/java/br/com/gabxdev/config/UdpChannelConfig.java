@@ -1,22 +1,26 @@
 package br.com.gabxdev.config;
 
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 
 public class UdpChannelConfig {
 
     private final static UdpChannelConfig INSTANCE = new UdpChannelConfig();
 
-    private final DatagramSocket datagramSocket;
+    private DatagramSocket datagramSocket;
 
     private UdpChannelConfig() {
+        var host = BackendUrlConfig.getInstance().getBackendsAddresses().getFirst();
+
         try {
-            datagramSocket = new DatagramSocket();
-            datagramSocket.setSendBufferSize(4 * 1024 * 1024);
+            this.datagramSocket = new DatagramSocket();
             datagramSocket.setBroadcast(false);
+            datagramSocket.connect(InetAddress.getByName(host.url()), host.port());
             startShutdownHook(datagramSocket);
-        } catch (SocketException e) {
-            throw new RuntimeException(e);
+        } catch (SocketException | UnknownHostException e) {
+            e.printStackTrace();
         }
     }
 
