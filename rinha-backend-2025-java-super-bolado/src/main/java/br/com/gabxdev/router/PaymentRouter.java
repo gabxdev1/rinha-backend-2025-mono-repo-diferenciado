@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 
@@ -41,11 +42,11 @@ public final class PaymentRouter {
 
     private void handleEvents() throws IOException {
         var poolSize = ApplicationProperties.getInstance().getProperty(PropertiesKey.HANDLER_UDP_POOL_SIZE);
-        var poll = Executors.newFixedThreadPool(Integer.parseInt(poolSize), Thread.ofVirtual().factory());
+        var pool = Executors.newFixedThreadPool(Integer.parseInt(poolSize), Thread.ofVirtual().factory());
         var datagramSocket = DatagramSocketConfig.getInstance().getDatagramSocket();
 
         while (true) {
-            var buffer = new byte[200];
+            var buffer = new byte[180];
 
             var datagramPacket = new DatagramPacket(buffer, buffer.length);
 
@@ -53,12 +54,29 @@ public final class PaymentRouter {
 
             CompletableFuture.runAsync(() -> {
                 mapperEvent(datagramPacket.getData(), datagramPacket.getAddress(), datagramPacket.getPort());
-            }, poll);
+            }, pool);
         }
+
+//        var buffer = new byte[190];
+//        var datagramPacket = new DatagramPacket(buffer, buffer.length);
+//
+//        while (true) {
+//            datagramPacket.setData(buffer);
+//            datagramPacket.setLength(buffer.length);
+//            datagramSocket.receive(datagramPacket);
+//
+//            var dataCopy = Arrays.copyOf(buffer, datagramPacket.getLength());
+//
+//            CompletableFuture.runAsync(() -> {
+//                mapperEvent(dataCopy, datagramPacket.getAddress(), datagramPacket.getPort());
+//            }, pool);
+//        }
+
     }
 
+
     private void mapperEvent(byte[] data, InetAddress addressLb, int portLb) {
-        routerEvent(new String(data, StandardCharsets.UTF_8).trim(), addressLb,  portLb);
+        routerEvent(new String(data, StandardCharsets.UTF_8).trim(), addressLb, portLb);
     }
 
     private void routerEvent(String event, InetAddress addressLb, int portLb) {
@@ -66,10 +84,14 @@ public final class PaymentRouter {
 
         if (EventType.valueOf(key).equals(EventType.PAYMENT_POST)) {
             paymentHandler.receivePayment(PaymentMapper.toPayment(event));
+
+            return;
         }
 
         if (EventType.valueOf(key).equals(EventType.PAYMENT_SUMMARY)) {
             paymentHandler.paymentSummary(event.replace("a", ""), addressLb, portLb);
+
+            return;
         }
 
         if (EventType.valueOf(key).equals(EventType.PURGE)) {

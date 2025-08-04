@@ -10,6 +10,8 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.nio.charset.StandardCharsets;
 
+import static br.com.gabxdev.model.enums.EventType.*;
+
 public final class ApiRouter {
 
     private final static ApiRouter INSTANCE = new ApiRouter();
@@ -58,10 +60,21 @@ public final class ApiRouter {
 
     private void routerEvent(Event event) {
 
-        switch (event.getType()) {
-            case PAYMENT_SUMMARY -> paymentService.paymentSummaryToMerge(event.getPayload());
-            case PAYMENT_SUMMARY_MERGE -> paymentSummaryWaiter.completeResponse(event.getPayload());
-            case PURGE -> paymentService.purgePaymentsInternal();
+
+        if (event.getType().equals(PAYMENT_SUMMARY)) {
+            paymentService.paymentSummaryToMerge(event.getPayload());
+
+            return;
+        }
+
+        if (event.getType().equals(PAYMENT_SUMMARY_MERGE)) {
+            paymentSummaryWaiter.completeResponse(event.getPayload());
+
+            return;
+        }
+
+        if (event.getType().equals(PURGE)) {
+            paymentService.purgePaymentsInternal();
         }
     }
 }

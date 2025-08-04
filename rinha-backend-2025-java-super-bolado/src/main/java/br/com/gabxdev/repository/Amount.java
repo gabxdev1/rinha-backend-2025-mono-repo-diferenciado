@@ -11,9 +11,7 @@ public class Amount {
 
     public static void saveAmount(String payload) {
         if (amount.equals(bigDecimal0)) {
-            PaymentRequestParse.extractAmountFromRequest(payload);
-
-            amount = new BigDecimal(payload);
+            amount = new BigDecimal(PaymentRequestParse.extractAmountFromRequest(payload));
         }
     }
 

@@ -5,6 +5,7 @@ import br.com.gabxdev.mapper.EventMapper;
 import br.com.gabxdev.service.LoadBalanceService;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
+import io.undertow.util.Headers;
 import io.undertow.util.StatusCodes;
 
 public final class PaymentSummaryHandler implements HttpHandler {
@@ -38,6 +39,7 @@ public final class PaymentSummaryHandler implements HttpHandler {
 
             loadBalanceService.paymentSummaryHandler(EventMapper.toPaymentSummaryGetRequest(from, to));
 
+//            exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
             exchange.setStatusCode(StatusCodes.OK);
             exchange.getResponseSender().send(paymentSummaryWaiter.awaitResponse());
         });

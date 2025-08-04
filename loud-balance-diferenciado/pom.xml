@@ -4,10 +4,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>br.com.gabxdev</groupId>
-    <artifactId>loud-balance-diferenciado-java-gabxv</artifactId>
-    <version>2.0.1</version>
+    <artifactId>loud-balance-diferenciado-java-gabxv-plus</artifactId>
+    <version>3.0.1</version>
     <name>loud-balance-diferenciado</name>
     <description>loud-balance-diferenciado-java-gabxv</description>
+
+<!--    3.0.0 - 8 workers-->
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>

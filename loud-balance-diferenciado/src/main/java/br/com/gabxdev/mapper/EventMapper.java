@@ -27,7 +27,7 @@ public class EventMapper {
 
         var body = Arrays.copyOf(payload, payload.length + 1);
 
-        body[body.length - 1] = EventType.PAYMENT_SUMMARY.getValue();
+        body[payload.length] = EventType.PAYMENT_SUMMARY.getValue();
 
         return body;
     }
