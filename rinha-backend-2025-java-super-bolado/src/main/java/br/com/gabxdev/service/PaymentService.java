@@ -3,6 +3,7 @@ package br.com.gabxdev.service;
 import br.com.gabxdev.client.UdpClient;
 import br.com.gabxdev.config.DatagramSocketConfig;
 import br.com.gabxdev.config.DatagramSocketExternalConfig;
+import br.com.gabxdev.config.LoudBalanceHostConfig;
 import br.com.gabxdev.mapper.JsonParse;
 import br.com.gabxdev.middleware.PaymentMiddleware;
 import br.com.gabxdev.middleware.PaymentSummaryWaiter;
@@ -11,19 +12,17 @@ import br.com.gabxdev.model.enums.EventType;
 import br.com.gabxdev.repository.InMemoryPaymentDatabase;
 import br.com.gabxdev.response.PaymentSummaryGetResponse;
 
-import java.io.Serializable;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
-import java.time.ZoneOffset;
 
 import static br.com.gabxdev.mapper.JsonParse.parseInstant;
 
 public final class PaymentService {
 
     private static final PaymentService INSTANCE = new PaymentService();
+
+    private static final long YEAR_2000 = 946684800000L;
 
     private final UdpClient udpClient = UdpClient.getInstance();
 
@@ -37,6 +36,8 @@ public final class PaymentService {
 
     private final PaymentSummaryWaiter paymentSummaryWaiter = PaymentSummaryWaiter.getInstance();
 
+    private final LoudBalanceHostConfig loudBalanceHostConfig = LoudBalanceHostConfig.getInstance();
+
     private PaymentService() {
     }
 
@@ -49,12 +50,7 @@ public final class PaymentService {
         var from = parseInstant(instants[0]);
         var to = parseInstant(instants[1]);
 
-        PaymentSummaryGetResponse paymentSummary;
-        if (from == 946684800000L) {
-            paymentSummary = paymentRepository.getTotalSummary();
-        } else {
-            paymentSummary = paymentRepository.getSummaryByTimeRange(from, to);
-        }
+        var paymentSummary = getSummary(from, to);
 
         var payload = Event.buildEventDTO(EventType.PAYMENT_SUMMARY_MERGE.ordinal(),
                 JsonParse.parseToJsonPaymentSummaryInternal(paymentSummary)).getBytes(StandardCharsets.UTF_8);
@@ -62,26 +58,30 @@ public final class PaymentService {
         sendSummary(datagramSocketExternal, new DatagramPacket(payload, payload.length));
     }
 
-    public void getPaymentSummary(String payload, InetAddress addressLb, int portLb) {
+    public void getPaymentSummary(String payload) {
         var instants = payload.split("@");
         var from = parseInstant(instants[0]);
         var to = parseInstant(instants[1]);
 
         paymentMiddleware.syncPaymentSummary(instants[0], instants[1]);
 
-        PaymentSummaryGetResponse paymentSummary2;
-        if (from == 946684800000L) {
-            paymentSummary2 = paymentRepository.getTotalSummary();
-        } else {
-            paymentSummary2 = paymentRepository.getSummaryByTimeRange(from, to);
-        }
-
+        var paymentSummary2 = getSummary(from, to);
         var paymentSummary1 = paymentSummaryWaiter.awaitResponse();
 
         var paymentSummaryMerged = PaymentMiddleware.mergeSummary(paymentSummary1, paymentSummary2);
         var response = JsonParse.parseToJsonPaymentSummary(paymentSummaryMerged).getBytes(StandardCharsets.UTF_8);
 
-        sendSummary(datagramSocket, new DatagramPacket(response, response.length, addressLb, portLb));
+        sendSummary(datagramSocket, new DatagramPacket(response, response.length,
+                loudBalanceHostConfig.getBackEndExternalHost(),
+                loudBalanceHostConfig.getBackendExternalPort()));
+    }
+
+    private PaymentSummaryGetResponse getSummary(long from, long to) {
+        if (from == YEAR_2000) {
+            return paymentRepository.getTotalSummary();
+        } else {
+            return paymentRepository.getSummaryByTimeRange(from, to);
+        }
     }
 
     private void sendSummary(DatagramSocket datagramSocket, DatagramPacket datagramPacket) {

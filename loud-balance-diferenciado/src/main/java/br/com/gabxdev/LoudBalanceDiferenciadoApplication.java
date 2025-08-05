@@ -15,7 +15,7 @@ public class LoudBalanceDiferenciadoApplication {
         Logger.getLogger("io.undertow").setLevel(Level.OFF);
         Logger.getLogger("org.xnio").setLevel(Level.OFF);
         Logger.getLogger("org.jboss").setLevel(Level.OFF);
-        SocketRouter.getInstance();
+
         UndertowServer.getInstance().start();
     }
 

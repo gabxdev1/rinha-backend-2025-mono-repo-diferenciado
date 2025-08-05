@@ -17,7 +17,7 @@ public class LoadBalanceService {
     private final SocketRouter socketRouter = SocketRouter.getInstance();
 
     public void receivePaymentHandler(byte[] payload) {
-        socketRouter.sendEventPost(payload);
+        socketRouter.sendEvent(payload);
     }
 
     public void purgePaymentsHandler() {
@@ -25,6 +25,6 @@ public class LoadBalanceService {
     }
 
     public void paymentSummaryHandler(byte[] payload) {
-        socketRouter.sendEvent(payload);
+        socketRouter.sendEventOfSummary(payload);
     }
 }

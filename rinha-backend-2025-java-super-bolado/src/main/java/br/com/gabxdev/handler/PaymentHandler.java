@@ -29,7 +29,7 @@ public final class PaymentHandler {
         paymentService.purgePayments();
     }
 
-    public void paymentSummary(String payload, InetAddress addressLb, int portLb) {
-        paymentService.getPaymentSummary(payload, addressLb, portLb);
+    public void paymentSummary(String payload) {
+        paymentService.getPaymentSummary(payload);
     }
 }

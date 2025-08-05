@@ -5,11 +5,9 @@
 
     <groupId>br.com.gabxdev</groupId>
     <artifactId>loud-balance-java-gabxv-plus</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1-sync</version>
     <name>loud-balance-diferenciado</name>
     <description>loud-balance-diferenciado-java-gabxv</description>
-
-<!--    3.0.0 - 8 workers-->
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>

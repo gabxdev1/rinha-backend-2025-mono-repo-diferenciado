@@ -14,7 +14,7 @@ public class ServerConfig {
 
     private final int workersThreadPoolSize;
 
-//    private final ExecutorService workersThreadPool;
+    private ExecutorService workersThreadPool;
 
     private ServerConfig() {
         var applicationProperties = ApplicationProperties.getInstance();
@@ -30,7 +30,7 @@ public class ServerConfig {
     }
 
     public ExecutorService getWorkersThreadPool() {
-        return null;
+        return workersThreadPool;
     }
 
     public int getWorkersThreadPoolSize() {

@@ -24,12 +24,12 @@ public enum EventType {
             return EventType.PAYMENT_SUMMARY;
         }
 
-        if (value == 'c') {
-            return EventType.PAYMENT_POST;
-        }
-
         if (value == 'd') {
             return EventType.PURGE;
+        }
+
+        if (value == 'c') {
+            return EventType.PAYMENT_POST;
         }
 
         if (value == 'b') {

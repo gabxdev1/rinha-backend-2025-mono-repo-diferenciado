@@ -12,11 +12,15 @@ public final class Payment {
 
     public PaymentProcessorType type;
 
-    public Payment() {
+    private final String amount;
+
+    public Payment(long requestedAt, String amount) {
+        this.requestedAt = requestedAt;
+        this.amount = amount;
     }
 
-    public Payment(long requestedAt) {
-        this.requestedAt = requestedAt;
+    public BigDecimal getAmount() {
+        return new BigDecimal(amount);
     }
 
     public long getRequestedAt() {

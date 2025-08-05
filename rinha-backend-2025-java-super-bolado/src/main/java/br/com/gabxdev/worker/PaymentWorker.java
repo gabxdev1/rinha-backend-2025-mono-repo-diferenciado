@@ -6,7 +6,8 @@ import br.com.gabxdev.properties.ApplicationProperties;
 import br.com.gabxdev.properties.PropertiesKey;
 import br.com.gabxdev.repository.InMemoryPaymentDatabase;
 
-import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Semaphore;
 
 public final class PaymentWorker {
 
@@ -14,19 +15,19 @@ public final class PaymentWorker {
 
     private final Integer workerPoolSize;
 
-    private final ArrayBlockingQueue<Payment> queue;
+    private final ConcurrentLinkedQueue<Payment> pendingPayments = new ConcurrentLinkedQueue<>();
 
     private final InMemoryPaymentDatabase paymentRepository = InMemoryPaymentDatabase.getInstance();
 
     private final PaymentProcessorClient processorClient = PaymentProcessorClient.getInstance();
 
+    private final Semaphore semaphore = new Semaphore(0);
+
     private PaymentWorker() {
         var applicationProperties = ApplicationProperties.getInstance();
 
-        var queueBufferS = applicationProperties.getProperty(PropertiesKey.QUEUE_BUFFER);
         var workerPoolSizeS = applicationProperties.getProperty(PropertiesKey.WORKER_POOL_SIZE);
 
-        this.queue = new ArrayBlockingQueue<>(Integer.parseInt(queueBufferS));
         this.workerPoolSize = Integer.parseInt(workerPoolSizeS);
 
         Thread.startVirtualThread(this::start);
@@ -44,22 +45,22 @@ public final class PaymentWorker {
 
     private void runWorker() {
         while (true) {
-            var request = takePayment();
+            try {
+                semaphore.acquire();
 
-            processPayment(request);
-        }
-    }
+                var request = pendingPayments.poll();
 
-    private Payment takePayment() {
-        try {
-            return queue.take();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+                processPayment(request);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     public void enqueue(Payment request) {
-        queue.offer(request);
+        pendingPayments.offer(request);
+
+        semaphore.release();
     }
 
     private void processPayment(Payment payment) {

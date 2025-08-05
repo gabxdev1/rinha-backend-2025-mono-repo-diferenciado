@@ -71,7 +71,7 @@ public final class InMemoryPaymentDatabase {
         }
 
         var count = payments.size();
-        var total = Amount.getAmount().multiply(BigDecimal.valueOf(count));
+        var total = payments.getFirst().getAmount().multiply(BigDecimal.valueOf(count));
 
         return new PaymentSummary(type, count, total);
     }

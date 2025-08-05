@@ -11,7 +11,8 @@ public enum PropertiesKey {
     URL_PROCESSOR_DEFAULT("url.processor.default"),
     URL_PROCESSOR_FALLBACK("url.processor.fallback"),
     HANDLER_UDP_POOL_SIZE("handler.udp.pool-size"),
-    TIMEOUT_PROFESSOR_DEFAULT("timeout.processor.default");
+    TIMEOUT_PROFESSOR_DEFAULT("timeout.processor.default"),
+    LB_URL("lb.url");
 
     private final String key;
 

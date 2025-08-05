@@ -8,9 +8,13 @@ import br.com.gabxdev.middleware.PaymentSummaryWaiter;
 import br.com.gabxdev.properties.ApplicationProperties;
 import br.com.gabxdev.repository.InMemoryPaymentDatabase;
 import br.com.gabxdev.router.ApiRouter;
-import br.com.gabxdev.router.PaymentSummaryAndPurgeRouter;
+import br.com.gabxdev.router.PaymentRouter;
 import br.com.gabxdev.service.PaymentService;
 import br.com.gabxdev.worker.PaymentWorker;
+
+import java.net.DatagramPacket;
+import java.util.Arrays;
+import java.util.concurrent.CompletableFuture;
 
 public class RinhaBackend2025JavaApplication {
     public static void main(String[] args) throws InterruptedException {
@@ -32,7 +36,7 @@ public class RinhaBackend2025JavaApplication {
         PaymentService.getInstance();
         PaymentHandler.getInstance();
         ApiRouter.getInstance();
-        PaymentSummaryAndPurgeRouter.getInstance();
+        PaymentRouter.getInstance();
 
         Thread.currentThread().join();
     }

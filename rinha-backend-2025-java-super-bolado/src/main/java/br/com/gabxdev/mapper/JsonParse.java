@@ -1,7 +1,6 @@
 package br.com.gabxdev.mapper;
 
 import br.com.gabxdev.model.Payment;
-import br.com.gabxdev.repository.Amount;
 import br.com.gabxdev.response.PaymentSummaryGetResponse;
 
 import java.time.Instant;
@@ -23,11 +22,11 @@ public class JsonParse {
         }
     }
 
-    public static String buildPaymentDTO(String uuid, long requestedAt) {
+    public static String buildPaymentDTO(String uuid, Payment payment) {
         return new StringBuilder("{")
                 .append("\"correlationId\":\"").append(uuid).append("\",")
-                .append("\"amount\":").append(Amount.getAmount().toPlainString()).append(",")
-                .append("\"requestedAt\":\"").append(Instant.ofEpochMilli(requestedAt).toString()).append("\"")
+                .append("\"amount\":").append(payment.getAmount().toPlainString()).append(",")
+                .append("\"requestedAt\":\"").append(Instant.ofEpochMilli(payment.getRequestedAt()).toString()).append("\"")
                 .append("}")
                 .toString();
     }
