@@ -4,8 +4,6 @@ import br.com.gabxdev.model.Payment;
 import br.com.gabxdev.service.PaymentService;
 import br.com.gabxdev.worker.PaymentWorker;
 
-import java.net.InetAddress;
-
 public final class PaymentHandler {
 
     private static final PaymentHandler INSTANCE = new PaymentHandler();

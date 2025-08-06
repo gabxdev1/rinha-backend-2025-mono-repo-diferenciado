@@ -1,6 +1,7 @@
 package br.com.gabxdev.lb;
 
 import br.com.gabxdev.socket.BackendAddress;
+import org.newsclub.net.unix.AFUNIXDatagramSocket;
 
 import java.net.DatagramSocket;
 import java.util.List;
@@ -15,7 +16,7 @@ public class LoudBalance {
     private LoudBalance() {
     }
 
-    public DatagramSocket selectBackEnd(List<DatagramSocket> sockets) {
+    public AFUNIXDatagramSocket selectBackEnd(List<AFUNIXDatagramSocket> sockets) {
         int index = roundRobinIndex.getAndIncrement() % sockets.size();
 
         return sockets.get(index);

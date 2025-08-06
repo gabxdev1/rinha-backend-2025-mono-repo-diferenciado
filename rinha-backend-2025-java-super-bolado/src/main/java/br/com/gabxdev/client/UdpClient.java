@@ -1,5 +1,8 @@
 package br.com.gabxdev.client;
 
+import br.com.gabxdev.config.UnixSocketConfig;
+import org.newsclub.net.unix.AFUNIXDatagramSocket;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -18,7 +21,15 @@ public class UdpClient {
         try {
             socket.send(datagramPacket);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
+        }
+    }
+
+    public void send(DatagramPacket datagramPacket, AFUNIXDatagramSocket socket) {
+        try {
+            socket.send(datagramPacket);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

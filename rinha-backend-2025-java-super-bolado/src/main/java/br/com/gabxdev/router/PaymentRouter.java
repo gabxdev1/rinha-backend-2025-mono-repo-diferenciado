@@ -1,6 +1,6 @@
 package br.com.gabxdev.router;
 
-import br.com.gabxdev.config.DatagramSocketConfig;
+import br.com.gabxdev.config.UnixSocketConfig;
 import br.com.gabxdev.handler.PaymentHandler;
 import br.com.gabxdev.mapper.PaymentMapper;
 import br.com.gabxdev.model.enums.EventType;
@@ -9,6 +9,7 @@ import br.com.gabxdev.properties.PropertiesKey;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
+import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -46,13 +47,15 @@ public final class PaymentRouter {
 
 
     private void handleEvents() throws IOException {
-        var socket = DatagramSocketConfig.getInstance().getDatagramSocket();
+        var socket = UnixSocketConfig.getInstance().getSocket();
 
         var buffer = new byte[120];
         var packet = new DatagramPacket(buffer, buffer.length);
 
         while (true) {
             socket.receive(packet);
+
+            System.out.println(new String(packet.getData(), 0, packet.getLength(), StandardCharsets.UTF_8));
 
             packets.offer(Arrays.copyOf(packet.getData(), packet.getLength()));
 

@@ -2,47 +2,32 @@ package br.com.gabxdev.config;
 
 import br.com.gabxdev.properties.ApplicationProperties;
 import br.com.gabxdev.properties.PropertiesKey;
+import org.newsclub.net.unix.AFUNIXSocketAddress;
 
+import java.io.File;
 import java.net.InetAddress;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 
 public final class LoudBalanceHostConfig {
 
     private final static LoudBalanceHostConfig INSTANCE = new LoudBalanceHostConfig();
 
-    private String backEndExternalHost;
-
-    private int backendExternalPort;
+    private AFUNIXSocketAddress getLbAddress;
 
     private LoudBalanceHostConfig() {
-        var applicationProperties = ApplicationProperties.getInstance();
-
-        this.backEndExternalHost = applicationProperties.getProperty(PropertiesKey.LB_URL);
-
-        this.backendExternalPort = 9096;
+        try {
+            getLbAddress = new AFUNIXSocketAddress(new File("/tmp/loudbalance.sock"));
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
     }
 
     public static LoudBalanceHostConfig getInstance() {
         return INSTANCE;
     }
 
-    public InetAddress getBackEndExternalHost() {
-        try {
-            return InetAddress.getByName(backEndExternalHost);
-        } catch (UnknownHostException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void setBackEndExternalHost(String backEndExternalHost) {
-        this.backEndExternalHost = backEndExternalHost;
-    }
-
-    public int getBackendExternalPort() {
-        return backendExternalPort;
-    }
-
-    public void setBackendExternalPort(int backendExternalPort) {
-        this.backendExternalPort = backendExternalPort;
+    public AFUNIXSocketAddress getGetLbAddress() {
+        return getLbAddress;
     }
 }

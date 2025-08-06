@@ -12,10 +12,6 @@ import br.com.gabxdev.router.PaymentRouter;
 import br.com.gabxdev.service.PaymentService;
 import br.com.gabxdev.worker.PaymentWorker;
 
-import java.net.DatagramPacket;
-import java.util.Arrays;
-import java.util.concurrent.CompletableFuture;
-
 public class RinhaBackend2025JavaApplication {
     public static void main(String[] args) throws InterruptedException {
         start();
@@ -24,7 +20,7 @@ public class RinhaBackend2025JavaApplication {
     private static void start() throws InterruptedException {
         ApplicationProperties.getInstance();
         BackendExternalHostConfig.getInstance();
-        DatagramSocketConfig.getInstance();
+        UnixSocketConfig.getInstance();
         DatagramSocketExternalConfig.getInstance();
         HttpClientConfig.httpClient();
         PaymentProcessorConfig.getInstance();

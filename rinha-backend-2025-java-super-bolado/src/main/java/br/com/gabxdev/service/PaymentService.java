@@ -1,9 +1,9 @@
 package br.com.gabxdev.service;
 
 import br.com.gabxdev.client.UdpClient;
-import br.com.gabxdev.config.DatagramSocketConfig;
 import br.com.gabxdev.config.DatagramSocketExternalConfig;
 import br.com.gabxdev.config.LoudBalanceHostConfig;
+import br.com.gabxdev.config.UnixSocketConfig;
 import br.com.gabxdev.mapper.JsonParse;
 import br.com.gabxdev.middleware.PaymentMiddleware;
 import br.com.gabxdev.middleware.PaymentSummaryWaiter;
@@ -11,9 +11,11 @@ import br.com.gabxdev.model.Event;
 import br.com.gabxdev.model.enums.EventType;
 import br.com.gabxdev.repository.InMemoryPaymentDatabase;
 import br.com.gabxdev.response.PaymentSummaryGetResponse;
+import org.newsclub.net.unix.AFUNIXDatagramSocket;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
 
 import static br.com.gabxdev.mapper.JsonParse.parseInstant;
@@ -26,7 +28,7 @@ public final class PaymentService {
 
     private final UdpClient udpClient = UdpClient.getInstance();
 
-    private final DatagramSocket datagramSocket = DatagramSocketConfig.getInstance().getDatagramSocket();
+    private final AFUNIXDatagramSocket unixSocket = UnixSocketConfig.getInstance().getSocket();
 
     private final DatagramSocket datagramSocketExternal = DatagramSocketExternalConfig.getInstance().getDatagramSocket();
 
@@ -55,7 +57,7 @@ public final class PaymentService {
         var payload = Event.buildEventDTO(EventType.PAYMENT_SUMMARY_MERGE.ordinal(),
                 JsonParse.parseToJsonPaymentSummaryInternal(paymentSummary)).getBytes(StandardCharsets.UTF_8);
 
-        sendSummary(datagramSocketExternal, new DatagramPacket(payload, payload.length));
+        udpClient.send(new DatagramPacket(payload, payload.length), datagramSocketExternal);
     }
 
     public void getPaymentSummary(String payload) {
@@ -71,9 +73,15 @@ public final class PaymentService {
         var paymentSummaryMerged = PaymentMiddleware.mergeSummary(paymentSummary1, paymentSummary2);
         var response = JsonParse.parseToJsonPaymentSummary(paymentSummaryMerged).getBytes(StandardCharsets.UTF_8);
 
-        sendSummary(datagramSocket, new DatagramPacket(response, response.length,
-                loudBalanceHostConfig.getBackEndExternalHost(),
-                loudBalanceHostConfig.getBackendExternalPort()));
+        if (!unixSocket.isConnected()) {
+            try {
+                unixSocket.connect(loudBalanceHostConfig.getGetLbAddress());
+            } catch (SocketException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        udpClient.send(new DatagramPacket(response, response.length), unixSocket);
     }
 
     private PaymentSummaryGetResponse getSummary(long from, long to) {
@@ -82,10 +90,6 @@ public final class PaymentService {
         } else {
             return paymentRepository.getSummaryByTimeRange(from, to);
         }
-    }
-
-    private void sendSummary(DatagramSocket datagramSocket, DatagramPacket datagramPacket) {
-        udpClient.send(datagramPacket, datagramSocket);
     }
 
     public void purgePayments() {

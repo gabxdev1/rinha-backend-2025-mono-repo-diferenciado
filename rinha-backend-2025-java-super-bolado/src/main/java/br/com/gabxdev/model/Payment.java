@@ -42,4 +42,14 @@ public final class Payment {
     public void setType(PaymentProcessorType type) {
         this.type = type;
     }
+
+    @Override
+    public String toString() {
+        return "Payment{" +
+               "requestedAt=" + requestedAt +
+               ", json='" + json + '\'' +
+               ", type=" + type +
+               ", amount='" + amount + '\'' +
+               '}';
+    }
 }

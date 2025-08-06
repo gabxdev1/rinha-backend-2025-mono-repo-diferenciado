@@ -1,65 +1,77 @@
 package br.com.gabxdev.config;
 
-import br.com.gabxdev.socket.BackendAddress;
+import org.newsclub.net.unix.AFSocketType;
+import org.newsclub.net.unix.AFUNIXDatagramSocket;
+import org.newsclub.net.unix.AFUNIXSocketAddress;
 
-import java.net.DatagramSocket;
-import java.net.InetAddress;
+import java.io.File;
 import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.List;
 
 public class ApiChannelConfig {
 
     private final static ApiChannelConfig INSTANCE = new ApiChannelConfig();
 
-    private final DatagramSocket datagramSocketApi1;
-
-    private final DatagramSocket datagramSocketApi2;
+    private final AFUNIXDatagramSocket socketApi1;
+    private final AFUNIXDatagramSocket socketApi2;
 
     private ApiChannelConfig() {
-        var backendUrlConfig = BackendUrlConfig.getInstance().getBackendsAddresses();
+        AFUNIXSocketAddress addressApi1;
+        AFUNIXSocketAddress addressApi2;
 
-        datagramSocketApi1 = this.loadDatagramSocket(backendUrlConfig.getFirst(), 9096);
 
-        datagramSocketApi2 = this.loadDatagramSocket(backendUrlConfig.getLast(), null);
+        try {
+            addressApi1 = new AFUNIXSocketAddress(new File("/tmp/api1.sock"));
+            addressApi2 = new AFUNIXSocketAddress(new File("/tmp/api2.sock"));
+        } catch (SocketException e) {
+            throw new RuntimeException(e);
+        }
+
+        socketApi1 = createSocket(addressApi1);
+        socketApi2 = createSocket(addressApi2);
+
+
+        AFUNIXSocketAddress lbAddress;
+        try {
+            var file = new File("/tmp/loudbalance.sock");
+            file.delete();
+            lbAddress = new AFUNIXSocketAddress(file);
+            socketApi1.bind(lbAddress);
+        } catch (Exception e) {
+            System.out.println("Error binding file: " + e.getMessage());
+        }
+
+        startShutdownHook(socketApi1);
+        startShutdownHook(socketApi2);
     }
 
     public static ApiChannelConfig getInstance() {
         return INSTANCE;
     }
 
-    private DatagramSocket loadDatagramSocket(BackendAddress backendUrlConfig, Integer port) {
-        DatagramSocket datagramSocket;
-
+    private AFUNIXDatagramSocket createSocket(AFUNIXSocketAddress address) {
         try {
-            if (port != null) {
-                datagramSocket = new DatagramSocket(port);
-            } else {
-                datagramSocket = new DatagramSocket();
-            }
-
-            datagramSocket.setBroadcast(false);
-            datagramSocket.setSendBufferSize(5 * 1024 * 1024);
-            datagramSocket.connect(InetAddress.getByName(backendUrlConfig.url()), backendUrlConfig.port());
-        } catch (SocketException | UnknownHostException e) {
-            throw new RuntimeException(e);
+            var socket = AFUNIXDatagramSocket.newInstance(AFSocketType.SOCK_DGRAM);
+            socket.connect(address);
+            socket.setSendBufferSize(5 * 1024 * 1024);
+            return socket;
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao criar socket UDS", e);
         }
-
-        startShutdownHook(datagramSocket);
-
-        return datagramSocket;
     }
 
-    private void startShutdownHook(DatagramSocket channel) {
+    private void startShutdownHook(AFUNIXDatagramSocket socket) {
         Runtime.getRuntime().addShutdownHook(
-                Thread.ofVirtual().unstarted(channel::close)
+                Thread.ofVirtual().unstarted(() -> {
+                    try {
+                        socket.close();
+                    } catch (Exception ignored) {
+                    }
+                })
         );
     }
 
-    public List<DatagramSocket> getDatagramSockets() {
-        return List.of(datagramSocketApi1, datagramSocketApi2);
+    public List<AFUNIXDatagramSocket> getDatagramSockets() {
+        return List.of(socketApi1, socketApi2);
     }
-
-
-
 }

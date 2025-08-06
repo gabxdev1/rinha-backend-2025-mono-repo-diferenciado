@@ -3,6 +3,7 @@ package br.com.gabxdev.router;
 import br.com.gabxdev.config.ApiChannelConfig;
 import br.com.gabxdev.lb.LoudBalance;
 import br.com.gabxdev.lb.PaymentSummaryWaiter;
+import org.newsclub.net.unix.AFUNIXDatagramSocket;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -14,7 +15,7 @@ public class SocketRouter {
 
     private final static SocketRouter INSTANCE = new SocketRouter();
 
-    private final List<DatagramSocket> sockets = ApiChannelConfig.getInstance().getDatagramSockets();
+    private final List<AFUNIXDatagramSocket> sockets = ApiChannelConfig.getInstance().getDatagramSockets();
 
     private final LoudBalance loudBalance = LoudBalance.getInstance();
 
@@ -29,15 +30,14 @@ public class SocketRouter {
     }
 
     private void handleEvents() {
+        var buffer = new byte[220];
+        var packet  = new DatagramPacket(buffer, buffer.length);
+
         while (true) {
             try {
-                var buffer = new byte[220];
+                sockets.getFirst().receive(packet);
 
-                var datagramPacket = new DatagramPacket(buffer, buffer.length);
-
-                sockets.getFirst().receive(datagramPacket);
-
-                var event = new String(datagramPacket.getData(), StandardCharsets.UTF_8).trim();
+                var event = new String(packet.getData(), 0, packet.getLength(), StandardCharsets.UTF_8);
 
                 processEvent(event);
             } catch (IOException e) {
