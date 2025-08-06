@@ -6,21 +6,14 @@ import java.math.BigDecimal;
 import java.time.Instant;
 
 public final class Payment {
-    private long requestedAt;
+    private final long requestedAt;
 
     public String json;
 
     public PaymentProcessorType type;
 
-    private final String amount;
-
-    public Payment(long requestedAt, String amount) {
+    public Payment(long requestedAt) {
         this.requestedAt = requestedAt;
-        this.amount = amount;
-    }
-
-    public BigDecimal getAmount() {
-        return new BigDecimal(amount);
     }
 
     public long getRequestedAt() {
@@ -43,13 +36,4 @@ public final class Payment {
         this.type = type;
     }
 
-    @Override
-    public String toString() {
-        return "Payment{" +
-               "requestedAt=" + requestedAt +
-               ", json='" + json + '\'' +
-               ", type=" + type +
-               ", amount='" + amount + '\'' +
-               '}';
-    }
 }

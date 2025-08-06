@@ -1,13 +1,12 @@
 package br.com.gabxdev.router;
 
-import br.com.gabxdev.config.DatagramSocketExternalConfig;
+import br.com.gabxdev.config.ApiSockerInternalConfig;
 import br.com.gabxdev.middleware.PaymentSummaryWaiter;
 import br.com.gabxdev.model.Event;
 import br.com.gabxdev.service.PaymentService;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.nio.charset.StandardCharsets;
 
 import static br.com.gabxdev.model.enums.EventType.*;
@@ -39,28 +38,25 @@ public final class ApiRouter {
     }
 
     private void handleEvents() throws IOException {
-        var datagramSocketExternal = DatagramSocketExternalConfig.getInstance().getDatagramSocket();
+        var socket = ApiSockerInternalConfig.getInstance().getDatagramSocket();
+
+        var buffer = new byte[100];
+        var packet = new DatagramPacket(buffer, buffer.length);
 
         while (true) {
-            var buffer = new byte[60];
+            socket.receive(packet);
 
-            var datagramPacket = new DatagramPacket(buffer, buffer.length);
-
-            datagramSocketExternal.receive(datagramPacket);
-
-            mapperEvent(datagramPacket.getData());
+            mapperEvent(packet.getData(), packet.getLength());
         }
     }
 
-    private void mapperEvent(byte[] data) {
-        var event = Event.parseEvent(new String(data, StandardCharsets.UTF_8).trim());
+    private void mapperEvent(byte[] data, int length) {
+        var event = Event.parseEvent(new String(data, 0, length, StandardCharsets.UTF_8));
 
         routerEvent(event);
     }
 
     private void routerEvent(Event event) {
-
-
         if (event.getType().equals(PAYMENT_SUMMARY)) {
             paymentService.paymentSummaryToMerge(event.getPayload());
 

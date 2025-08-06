@@ -1,7 +1,7 @@
 package br.com.gabxdev.handler;
 
 import br.com.gabxdev.config.ServerConfig;
-import br.com.gabxdev.service.LoadBalanceService;
+import br.com.gabxdev.producer.PaymentPostProducer;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.StatusCodes;
@@ -10,7 +10,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 
 public class ReceivePaymentHandler implements HttpHandler {
-    private final LoadBalanceService loadBalanceService = LoadBalanceService.getInstance();
+    private final PaymentPostProducer paymentPostProducer = PaymentPostProducer.getInstance();
 
     private final ExecutorService threadPool = ServerConfig.getInstance().getWorkersThreadPool();
 
@@ -30,7 +30,7 @@ public class ReceivePaymentHandler implements HttpHandler {
             exchange.endExchange();
 
             CompletableFuture.runAsync(() -> {
-                loadBalanceService.receivePaymentHandler(payload);
+                paymentPostProducer.sendEvent(payload);
             }, threadPool);
         });
     }

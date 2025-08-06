@@ -6,14 +6,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 public class EventMapper {
-    public static byte[] toPaymentPostRequest(byte[] json) {
-        var body = Arrays.copyOf(json, json.length + 1);
-
-        body[json.length] = EventType.PAYMENT_POST.getValue();
-
-        return body;
-    }
-
     public static byte[] toPurgePaymentsPostRequest() {
         var bytes = new byte[1];
 

@@ -1,8 +1,8 @@
 package br.com.gabxdev.service;
 
 import br.com.gabxdev.client.UdpClient;
-import br.com.gabxdev.config.DatagramSocketExternalConfig;
-import br.com.gabxdev.config.LoudBalanceHostConfig;
+import br.com.gabxdev.config.ApiSockerInternalConfig;
+import br.com.gabxdev.config.LoudBalanceChannelConfig;
 import br.com.gabxdev.config.UnixSocketConfig;
 import br.com.gabxdev.mapper.JsonParse;
 import br.com.gabxdev.middleware.PaymentMiddleware;
@@ -28,9 +28,7 @@ public final class PaymentService {
 
     private final UdpClient udpClient = UdpClient.getInstance();
 
-    private final AFUNIXDatagramSocket unixSocket = UnixSocketConfig.getInstance().getSocket();
-
-    private final DatagramSocket datagramSocketExternal = DatagramSocketExternalConfig.getInstance().getDatagramSocket();
+    private final DatagramSocket datagramSocketExternal = ApiSockerInternalConfig.getInstance().getDatagramSocket();
 
     private final InMemoryPaymentDatabase paymentRepository = InMemoryPaymentDatabase.getInstance();
 
@@ -38,7 +36,7 @@ public final class PaymentService {
 
     private final PaymentSummaryWaiter paymentSummaryWaiter = PaymentSummaryWaiter.getInstance();
 
-    private final LoudBalanceHostConfig loudBalanceHostConfig = LoudBalanceHostConfig.getInstance();
+    private final DatagramSocket lbSocket = LoudBalanceChannelConfig.getInstance().getSocket();
 
     private PaymentService() {
     }
@@ -73,15 +71,7 @@ public final class PaymentService {
         var paymentSummaryMerged = PaymentMiddleware.mergeSummary(paymentSummary1, paymentSummary2);
         var response = JsonParse.parseToJsonPaymentSummary(paymentSummaryMerged).getBytes(StandardCharsets.UTF_8);
 
-        if (!unixSocket.isConnected()) {
-            try {
-                unixSocket.connect(loudBalanceHostConfig.getGetLbAddress());
-            } catch (SocketException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        udpClient.send(new DatagramPacket(response, response.length), unixSocket);
+        udpClient.send(new DatagramPacket(response, response.length), lbSocket);
     }
 
     private PaymentSummaryGetResponse getSummary(long from, long to) {

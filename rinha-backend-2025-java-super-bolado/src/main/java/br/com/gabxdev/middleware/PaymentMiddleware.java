@@ -1,7 +1,7 @@
 package br.com.gabxdev.middleware;
 
 import br.com.gabxdev.client.UdpClient;
-import br.com.gabxdev.config.DatagramSocketExternalConfig;
+import br.com.gabxdev.config.ApiSockerInternalConfig;
 import br.com.gabxdev.mapper.EventMapper;
 import br.com.gabxdev.response.PaymentSummaryGetResponse;
 
@@ -16,7 +16,7 @@ public final class PaymentMiddleware {
 
     private final static PaymentMiddleware INSTANCE = new PaymentMiddleware();
 
-    private final DatagramSocket datagramSocketExternal = DatagramSocketExternalConfig.getInstance().getDatagramSocket();
+    private final DatagramSocket datagramSocketExternal = ApiSockerInternalConfig.getInstance().getDatagramSocket();
 
     private final ExecutorService pool = Executors.newFixedThreadPool(1, Thread.ofVirtual().factory());
 

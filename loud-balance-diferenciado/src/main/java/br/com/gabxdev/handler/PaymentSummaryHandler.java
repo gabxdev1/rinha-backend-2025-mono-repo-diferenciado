@@ -2,17 +2,17 @@ package br.com.gabxdev.handler;
 
 import br.com.gabxdev.lb.PaymentSummaryWaiter;
 import br.com.gabxdev.mapper.EventMapper;
-import br.com.gabxdev.service.LoadBalanceService;
+import br.com.gabxdev.producer.EventProducer;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.Headers;
 import io.undertow.util.StatusCodes;
 
-public final class PaymentSummaryHandler implements HttpHandler {
+public class PaymentSummaryHandler implements HttpHandler {
 
     private final PaymentSummaryWaiter paymentSummaryWaiter = PaymentSummaryWaiter.getInstance();
 
-    private final LoadBalanceService loadBalanceService = LoadBalanceService.getInstance();
+    private final EventProducer eventProducer = EventProducer.getInstance();
 
     public PaymentSummaryHandler() {
     }
@@ -37,9 +37,9 @@ public final class PaymentSummaryHandler implements HttpHandler {
             var to = queryParameters.containsKey("to") ?
                     queryParameters.get("to").getFirst() : "x";
 
-            loadBalanceService.paymentSummaryHandler(EventMapper.toPaymentSummaryGetRequest(from, to));
+            eventProducer.sendEvent(EventMapper.toPaymentSummaryGetRequest(from, to));
 
-//            exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
+            exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
             exchange.setStatusCode(StatusCodes.OK);
             exchange.getResponseSender().send(paymentSummaryWaiter.awaitResponse());
         });

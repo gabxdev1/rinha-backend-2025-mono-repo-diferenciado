@@ -1,9 +1,7 @@
 package br.com.gabxdev.lb;
 
-import br.com.gabxdev.socket.BackendAddress;
 import org.newsclub.net.unix.AFUNIXDatagramSocket;
 
-import java.net.DatagramSocket;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 

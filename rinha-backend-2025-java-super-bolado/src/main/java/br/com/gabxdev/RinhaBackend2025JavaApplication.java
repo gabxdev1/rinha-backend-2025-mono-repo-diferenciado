@@ -2,13 +2,13 @@ package br.com.gabxdev;
 
 import br.com.gabxdev.client.PaymentProcessorClient;
 import br.com.gabxdev.config.*;
-import br.com.gabxdev.handler.PaymentHandler;
+import br.com.gabxdev.consumer.EventConsumer;
+import br.com.gabxdev.consumer.PaymentPostConsumer;
 import br.com.gabxdev.middleware.PaymentMiddleware;
 import br.com.gabxdev.middleware.PaymentSummaryWaiter;
 import br.com.gabxdev.properties.ApplicationProperties;
 import br.com.gabxdev.repository.InMemoryPaymentDatabase;
 import br.com.gabxdev.router.ApiRouter;
-import br.com.gabxdev.router.PaymentRouter;
 import br.com.gabxdev.service.PaymentService;
 import br.com.gabxdev.worker.PaymentWorker;
 
@@ -19,9 +19,9 @@ public class RinhaBackend2025JavaApplication {
 
     private static void start() throws InterruptedException {
         ApplicationProperties.getInstance();
-        BackendExternalHostConfig.getInstance();
+        ApiInternalConfig.getInstance();
         UnixSocketConfig.getInstance();
-        DatagramSocketExternalConfig.getInstance();
+        ApiSockerInternalConfig.getInstance();
         HttpClientConfig.httpClient();
         PaymentProcessorConfig.getInstance();
         InMemoryPaymentDatabase.getInstance();
@@ -30,9 +30,11 @@ public class RinhaBackend2025JavaApplication {
         PaymentSummaryWaiter.getInstance();
         PaymentMiddleware.getInstance();
         PaymentService.getInstance();
-        PaymentHandler.getInstance();
         ApiRouter.getInstance();
-        PaymentRouter.getInstance();
+        LoudBalanceChannelConfig.getInstance();
+        EventConsumer.getInstance();
+        PaymentPostConsumer.getInstance();
+
 
         Thread.currentThread().join();
     }

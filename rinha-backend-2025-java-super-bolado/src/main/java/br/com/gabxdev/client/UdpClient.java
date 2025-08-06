@@ -21,6 +21,7 @@ public class UdpClient {
         try {
             socket.send(datagramPacket);
         } catch (IOException e) {
+            System.out.println("Erro ao send DatagramPacket");
             e.printStackTrace();
         }
     }

@@ -3,15 +3,15 @@ package br.com.gabxdev.config;
 import br.com.gabxdev.properties.ApplicationProperties;
 import br.com.gabxdev.properties.PropertiesKey;
 
-public final class BackendExternalHostConfig {
+public final class ApiInternalConfig {
 
-    private final static BackendExternalHostConfig INSTANCE = new BackendExternalHostConfig();
+    private final static ApiInternalConfig INSTANCE = new ApiInternalConfig();
 
-    private String backEndExternalHost;
+    private final String backEndExternalHost;
 
-    private int backendExternalPort;
+    private final int backendExternalPort;
 
-    private BackendExternalHostConfig() {
+    private ApiInternalConfig() {
         var applicationProperties = ApplicationProperties.getInstance();
 
         this.backEndExternalHost = applicationProperties.getProperty(PropertiesKey.EXTERNAL_UDP_HOST);
@@ -21,7 +21,7 @@ public final class BackendExternalHostConfig {
         this.backendExternalPort = Integer.parseInt(portS);
     }
 
-    public static BackendExternalHostConfig getInstance() {
+    public static ApiInternalConfig getInstance() {
         return INSTANCE;
     }
 
@@ -29,15 +29,7 @@ public final class BackendExternalHostConfig {
         return backEndExternalHost;
     }
 
-    public void setBackEndExternalHost(String backEndExternalHost) {
-        this.backEndExternalHost = backEndExternalHost;
-    }
-
     public int getBackendExternalPort() {
         return backendExternalPort;
-    }
-
-    public void setBackendExternalPort(int backendExternalPort) {
-        this.backendExternalPort = backendExternalPort;
     }
 }
