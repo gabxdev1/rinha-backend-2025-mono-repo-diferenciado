@@ -13,7 +13,7 @@ public class PurgePaymentHandler implements HttpHandler {
 
     private final LoadBalanceService loadBalanceService = LoadBalanceService.getInstance();
 
-//    private final ExecutorService threadPool = ServerConfig.getInstance().getWorkersThreadPool();
+    private final ExecutorService threadPool = ServerConfig.getInstance().getWorkersThreadPool();
 
     @Override
     public void handleRequest(HttpServerExchange exchange) {
@@ -29,7 +29,6 @@ public class PurgePaymentHandler implements HttpHandler {
         exchange.setStatusCode(StatusCodes.OK);
         exchange.endExchange();
 
-        loadBalanceService.purgePaymentsHandler();
-//        CompletableFuture.runAsync(loadBalanceService::purgePaymentsHandler, threadPool);
+        CompletableFuture.runAsync(loadBalanceService::purgePaymentsHandler, threadPool);
     }
 }

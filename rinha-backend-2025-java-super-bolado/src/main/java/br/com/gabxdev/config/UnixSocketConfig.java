@@ -24,6 +24,8 @@ public final class UnixSocketConfig {
 
         var socketPath = applicationProperties.getProperty(PropertiesKey.SOCKET_PATH);
 
+        System.out.println("SOCKET_PATH: " + socketPath);
+
         var file = new File(socketPath);
 
         if (file.exists()) {

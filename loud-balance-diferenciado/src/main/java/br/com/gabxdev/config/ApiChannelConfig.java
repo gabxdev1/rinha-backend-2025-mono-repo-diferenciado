@@ -43,6 +43,12 @@ public class ApiChannelConfig {
 
         startShutdownHook(socketApi1);
         startShutdownHook(socketApi2);
+
+        if (new File("/tmp/loudbalance.sock").exists()) {
+            System.out.println("file exists");
+        } else {
+            System.out.println("file not exists");
+        }
     }
 
     public static ApiChannelConfig getInstance() {

@@ -49,15 +49,15 @@ public final class PaymentRouter {
     private void handleEvents() throws IOException {
         var socket = UnixSocketConfig.getInstance().getSocket();
 
-        var buffer = new byte[120];
-        var packet = new DatagramPacket(buffer, buffer.length);
-
         while (true) {
+
+            var buffer = new byte[120];
+
+            var packet = new DatagramPacket(buffer, buffer.length);
+
             socket.receive(packet);
 
-            System.out.println(new String(packet.getData(), 0, packet.getLength(), StandardCharsets.UTF_8));
-
-            packets.offer(Arrays.copyOf(packet.getData(), packet.getLength()));
+            packets.offer(packet.getData());
 
             semaphore.release();
         }

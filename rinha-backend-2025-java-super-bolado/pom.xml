@@ -54,37 +54,37 @@
             </plugin>
 
 
-            <plugin>
-                <groupId>org.graalvm.buildtools</groupId>
-                <artifactId>native-maven-plugin</artifactId>
-                <version>0.11.0</version>
-            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>org.graalvm.buildtools</groupId>-->
+<!--                <artifactId>native-maven-plugin</artifactId>-->
+<!--                <version>0.11.0</version>-->
+<!--            </plugin>-->
 
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>3.5.4</version>
-                <configuration>
-                    <mainClass>br.com.gabxdev.RinhaBackend2025JavaApplication</mainClass>
-                    <image>
-                        <name>${docker.image.name}:${project.version}</name>
-                        <builder>paketobuildpacks/builder-jammy-java-tiny:latest</builder>
-                        <env>
-                            <BP_NATIVE_IMAGE>true</BP_NATIVE_IMAGE>
-                            <BP_JVM_VERSION>21</BP_JVM_VERSION>
-                            <BP_NATIVE_IMAGE_BUILD_ARGUMENTS>
-                                -H:IncludeResources=".*"
-                                -march=skylake
-                                --native-compiler-options=-march=skylake
-                                --native-compiler-options=-mtune=skylake
-                                --no-fallback
-                                -O3
-                                --gc=serial
-                            </BP_NATIVE_IMAGE_BUILD_ARGUMENTS>
-                        </env>
-                    </image>
-                </configuration>
-            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>org.springframework.boot</groupId>-->
+<!--                <artifactId>spring-boot-maven-plugin</artifactId>-->
+<!--                <version>3.5.4</version>-->
+<!--                <configuration>-->
+<!--                    <mainClass>br.com.gabxdev.RinhaBackend2025JavaApplication</mainClass>-->
+<!--                    <image>-->
+<!--                        <name>${docker.image.name}:${project.version}</name>-->
+<!--                        <builder>paketobuildpacks/builder-jammy-java-tiny:latest</builder>-->
+<!--                        <env>-->
+<!--                            <BP_NATIVE_IMAGE>true</BP_NATIVE_IMAGE>-->
+<!--                            <BP_JVM_VERSION>21</BP_JVM_VERSION>-->
+<!--                            <BP_NATIVE_IMAGE_BUILD_ARGUMENTS>-->
+<!--                                -H:IncludeResources=".*"-->
+<!--                                -march=skylake-->
+<!--                                &#45;&#45;native-compiler-options=-march=skylake-->
+<!--                                &#45;&#45;native-compiler-options=-mtune=skylake-->
+<!--                                &#45;&#45;no-fallback-->
+<!--                                -O3-->
+<!--                                &#45;&#45;gc=serial-->
+<!--                            </BP_NATIVE_IMAGE_BUILD_ARGUMENTS>-->
+<!--                        </env>-->
+<!--                    </image>-->
+<!--                </configuration>-->
+<!--            </plugin>-->
         </plugins>
     </build>
 
