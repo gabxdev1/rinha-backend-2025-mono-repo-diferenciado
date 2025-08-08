@@ -4,6 +4,8 @@ import br.com.gabxdev.config.RouterConfig;
 import br.com.gabxdev.config.ServerConfig;
 import io.undertow.Undertow;
 
+import java.net.UnixDomainSocketAddress;
+
 public class UndertowServer {
     private final static UndertowServer instance = new UndertowServer();
 
@@ -11,6 +13,7 @@ public class UndertowServer {
 
     private UndertowServer() {
         var serverConfig = ServerConfig.getInstance();
+
 
         this.server = Undertow.builder()
                 .addHttpListener(9999, "0.0.0.0")

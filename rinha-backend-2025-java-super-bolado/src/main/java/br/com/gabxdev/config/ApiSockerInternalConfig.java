@@ -40,8 +40,6 @@ public final class ApiSockerInternalConfig {
         try {
             datagramSocket = new DatagramSocket(udpChannelPort);
             datagramSocket.setBroadcast(false);
-            datagramSocket.setSendBufferSize(1024 * 2);
-            datagramSocket.setReceiveBufferSize(1024 * 2);
             datagramSocket.connect(InetAddress.getByName(this.hostApi2), this.portApi2);
         } catch (SocketException | UnknownHostException e) {
             throw new RuntimeException(e);

@@ -8,15 +8,11 @@ public enum PropertiesKey {
     RETRY_API_DEFAULT("retry.api.default"),
     URL_PROCESSOR_DEFAULT("url.processor.default"),
     URL_PROCESSOR_FALLBACK("url.processor.fallback"),
-    HANDLER_UDP_POOL_SIZE("handler.udp.pool-size"),
     TIMEOUT_PROFESSOR_DEFAULT("timeout.processor.default"),
     SOCKET_PATH("socket.path"),
-    SOCKET_PATH_2("socket.path.2"),
-    LB_UDP_HOST("lb.udp.host"),
-    LB_UDP_PORT("lb.udp.port"),
-    API_MASTER("api.master"),
-    API_UDP_PORT("api.udp.port"),
-    CLIENT_BACKOFF("client.backoff");
+    CLIENT_BACKOFF("client.backoff"),
+    WORKERS_THREAD_POOL_SIZE("workers.thread.pool.size"),
+    IO_THREAD_POOL_SIZE("io.thread.pool.size");
 
     private final String key;
 

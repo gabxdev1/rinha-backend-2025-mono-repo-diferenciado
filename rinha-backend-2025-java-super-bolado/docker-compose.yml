@@ -1,6 +1,6 @@
 services:
   backend-1:
-    image: gabxdevv/rinha-backend-2025-java-gabxdev-unix:2.0.2
+    image: gabxdevv/rinha-backend-2025-java-gabxdev-undertow-unix:1.0.0
     restart: always
     volumes:
       - /tmp:/tmp
@@ -12,12 +12,8 @@ services:
       UDP_CHANNEL_INTERNAL_PORT: 9003
       EXTERNAL_UDP_HOST: backend-2
       EXTERNAL_UDP_PORT: 9004
-      API_UDP_PORT: 9095
-      API_MASTER: true
-      LB_UDP_HOST: load-balancer
       CLIENT_BACKOFF: 250
-      SOCKET_PATH: /tmp/api1-1.sock
-      SOCKET_PATH_2: /tmp/api1-2.sock
+      SOCKET_PATH: /tmp/api1.sock
       JAVA_OPTS: >-
         -server
         -XX:+UseG1GC
@@ -38,7 +34,7 @@ services:
           memory: '125MB'
 
   backend-2:
-    image: gabxdevv/rinha-backend-2025-java-gabxdev-unix:2.0.2
+    image: gabxdevv/rinha-backend-2025-java-gabxdev-undertow-unix:1.0.0
     restart: always
     volumes:
       - /tmp:/tmp
@@ -51,8 +47,7 @@ services:
       EXTERNAL_UDP_HOST: backend-1
       EXTERNAL_UDP_PORT: 9003
       CLIENT_BACKOFF: 250
-      SOCKET_PATH: /tmp/api2-1.sock
-      SOCKET_PATH_2: /tmp/api2-2.sock
+      SOCKET_PATH: /tmp/api2.sock
       JAVA_OPTS: >-
         -server
         -XX:+UseG1GC
@@ -71,37 +66,25 @@ services:
         limits:
           cpus: '0.6'
           memory: '125MB'
-
-  load-balancer:
-    image: gabxdevv/loud-balance-java-gabxv-unix:2.0.2
-    restart: always
-    volumes:
-      - /tmp:/tmp
-    depends_on:
-      - backend-1
-      - backend-2
-    ports:
-      - "9999:9999"
-    networks:
-      - backend
-    deploy:
-      resources:
-        limits:
-          cpus: "0.30"
-          memory: "100MB"
-    environment:
-      BACK_END_1_URL: backend-1
-      BACK_END_2_PORT: 9095
-      JAVA_OPTS: >-
-        -server
-        -XX:+UseG1GC
-        -XX:+UseFastAccessorMethods
-        -Xlog:disable
-        -XX:-PrintGC
-        -XX:+UseStringCache
-        -XX:-PrintGCDetails
-        -XX:-FlightRecorder
-        -XX:+DisableExplicitGC
+#
+#  load-balancer:
+#    image: nginx:alpine
+#    restart: always
+#    volumes:
+#      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+#      - /tmp:/tmp
+#    depends_on:
+#      - backend-1
+#      - backend-2
+#    ports:
+#      - "9999:9999"
+#    networks:
+#      - backend
+#    deploy:
+#      resources:
+#        limits:
+#          cpus: "0.3"
+#          memory: "100MB"
 
 networks:
   backend:
