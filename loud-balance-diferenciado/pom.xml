@@ -5,7 +5,7 @@
 
     <groupId>br.com.gabxdev</groupId>
     <artifactId>loud-balance-java-gabxv-unix</artifactId>
-    <version>1.0.0</version>
+    <version>2.0.2</version>
     <name>loud-balance-diferenciado</name>
     <description>loud-balance-diferenciado-java-gabxv</description>
 
@@ -48,6 +48,24 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>jib-maven-plugin</artifactId>
+                <version>${jib-maven-plugin.version}</version>
+                <configuration>
+                    <from>
+                        <image>${jib.maven-plugin.image}</image>
+                    </from>
+                    <to>
+                        <image>${docker.image.name}:${project.version}</image>
+                    </to>
+                    <container>
+                        <format>OCI</format>
+                    </container>
+                </configuration>
+            </plugin>
+
+
+            <plugin>
                 <groupId>org.graalvm.buildtools</groupId>
                 <artifactId>native-maven-plugin</artifactId>
                 <version>0.11.0</version>
@@ -72,6 +90,7 @@
                                 --no-fallback
                                 -O3
                                 --gc=serial
+                                --no-server
                             </BP_NATIVE_IMAGE_BUILD_ARGUMENTS>
                         </env>
                     </image>

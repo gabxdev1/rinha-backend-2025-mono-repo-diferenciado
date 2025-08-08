@@ -2,29 +2,29 @@ package br.com.gabxdev.model;
 
 import br.com.gabxdev.model.enums.PaymentProcessorType;
 
-import java.math.BigDecimal;
-import java.time.Instant;
-
 public final class Payment {
     private final long requestedAt;
 
-    public String json;
+    private byte[] json;
 
-    public PaymentProcessorType type;
+    private PaymentProcessorType type;
 
-    public Payment(long requestedAt) {
+    private byte[] payload;
+
+    public Payment(long requestedAt, byte[] payload) {
         this.requestedAt = requestedAt;
+        this.payload = payload;
     }
 
     public long getRequestedAt() {
         return requestedAt;
     }
 
-    public String getJson() {
+    public byte[] getJson() {
         return json;
     }
 
-    public void setJson(String json) {
+    public void setJson(byte[] json) {
         this.json = json;
     }
 
@@ -36,4 +36,7 @@ public final class Payment {
         this.type = type;
     }
 
+    public byte[] getPayload() {
+        return payload;
+    }
 }

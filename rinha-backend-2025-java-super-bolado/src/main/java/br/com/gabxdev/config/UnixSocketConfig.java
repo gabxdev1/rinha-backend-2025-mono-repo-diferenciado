@@ -9,25 +9,37 @@ import org.newsclub.net.unix.AFUNIXSocketAddress;
 import java.io.File;
 import java.io.IOException;
 import java.net.DatagramSocket;
+import java.util.List;
 
 public final class UnixSocketConfig {
 
     private final static UnixSocketConfig INSTANCE = new UnixSocketConfig();
 
-    private final AFUNIXDatagramSocket socket;
+    private final AFUNIXDatagramSocket socketOne;
+
+    private final AFUNIXDatagramSocket socketTwo;
 
     private UnixSocketConfig() {
         var applicationProperties = ApplicationProperties.getInstance();
 
         var socketPath = applicationProperties.getProperty(PropertiesKey.SOCKET_PATH);
+        var socketPath2 = applicationProperties.getProperty(PropertiesKey.SOCKET_PATH_2);
 
         var file = new File(socketPath);
+        var file2 = new File(socketPath2);
 
         if (file.exists()) {
             file.delete();
         }
 
-        this.socket = loadDatagramSocket(file);
+        if (file2.exists()) {
+            file2.delete();
+        }
+
+        this.socketOne = loadDatagramSocket(file);
+        this.socketTwo = loadDatagramSocket(file2);
+
+        startShutdownHook(List.of(this.socketOne, this.socketTwo));
     }
 
     private AFUNIXDatagramSocket loadDatagramSocket(File file) {
@@ -37,18 +49,18 @@ public final class UnixSocketConfig {
             socket = AFUNIXDatagramSocket.newInstance(AFSocketType.SOCK_DGRAM);
             socket.bind(AFUNIXSocketAddress.of(file));
             socket.setReceiveBufferSize(5 * 1024 * 1024);
+            System.out.println("[UnixSocketConfig] new socket UDS created, address: " + socket.getLocalSocketAddress());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
-        startShutdownHook(socket);
-
         return socket;
     }
 
-    private void startShutdownHook(DatagramSocket channel) {
+    private void startShutdownHook(List<DatagramSocket> channel) {
         Runtime.getRuntime().addShutdownHook(
-                Thread.ofVirtual().unstarted(channel::close)
+                Thread.ofVirtual().unstarted(() ->
+                        channel.forEach(DatagramSocket::close))
         );
     }
 
@@ -56,7 +68,7 @@ public final class UnixSocketConfig {
         return INSTANCE;
     }
 
-    public AFUNIXDatagramSocket getSocket() {
-        return socket;
+    public List<AFUNIXDatagramSocket> getSockets() {
+        return List.of(this.socketOne, this.socketTwo);
     }
 }

@@ -11,10 +11,12 @@ public enum PropertiesKey {
     HANDLER_UDP_POOL_SIZE("handler.udp.pool-size"),
     TIMEOUT_PROFESSOR_DEFAULT("timeout.processor.default"),
     SOCKET_PATH("socket.path"),
+    SOCKET_PATH_2("socket.path.2"),
     LB_UDP_HOST("lb.udp.host"),
     LB_UDP_PORT("lb.udp.port"),
     API_MASTER("api.master"),
-    API_UDP_PORT("api.udp.port"),;
+    API_UDP_PORT("api.udp.port"),
+    CLIENT_BACKOFF("client.backoff");
 
     private final String key;
 

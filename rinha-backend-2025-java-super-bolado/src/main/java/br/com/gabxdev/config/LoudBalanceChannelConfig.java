@@ -45,7 +45,7 @@ public final class LoudBalanceChannelConfig {
 
     private void connect(ApplicationProperties properties) {
         try {
-            Thread.sleep(180);
+            Thread.sleep(500);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }

@@ -4,11 +4,16 @@ import br.com.gabxdev.model.Payment;
 import br.com.gabxdev.repository.Amount;
 import br.com.gabxdev.response.PaymentSummaryGetResponse;
 
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.Arrays;
 
 public class JsonParse {
+    private final static byte[] injectedFieldPrefix = ",\"requestedAt\":\"".getBytes(StandardCharsets.UTF_8);
+
+    private final static byte[] injectedFieldSuffix = "\"}".getBytes(StandardCharsets.UTF_8);
 
     public static long parseInstant(String str) {
         try {
@@ -23,13 +28,24 @@ public class JsonParse {
         }
     }
 
-    public static String buildPaymentDTO(String uuid, Payment payment) {
-        return new StringBuilder("{")
-                .append("\"correlationId\":\"").append(uuid).append("\",")
-                .append("\"amount\":").append(Amount.getAmount().toPlainString()).append(",")
-                .append("\"requestedAt\":\"").append(Instant.ofEpochMilli(payment.getRequestedAt()).toString()).append("\"")
-                .append("}")
-                .toString();
+    public static byte[] buildPaymentDTO(byte[] payload, long requestedAt) {
+        byte[] utcBytes = Instant.ofEpochMilli(requestedAt).toString().getBytes(StandardCharsets.UTF_8);
+
+        int originalLengthWithoutClosingBrace = payload.length - 1;
+
+        byte[] finalBytes = new byte[
+                originalLengthWithoutClosingBrace +
+                injectedFieldPrefix.length +
+                utcBytes.length +
+                injectedFieldSuffix.length
+                ];
+
+        System.arraycopy(payload, 0, finalBytes, 0, originalLengthWithoutClosingBrace);
+        System.arraycopy(injectedFieldPrefix, 0, finalBytes, originalLengthWithoutClosingBrace, injectedFieldPrefix.length);
+        System.arraycopy(utcBytes, 0, finalBytes, originalLengthWithoutClosingBrace + injectedFieldPrefix.length, utcBytes.length);
+        System.arraycopy(injectedFieldSuffix, 0, finalBytes, finalBytes.length - injectedFieldSuffix.length, injectedFieldSuffix.length);
+
+        return finalBytes;
     }
 
     public static String parseToJsonPaymentSummary(PaymentSummaryGetResponse paymentSummary) {

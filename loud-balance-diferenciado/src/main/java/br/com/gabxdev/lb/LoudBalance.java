@@ -15,7 +15,7 @@ public class LoudBalance {
     }
 
     public AFUNIXDatagramSocket selectBackEnd(List<AFUNIXDatagramSocket> sockets) {
-        int index = roundRobinIndex.getAndIncrement() % sockets.size();
+        int index = Math.floorMod(roundRobinIndex.getAndIncrement(), sockets.size());
 
         return sockets.get(index);
     }

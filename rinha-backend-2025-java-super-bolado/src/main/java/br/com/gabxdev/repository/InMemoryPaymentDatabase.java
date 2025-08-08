@@ -28,7 +28,7 @@ public final class InMemoryPaymentDatabase {
     }
 
     public void save(Payment payment) {
-        if (payment.type.equals(PaymentProcessorType.DEFAULT)) {
+        if (payment.getType().equals(PaymentProcessorType.DEFAULT)) {
             paymentsDefault.offer(payment);
         } else {
             paymentsFallback.offer(payment);

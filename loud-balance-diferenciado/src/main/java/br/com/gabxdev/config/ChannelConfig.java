@@ -16,30 +16,36 @@ public class ChannelConfig {
 
     private final static ChannelConfig INSTANCE = new ChannelConfig();
 
-    private final AFUNIXDatagramSocket api1Client;
+    private final AFUNIXDatagramSocket apiOneOneClient;
+    private final AFUNIXDatagramSocket apiOneTwoClient;
 
-    private final AFUNIXDatagramSocket api2Client;
+    private final AFUNIXDatagramSocket apiTwoOneClient;
+    private final AFUNIXDatagramSocket apiTwoTwoClient;
 
     private final DatagramSocket clientUdp;
 
     private ChannelConfig() {
-        AFUNIXSocketAddress addressApi1;
-        AFUNIXSocketAddress addressApi2;
+        AFUNIXSocketAddress addressApiOneOne;
+        AFUNIXSocketAddress addressApiOneTwo;
+        AFUNIXSocketAddress addressApiTwoOne;
+        AFUNIXSocketAddress addressApiTwoTwo;
 
         try {
-            addressApi1 = AFUNIXSocketAddress.of(new File("/tmp/api1.sock"));
-            addressApi2 = AFUNIXSocketAddress.of(new File("/tmp/api2.sock"));
+            addressApiOneOne = AFUNIXSocketAddress.of(new File("/tmp/api1-1.sock"));
+            addressApiOneTwo = AFUNIXSocketAddress.of(new File("/tmp/api1-2.sock"));
+            addressApiTwoOne = AFUNIXSocketAddress.of(new File("/tmp/api2-1.sock"));
+            addressApiTwoTwo = AFUNIXSocketAddress.of(new File("/tmp/api2-2.sock"));
         } catch (SocketException e) {
             throw new RuntimeException(e);
         }
 
-        api1Client = createSocketUds(addressApi1);
-        api2Client = createSocketUds(addressApi2);
+        apiOneOneClient = createSocketUds(addressApiOneOne);
+        apiOneTwoClient = createSocketUds(addressApiOneTwo);
+        apiTwoOneClient = createSocketUds(addressApiTwoOne);
+        apiTwoTwoClient = createSocketUds(addressApiTwoTwo);
         clientUdp = createSocketUdp();
 
-        startShutdownHook(api1Client);
-        startShutdownHook(api2Client);
-        startShutdownHook(clientUdp);
+        startShutdownHook(List.of(apiOneOneClient,  apiOneTwoClient, apiTwoOneClient, apiTwoTwoClient, clientUdp));
     }
 
     public static ChannelConfig getInstance() {
@@ -54,7 +60,7 @@ public class ChannelConfig {
             System.out.println("[ChannelConfig] Create socket unix, address: " + address);
             return socket;
         } catch (Exception e) {
-            throw new RuntimeException("Erro ao criar socket UDS", e);
+            throw new RuntimeException("Erro ao criar socket UDS: " + e.getMessage(), e);
         }
     }
 
@@ -78,11 +84,11 @@ public class ChannelConfig {
         }
     }
 
-    private void startShutdownHook(DatagramSocket socket) {
+    private void startShutdownHook(List<DatagramSocket> socket) {
         Runtime.getRuntime().addShutdownHook(
                 Thread.ofVirtual().unstarted(() -> {
                     try {
-                        socket.close();
+                        socket.forEach(DatagramSocket::close);
                     } catch (Exception ignored) {
                     }
                 })
@@ -90,7 +96,7 @@ public class ChannelConfig {
     }
 
     public List<AFUNIXDatagramSocket> getDatagramSockets() {
-        return List.of(api1Client, api2Client);
+        return List.of(apiOneOneClient,  apiTwoOneClient, apiOneTwoClient, apiTwoTwoClient);
     }
 
     public DatagramSocket getClientUdp() {
