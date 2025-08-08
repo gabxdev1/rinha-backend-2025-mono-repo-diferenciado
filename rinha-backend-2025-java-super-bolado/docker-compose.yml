@@ -2,8 +2,6 @@ services:
   backend-1:
     image: gabxdevv/rinha-backend-2025-java-gabxdev-undertow-unix:1.0.0
     restart: always
-    volumes:
-      - /tmp:/tmp
     environment:
       RETRY_API_DEFAULT: 15
       WORKER_POOL_SIZE: 16
@@ -11,9 +9,11 @@ services:
       URL_PROCESSOR_FALLBACK: http://payment-processor-fallback:8080/payments
       UDP_CHANNEL_INTERNAL_PORT: 9003
       EXTERNAL_UDP_HOST: backend-2
+      SERVER_PORT: 8080
       EXTERNAL_UDP_PORT: 9004
       CLIENT_BACKOFF: 250
-      SOCKET_PATH: /tmp/api1.sock
+      WORKERS_THREAD_POOL_SIZE: 8
+      IO_THREAD_POOL_SIZE: 3
       JAVA_OPTS: >-
         -server
         -XX:+UseG1GC
@@ -36,8 +36,6 @@ services:
   backend-2:
     image: gabxdevv/rinha-backend-2025-java-gabxdev-undertow-unix:1.0.0
     restart: always
-    volumes:
-      - /tmp:/tmp
     environment:
       RETRY_API_DEFAULT: 15
       WORKER_POOL_SIZE: 16
@@ -46,8 +44,10 @@ services:
       UDP_CHANNEL_INTERNAL_PORT: 9004
       EXTERNAL_UDP_HOST: backend-1
       EXTERNAL_UDP_PORT: 9003
+      SERVER_PORT: 8080
       CLIENT_BACKOFF: 250
-      SOCKET_PATH: /tmp/api2.sock
+      WORKERS_THREAD_POOL_SIZE: 8
+      IO_THREAD_POOL_SIZE: 3
       JAVA_OPTS: >-
         -server
         -XX:+UseG1GC
@@ -66,25 +66,24 @@ services:
         limits:
           cpus: '0.6'
           memory: '125MB'
-#
-#  load-balancer:
-#    image: nginx:alpine
-#    restart: always
-#    volumes:
-#      - ./nginx.conf:/etc/nginx/nginx.conf:ro
-#      - /tmp:/tmp
-#    depends_on:
-#      - backend-1
-#      - backend-2
-#    ports:
-#      - "9999:9999"
-#    networks:
-#      - backend
-#    deploy:
-#      resources:
-#        limits:
-#          cpus: "0.3"
-#          memory: "100MB"
+
+  load-balancer:
+    image: nginx:alpine
+    restart: always
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - backend-1
+      - backend-2
+    ports:
+      - "9999:9999"
+    networks:
+      - backend
+    deploy:
+      resources:
+        limits:
+          cpus: "0.3"
+          memory: "100MB"
 
 networks:
   backend:

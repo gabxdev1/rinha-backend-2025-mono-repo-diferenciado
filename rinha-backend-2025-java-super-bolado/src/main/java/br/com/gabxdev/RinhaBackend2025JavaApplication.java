@@ -18,7 +18,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class RinhaBackend2025JavaApplication {
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) {
         System.setProperty("org.xnio.Options.JMX", "false");
         Logger.getLogger("io.undertow").setLevel(Level.OFF);
         Logger.getLogger("org.xnio").setLevel(Level.OFF);
@@ -26,7 +26,7 @@ public class RinhaBackend2025JavaApplication {
         start();
     }
 
-    private static void start() throws InterruptedException {
+    private static void start() {
         ApplicationProperties.getInstance();
         ApiInternalConfig.getInstance();
         ApiSockerInternalConfig.getInstance();
@@ -41,8 +41,6 @@ public class RinhaBackend2025JavaApplication {
         ApiInternalConsumer.getInstance();
 
 
-        UndertowServer.getInstance();
-
-
+        UndertowServer.getInstance().start();
     }
 }
