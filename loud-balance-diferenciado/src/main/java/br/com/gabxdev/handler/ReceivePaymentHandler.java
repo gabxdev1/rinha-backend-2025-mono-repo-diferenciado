@@ -6,7 +6,6 @@ import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.StatusCodes;
 
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 
 public class ReceivePaymentHandler implements HttpHandler {
@@ -26,12 +25,10 @@ public class ReceivePaymentHandler implements HttpHandler {
 
     private void handleReceivePayment(HttpServerExchange exchange) {
         exchange.getRequestReceiver().receiveFullBytes((httpServerExchange, payload) -> {
-            exchange.setStatusCode(StatusCodes.OK);
-            exchange.endExchange();
+            var response = paymentPostProducer.callAnyApi(payload);
 
-            CompletableFuture.runAsync(() -> {
-                paymentPostProducer.sendEvent(payload);
-            }, threadPool);
+            exchange.setStatusCode(response);
+            exchange.endExchange();
         });
     }
 }

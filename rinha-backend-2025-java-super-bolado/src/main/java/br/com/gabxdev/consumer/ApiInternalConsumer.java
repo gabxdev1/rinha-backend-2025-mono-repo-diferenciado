@@ -1,4 +1,4 @@
-package br.com.gabxdev.router;
+package br.com.gabxdev.consumer;
 
 import br.com.gabxdev.config.ApiSockerInternalConfig;
 import br.com.gabxdev.middleware.PaymentSummaryWaiter;
@@ -11,23 +11,15 @@ import java.nio.charset.StandardCharsets;
 
 import static br.com.gabxdev.model.enums.EventType.*;
 
-public final class ApiRouter {
+public class ApiInternalConsumer {
 
-    private final static ApiRouter INSTANCE = new ApiRouter();
+    private final static ApiInternalConsumer INSTANCE = new ApiInternalConsumer();
 
     private final PaymentService paymentService = PaymentService.getInstance();
 
     private final PaymentSummaryWaiter paymentSummaryWaiter = PaymentSummaryWaiter.getInstance();
 
-    private ApiRouter() {
-        start();
-    }
-
-    public static ApiRouter getInstance() {
-        return INSTANCE;
-    }
-
-    private void start() {
+    private ApiInternalConsumer() {
         Thread.startVirtualThread(() -> {
             try {
                 handleEvents();
@@ -35,6 +27,10 @@ public final class ApiRouter {
                 throw new RuntimeException(e);
             }
         });
+    }
+
+    public static ApiInternalConsumer getInstance() {
+        return INSTANCE;
     }
 
     private void handleEvents() throws IOException {
