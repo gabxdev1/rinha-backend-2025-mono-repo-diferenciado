@@ -24,15 +24,13 @@ public class PaymentPostProducer {
         return INSTANCE;
     }
 
-    public int callAnyApi(byte[] event) {
+    public void callAnyApi(byte[] event) {
         var client = loudBalance.selectBackEnd(sockets);
 
         try {
             client.send(new DatagramPacket(event, event.length));
-
-            return StatusCodes.OK;
         } catch (IOException e) {
-            return StatusCodes.INTERNAL_SERVER_ERROR;
+            System.out.println("Erro ao enviar request: " + e.getMessage());
         }
     }
 }

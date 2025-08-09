@@ -17,7 +17,6 @@ public class UndertowServer {
                 .setIoThreads(serverConfig.getIoThreadPoolSize())
                 .setWorkerThreads(serverConfig.getWorkersThreadPoolSize())
                 .setDirectBuffers(true)
-                .setBufferSize(256)
                 .setHandler(RouterConfig.getInstance().getRoutes())
                 .build();
 
