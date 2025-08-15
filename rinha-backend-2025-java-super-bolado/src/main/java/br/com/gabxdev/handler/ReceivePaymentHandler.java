@@ -7,7 +7,6 @@ import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.StatusCodes;
 
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 
 public class ReceivePaymentHandler implements HttpHandler {
@@ -32,9 +31,9 @@ public class ReceivePaymentHandler implements HttpHandler {
             exchange.endExchange();
 
 
-            CompletableFuture.runAsync(() -> {
-                paymentWorker.enqueue(PaymentMapper.toPayment(payload));
-            }, pool);
+//            CompletableFuture.runAsync(() -> {
+            paymentWorker.enqueue(PaymentMapper.toPayment(payload));
+//            }, pool);
         });
     }
 }

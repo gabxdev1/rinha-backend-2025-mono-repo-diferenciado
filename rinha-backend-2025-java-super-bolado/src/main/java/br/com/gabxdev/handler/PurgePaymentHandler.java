@@ -29,6 +29,8 @@ public class PurgePaymentHandler implements HttpHandler {
         exchange.setStatusCode(StatusCodes.OK);
         exchange.endExchange();
 
-        CompletableFuture.runAsync(paymentService::purgePayments, threadPool);
+        paymentService.purgePayments();
+
+//        CompletableFuture.runAsync(paymentService::purgePayments, threadPool);
     }
 }

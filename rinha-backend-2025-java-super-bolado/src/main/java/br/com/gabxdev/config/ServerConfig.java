@@ -14,7 +14,7 @@ public class ServerConfig {
 
     private final int workersThreadPoolSize;
 
-    private final ExecutorService workersThreadPool;
+    private ExecutorService workersThreadPool;
 
     private ServerConfig() {
         var applicationProperties = ApplicationProperties.getInstance();
@@ -22,7 +22,7 @@ public class ServerConfig {
         ioThreadPoolSize = Integer.parseInt(applicationProperties.getProperty(PropertiesKey.IO_THREAD_POOL_SIZE));
         workersThreadPoolSize = Integer.parseInt(applicationProperties.getProperty(PropertiesKey.WORKERS_THREAD_POOL_SIZE));
 
-        workersThreadPool = Executors.newFixedThreadPool(12, Thread.ofVirtual().factory());
+//        workersThreadPool = Executors.newFixedThreadPool(12, Thread.ofVirtual().factory());
     }
 
     public static ServerConfig getInstance() {

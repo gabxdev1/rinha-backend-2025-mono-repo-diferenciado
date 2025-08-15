@@ -6,7 +6,7 @@
 
     <groupId>br.com.gabxdev</groupId>
     <artifactId>rinha-backend-2025-java-gabxdev-undertow-unix</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.7</version>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>

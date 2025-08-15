@@ -1,6 +1,6 @@
 services:
   backend-1:
-    image: gabxdevv/rinha-backend-2025-java-gabxdev-undertow-unix:1.0.0
+    image: gabxdevv/rinha-backend-2025-java-gabxdev-undertow-unix:1.0.7
     restart: always
     environment:
       RETRY_API_DEFAULT: 15
@@ -12,8 +12,8 @@ services:
       SERVER_PORT: 8080
       EXTERNAL_UDP_PORT: 9004
       CLIENT_BACKOFF: 250
-      WORKERS_THREAD_POOL_SIZE: 8
-      IO_THREAD_POOL_SIZE: 3
+      WORKERS_THREAD_POOL_SIZE: 12
+      IO_THREAD_POOL_SIZE: 6
       JAVA_OPTS: >-
         -server
         -XX:+UseG1GC
@@ -34,7 +34,7 @@ services:
           memory: '125MB'
 
   backend-2:
-    image: gabxdevv/rinha-backend-2025-java-gabxdev-undertow-unix:1.0.0
+    image: gabxdevv/rinha-backend-2025-java-gabxdev-undertow-unix:1.0.7
     restart: always
     environment:
       RETRY_API_DEFAULT: 15
@@ -46,8 +46,8 @@ services:
       EXTERNAL_UDP_PORT: 9003
       SERVER_PORT: 8080
       CLIENT_BACKOFF: 250
-      WORKERS_THREAD_POOL_SIZE: 8
-      IO_THREAD_POOL_SIZE: 3
+      WORKERS_THREAD_POOL_SIZE: 12
+      IO_THREAD_POOL_SIZE: 6
       JAVA_OPTS: >-
         -server
         -XX:+UseG1GC
@@ -68,7 +68,7 @@ services:
           memory: '125MB'
 
   load-balancer:
-    image: nginx:alpine
+    image: nginx:1.28-alpine
     restart: always
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
