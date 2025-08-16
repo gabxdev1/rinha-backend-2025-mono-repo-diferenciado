@@ -19,11 +19,6 @@ public class UndertowServer {
                 .setIoThreads(serverConfig.getIoThreadPoolSize())
                 .setWorkerThreads(serverConfig.getWorkersThreadPoolSize())
                 .setHandler(RouterConfig.getInstance().getRoutes())
-                .setDirectBuffers(true)
-                .setSocketOption(Options.TCP_NODELAY, true)
-                .setSocketOption(Options.REUSE_ADDRESSES, true)
-                .setSocketOption(Options.KEEP_ALIVE, true)
-                .setServerOption(UndertowOptions.ALWAYS_SET_KEEP_ALIVE, true)
                 .build();
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {

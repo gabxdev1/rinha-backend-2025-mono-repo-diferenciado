@@ -31,7 +31,7 @@ public class PaymentPostProducer {
             client.send(new DatagramPacket(event, event.length));
 
             return StatusCodes.OK;
-        } catch (IOException e) {
+        } catch (Exception e) {
             return StatusCodes.INTERNAL_SERVER_ERROR;
         }
     }

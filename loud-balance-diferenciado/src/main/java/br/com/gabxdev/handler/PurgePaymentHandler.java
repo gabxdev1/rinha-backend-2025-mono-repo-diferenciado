@@ -14,8 +14,6 @@ public class PurgePaymentHandler implements HttpHandler {
 
     private final EventProducer eventProducer = EventProducer.getInstance();
 
-    private final ExecutorService threadPool = ServerConfig.getInstance().getWorkersThreadPool();
-
     @Override
     public void handleRequest(HttpServerExchange exchange) {
         if (exchange.isInIoThread()) {
@@ -30,8 +28,6 @@ public class PurgePaymentHandler implements HttpHandler {
         exchange.setStatusCode(StatusCodes.OK);
         exchange.endExchange();
 
-        CompletableFuture.runAsync(() -> {
-            eventProducer.sendEvent(EventMapper.toPurgePaymentsPostRequest());
-        }, threadPool);
+        eventProducer.sendEvent(EventMapper.toPurgePaymentsPostRequest());
     }
 }
