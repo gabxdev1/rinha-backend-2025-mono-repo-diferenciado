@@ -3,7 +3,6 @@ package br.com.gabxdev.service;
 import br.com.gabxdev.client.UdpClient;
 import br.com.gabxdev.config.ApiSockerInternalConfig;
 import br.com.gabxdev.config.LoudBalanceChannelConfig;
-import br.com.gabxdev.config.UnixSocketConfig;
 import br.com.gabxdev.mapper.JsonParse;
 import br.com.gabxdev.middleware.PaymentMiddleware;
 import br.com.gabxdev.middleware.PaymentSummaryWaiter;
@@ -11,11 +10,9 @@ import br.com.gabxdev.model.Event;
 import br.com.gabxdev.model.enums.EventType;
 import br.com.gabxdev.repository.InMemoryPaymentDatabase;
 import br.com.gabxdev.response.PaymentSummaryGetResponse;
-import org.newsclub.net.unix.AFUNIXDatagramSocket;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
 
 import static br.com.gabxdev.mapper.JsonParse.parseInstant;

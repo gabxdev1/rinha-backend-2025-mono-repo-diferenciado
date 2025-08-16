@@ -25,11 +25,9 @@ public class Event {
     }
 
     public static String buildEventDTO(int type, String payload) {
-        return new StringBuilder(50)
-                .append(type)
-                .append("&")
-                .append(payload)
-                .toString();
+        return type +
+               "&" +
+               payload;
     }
 
     public static Event parseEvent(String eventDTO) {

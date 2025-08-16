@@ -39,11 +39,11 @@ public class EventConsumer {
     private void handlerEvent() throws IOException {
         var socket = LoudBalanceChannelConfig.getInstance().getSocket();
 
-        var buffer = new byte[60];
-
-        var packet = new DatagramPacket(buffer, buffer.length);
-
         while (true) {
+            var buffer = new byte[60];
+
+            var packet = new DatagramPacket(buffer, buffer.length);
+
             socket.receive(packet);
 
             routerEvent(new String(packet.getData(), 0, packet.getLength(), StandardCharsets.UTF_8));

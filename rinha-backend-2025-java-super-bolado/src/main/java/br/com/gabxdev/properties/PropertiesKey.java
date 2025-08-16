@@ -10,6 +10,7 @@ public enum PropertiesKey {
     URL_PROCESSOR_FALLBACK("url.processor.fallback"),
     HANDLER_UDP_POOL_SIZE("handler.udp.pool-size"),
     TIMEOUT_PROFESSOR_DEFAULT("timeout.processor.default"),
+    TIMEOUT_PROFESSOR_FALLBACK("timeout.processor.fallback"),
     SOCKET_PATH("socket.path"),
     SOCKET_PATH_2("socket.path.2"),
     LB_UDP_HOST("lb.udp.host"),

@@ -1,11 +1,18 @@
 package br.com.gabxdev.worker;
 
 import br.com.gabxdev.client.PaymentProcessorClient;
+import br.com.gabxdev.commons.HttpHeaders;
+import br.com.gabxdev.commons.MediaType;
+import br.com.gabxdev.config.PaymentProcessorConfig;
+import br.com.gabxdev.mapper.JsonParse;
 import br.com.gabxdev.model.Payment;
 import br.com.gabxdev.properties.ApplicationProperties;
 import br.com.gabxdev.properties.PropertiesKey;
 import br.com.gabxdev.repository.InMemoryPaymentDatabase;
 
+import java.net.URI;
+import java.net.http.HttpRequest;
+import java.time.Duration;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Semaphore;
 
@@ -14,6 +21,8 @@ public final class PaymentWorker {
     private final static PaymentWorker INSTANCE = new PaymentWorker();
 
     private final Integer workerPoolSize;
+
+    private final PaymentProcessorConfig paymentProcessorConfig = PaymentProcessorConfig.getInstance();
 
     private final ConcurrentLinkedQueue<Payment> pendingPayments = new ConcurrentLinkedQueue<>();
 
@@ -48,9 +57,7 @@ public final class PaymentWorker {
             try {
                 semaphore.acquire();
 
-                var request = pendingPayments.poll();
-
-                processPayment(request);
+                processPayment(pendingPayments.poll());
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -64,6 +71,8 @@ public final class PaymentWorker {
     }
 
     private void processPayment(Payment payment) {
+        completeBuildPayment(payment);
+
         if (processorClient.sendPayment(payment)) {
             paymentRepository.save(payment);
 
@@ -71,5 +80,42 @@ public final class PaymentWorker {
         }
 
         enqueue(payment);
+    }
+
+    private void completeBuildPayment(Payment payment) {
+        if (isNewPayment(payment)) {
+            payment.setAmount(JsonParse.parseBigDecimal(payment.getPayload()));
+
+            payment.setJson(JsonParse.buildPaymentDTO(
+                    payment.getPayload(),
+                    payment.getRequestedAt(),
+                    payment.getPacketLength()
+            ));
+
+            payment.setRequestDefault(buildRequest(
+                    payment.getJson(),
+                    paymentProcessorConfig.getUriProcessorDefault(),
+                    paymentProcessorConfig.getTimeoutDefault()
+            ));
+
+            payment.setRequestFallback(buildRequest(
+                    payment.getJson(),
+                    paymentProcessorConfig.getUriProcessorFallback(),
+                    paymentProcessorConfig.getTimeoutFallback()
+            ));
+        }
+    }
+
+    private boolean isNewPayment(Payment payment) {
+        return payment.getAmount() == null;
+    }
+
+    private HttpRequest buildRequest(byte[] body, URI uri, Duration timeout) {
+        return HttpRequest.newBuilder()
+                .uri(uri)
+                .timeout(timeout)
+                .header(HttpHeaders.CONTENT_TYPE.getValue(), MediaType.APPLICATION_JSON.getValue())
+                .POST(HttpRequest.BodyPublishers.ofByteArray(body))
+                .build();
     }
 }

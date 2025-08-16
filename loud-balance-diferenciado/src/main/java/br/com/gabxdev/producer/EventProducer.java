@@ -12,7 +12,8 @@ public class EventProducer {
 
     private final DatagramSocket client = ChannelConfig.getInstance().getClientUdp();
 
-    private EventProducer() {}
+    private EventProducer() {
+    }
 
     public static EventProducer getInstance() {
         return INSTANCE;
@@ -21,7 +22,7 @@ public class EventProducer {
     public void sendEvent(byte[] event) {
         try {
             client.send(new DatagramPacket(event, event.length));
-        } catch (IOException e) {
+        } catch (Exception e) {
             System.out.println("[EventProducer] Error ao enviar evento");
         }
     }

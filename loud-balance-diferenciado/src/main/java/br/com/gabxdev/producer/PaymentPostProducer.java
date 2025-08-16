@@ -11,7 +11,7 @@ import java.util.List;
 
 public class PaymentPostProducer {
 
-    private static PaymentPostProducer INSTANCE = new PaymentPostProducer();
+    private static final PaymentPostProducer INSTANCE = new PaymentPostProducer();
 
     private final List<AFUNIXDatagramSocket> sockets = ChannelConfig.getInstance().getDatagramSockets();
 
@@ -24,13 +24,15 @@ public class PaymentPostProducer {
         return INSTANCE;
     }
 
-    public void callAnyApi(byte[] event) {
+    public int callAnyApi(byte[] event) {
         var client = loudBalance.selectBackEnd(sockets);
 
         try {
             client.send(new DatagramPacket(event, event.length));
+
+            return StatusCodes.OK;
         } catch (IOException e) {
-            System.out.println("Erro ao enviar request: " + e.getMessage());
+            return StatusCodes.INTERNAL_SERVER_ERROR;
         }
     }
 }

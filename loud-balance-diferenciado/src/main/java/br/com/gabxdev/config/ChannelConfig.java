@@ -45,7 +45,7 @@ public class ChannelConfig {
         apiTwoTwoClient = createSocketUds(addressApiTwoTwo);
         clientUdp = createSocketUdp();
 
-        startShutdownHook(List.of(apiOneOneClient,  apiOneTwoClient, apiTwoOneClient, apiTwoTwoClient, clientUdp));
+        startShutdownHook(List.of(apiOneOneClient, apiOneTwoClient, apiTwoOneClient, apiTwoTwoClient, clientUdp));
     }
 
     public static ChannelConfig getInstance() {
@@ -96,7 +96,7 @@ public class ChannelConfig {
     }
 
     public List<AFUNIXDatagramSocket> getDatagramSockets() {
-        return List.of(apiOneOneClient,  apiTwoOneClient, apiOneTwoClient, apiTwoTwoClient);
+        return List.of(apiOneOneClient, apiTwoOneClient, apiOneTwoClient, apiTwoTwoClient);
     }
 
     public DatagramSocket getClientUdp() {

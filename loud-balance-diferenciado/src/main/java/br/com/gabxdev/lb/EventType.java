@@ -7,7 +7,7 @@ public enum EventType {
 
     PAYMENT_POST('c'),
 
-    PURGE( 'd');
+    PURGE('d');
 
     private final char value;
 

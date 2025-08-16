@@ -26,12 +26,10 @@ public class ReceivePaymentHandler implements HttpHandler {
 
     private void handleReceivePayment(HttpServerExchange exchange) {
         exchange.getRequestReceiver().receiveFullBytes((httpServerExchange, payload) -> {
-            exchange.setStatusCode(StatusCodes.OK);
-            exchange.endExchange();
+            var response = paymentPostProducer.callAnyApi(payload);
 
-            CompletableFuture.runAsync(() -> {
-                paymentPostProducer.callAnyApi(payload);
-            }, threadPool);
+            exchange.setStatusCode(response);
+            exchange.endExchange();
         });
     }
 }

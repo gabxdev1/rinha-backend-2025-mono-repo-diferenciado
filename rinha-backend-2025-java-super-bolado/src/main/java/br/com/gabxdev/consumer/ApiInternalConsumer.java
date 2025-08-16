@@ -36,10 +36,11 @@ public class ApiInternalConsumer {
     private void handleEvents() throws IOException {
         var socket = ApiSockerInternalConfig.getInstance().getDatagramSocket();
 
-        var buffer = new byte[100];
-        var packet = new DatagramPacket(buffer, buffer.length);
-
         while (true) {
+            var buffer = new byte[180];
+
+            var packet = new DatagramPacket(buffer, buffer.length);
+
             socket.receive(packet);
 
             mapperEvent(packet.getData(), packet.getLength());

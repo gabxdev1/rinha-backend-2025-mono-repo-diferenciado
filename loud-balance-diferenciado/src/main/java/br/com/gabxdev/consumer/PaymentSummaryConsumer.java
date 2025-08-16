@@ -32,11 +32,11 @@ public class PaymentSummaryConsumer {
     private void handlePaymentSummary() throws IOException {
         var paymentSummaryWaiter = PaymentSummaryWaiter.getInstance();
 
-        var buffer = new byte[220];
-
-        var packet = new DatagramPacket(buffer, buffer.length);
-
         while (true) {
+            var buffer = new byte[220];
+
+            var packet = new DatagramPacket(buffer, buffer.length);
+
             client.receive(packet);
 
             paymentSummaryWaiter.completeResponse(buildPayload(packet.getData(), packet.getLength()));

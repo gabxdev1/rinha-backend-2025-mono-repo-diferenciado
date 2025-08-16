@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>br.com.gabxdev</groupId>
-    <artifactId>rinha-backend-2025-java-gabxdev-unix</artifactId>
-    <version>3.0.0</version>
+    <artifactId>rinha-backend-2025-java-gabxdev-unix-final</artifactId>
+    <version>1.0.0</version>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
@@ -56,9 +56,8 @@
                             <BP_JVM_VERSION>21</BP_JVM_VERSION>
                             <BP_NATIVE_IMAGE_BUILD_ARGUMENTS>
                                 -H:IncludeResources=".*"
-                                -march=skylake
-                                --native-compiler-options=-march=skylake
-                                --native-compiler-options=-mtune=skylake
+                                -march=x86-64-v3
+                                --native-compiler-options=-march=x86-64-v3
                                 --no-fallback
                                 -O3
                                 --gc=serial

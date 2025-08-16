@@ -1,6 +1,5 @@
 package br.com.gabxdev.client;
 
-import br.com.gabxdev.config.UnixSocketConfig;
 import org.newsclub.net.unix.AFUNIXDatagramSocket;
 
 import java.io.IOException;
