@@ -5,7 +5,7 @@
 
     <groupId>br.com.gabxdev</groupId>
     <artifactId>load-balance-java-gabxdev-unix-final</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <name>load-balance-diferenciado</name>
 
     <properties>
