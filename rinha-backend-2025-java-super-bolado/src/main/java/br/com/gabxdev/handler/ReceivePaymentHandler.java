@@ -1,12 +1,13 @@
 package br.com.gabxdev.handler;
 
 import br.com.gabxdev.config.ServerConfig;
-import br.com.gabxdev.mapper.PaymentMapper;
+import br.com.gabxdev.model.Payment;
 import br.com.gabxdev.worker.PaymentWorker;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.StatusCodes;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 
 public class ReceivePaymentHandler implements HttpHandler {
@@ -31,9 +32,9 @@ public class ReceivePaymentHandler implements HttpHandler {
             exchange.endExchange();
 
 
-//            CompletableFuture.runAsync(() -> {
-            paymentWorker.enqueue(PaymentMapper.toPayment(payload));
-//            }, pool);
+            CompletableFuture.runAsync(() -> {
+                paymentWorker.enqueue(new Payment(System.currentTimeMillis(), payload));
+            }, pool);
         });
     }
 }

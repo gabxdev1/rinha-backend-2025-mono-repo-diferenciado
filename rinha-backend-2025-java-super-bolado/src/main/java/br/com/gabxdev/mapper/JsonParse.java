@@ -1,9 +1,8 @@
 package br.com.gabxdev.mapper;
 
-import br.com.gabxdev.model.Payment;
-import br.com.gabxdev.repository.Amount;
 import br.com.gabxdev.response.PaymentSummaryGetResponse;
 
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -14,6 +13,8 @@ public class JsonParse {
     private final static byte[] injectedFieldPrefix = ",\"requestedAt\":\"".getBytes(StandardCharsets.UTF_8);
 
     private final static byte[] injectedFieldSuffix = "\"}".getBytes(StandardCharsets.UTF_8);
+
+    private static final int START_INDEX_AMOUNT = 62;
 
     public static long parseInstant(String str) {
         try {
@@ -26,6 +27,29 @@ public class JsonParse {
                         .toInstant(ZoneOffset.UTC).toEpochMilli();
             }
         }
+    }
+
+    public static BigDecimal parseBigDecimal(byte[] payload) {
+        int startIndex = 0;
+        int endIndex = 0;
+
+        for (int i = START_INDEX_AMOUNT; i < payload.length; i++) {
+            if (Character.isDigit(payload[i])) {
+                startIndex = i;
+                endIndex = i;
+                break;
+            }
+        }
+
+        while (payload[endIndex] != '}') {
+            endIndex++;
+        }
+
+        var amountStr = new String(Arrays.copyOfRange(payload, startIndex, endIndex), StandardCharsets.UTF_8);
+
+        var amount = new BigDecimal(amountStr);
+
+        return amount;
     }
 
     public static byte[] buildPaymentDTO(byte[] payload, long requestedAt) {
@@ -65,17 +89,16 @@ public class JsonParse {
                                            String totalRequestsFallback,
                                            String amountTotalDefault) {
 
-        return new StringBuilder("{")
-                .append("\"default\": {")
-                .append("\"totalRequests\":").append(totalRequestsDefault).append(",")
-                .append("\"totalAmount\":").append(totalAmountDefault)
-                .append("},")
-                .append("\"fallback\": {")
-                .append("\"totalRequests\":").append(totalRequestsFallback).append(",")
-                .append("\"totalAmount\":").append(amountTotalDefault)
-                .append("}")
-                .append("}")
-                .toString();
+        return "{" +
+               "\"default\": {" +
+               "\"totalRequests\":" + totalRequestsDefault + "," +
+               "\"totalAmount\":" + totalAmountDefault +
+               "}," +
+               "\"fallback\": {" +
+               "\"totalRequests\":" + totalRequestsFallback + "," +
+               "\"totalAmount\":" + amountTotalDefault +
+               "}" +
+               "}";
     }
 
     public static String parseToJsonPaymentSummaryInternal(PaymentSummaryGetResponse paymentSummary) {
@@ -95,15 +118,14 @@ public class JsonParse {
                                                    String totalRequestsFallback,
                                                    String amountTotalDefault) {
 
-        var sb = new StringBuilder(100);
+        String sb = totalRequestsDefault +
+                    "-" +
+                    totalAmountDefault +
+                    "-" +
+                    totalRequestsFallback +
+                    "-" +
+                    amountTotalDefault;
 
-        return sb.append(totalRequestsDefault)
-                .append("-")
-                .append(totalAmountDefault)
-                .append("-")
-                .append(totalRequestsFallback)
-                .append("-")
-                .append(amountTotalDefault)
-                .toString();
+        return sb;
     }
 }

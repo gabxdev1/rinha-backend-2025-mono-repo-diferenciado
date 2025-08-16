@@ -8,9 +8,7 @@ import br.com.gabxdev.response.PaymentSummaryGetResponse;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.stream.Collectors;
 
 public final class InMemoryPaymentDatabase {
 
@@ -71,7 +69,11 @@ public final class InMemoryPaymentDatabase {
         }
 
         var count = payments.size();
-        var total = Amount.getAmount().multiply(BigDecimal.valueOf(count));
+        var total = BigDecimal.ZERO;
+
+        for (Payment payment : payments) {
+            total = total.add(payment.getAmount());
+        }
 
         return new PaymentSummary(type, count, total);
     }

@@ -1,9 +1,9 @@
 services:
   backend-1:
-    image: gabxdevv/rinha-backend-2025-java-gabxdev-undertow-unix:1.0.7
+    image: gabxdevv/rinha-backend-2025-java-gabxdev-nginx-final:1.0.0
     restart: always
     environment:
-      RETRY_API_DEFAULT: 15
+      RETRY_API_DEFAULT: 8
       WORKER_POOL_SIZE: 16
       URL_PROCESSOR_DEFAULT: http://payment-processor-default:8080/payments
       URL_PROCESSOR_FALLBACK: http://payment-processor-fallback:8080/payments
@@ -12,18 +12,6 @@ services:
       SERVER_PORT: 8080
       EXTERNAL_UDP_PORT: 9004
       CLIENT_BACKOFF: 250
-      WORKERS_THREAD_POOL_SIZE: 12
-      IO_THREAD_POOL_SIZE: 6
-      JAVA_OPTS: >-
-        -server
-        -XX:+UseG1GC
-        -XX:+UseFastAccessorMethods
-        -Xlog:disable
-        -XX:-PrintGC
-        -XX:+UseStringCache
-        -XX:-PrintGCDetails
-        -XX:-FlightRecorder
-        -XX:+DisableExplicitGC
     networks:
       - backend
       - payment-processor
@@ -31,13 +19,13 @@ services:
       resources:
         limits:
           cpus: '0.6'
-          memory: '125MB'
+          memory: '145MB'
 
   backend-2:
-    image: gabxdevv/rinha-backend-2025-java-gabxdev-undertow-unix:1.0.7
+    image: gabxdevv/rinha-backend-2025-java-gabxdev-nginx-final:1.0.0
     restart: always
     environment:
-      RETRY_API_DEFAULT: 15
+      RETRY_API_DEFAULT: 8
       WORKER_POOL_SIZE: 16
       URL_PROCESSOR_DEFAULT: http://payment-processor-default:8080/payments
       URL_PROCESSOR_FALLBACK: http://payment-processor-fallback:8080/payments
@@ -45,19 +33,6 @@ services:
       EXTERNAL_UDP_HOST: backend-1
       EXTERNAL_UDP_PORT: 9003
       SERVER_PORT: 8080
-      CLIENT_BACKOFF: 250
-      WORKERS_THREAD_POOL_SIZE: 12
-      IO_THREAD_POOL_SIZE: 6
-      JAVA_OPTS: >-
-        -server
-        -XX:+UseG1GC
-        -XX:+UseFastAccessorMethods
-        -Xlog:disable
-        -XX:-PrintGC
-        -XX:+UseStringCache
-        -XX:-PrintGCDetails
-        -XX:-FlightRecorder
-        -XX:+DisableExplicitGC
     networks:
       - backend
       - payment-processor
@@ -65,7 +40,7 @@ services:
       resources:
         limits:
           cpus: '0.6'
-          memory: '125MB'
+          memory: '145MB'
 
   load-balancer:
     image: nginx:1.28-alpine
@@ -83,7 +58,7 @@ services:
       resources:
         limits:
           cpus: "0.3"
-          memory: "100MB"
+          memory: "60MB"
 
 networks:
   backend:
