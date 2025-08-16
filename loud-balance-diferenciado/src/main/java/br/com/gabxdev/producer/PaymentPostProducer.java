@@ -2,6 +2,7 @@ package br.com.gabxdev.producer;
 
 import br.com.gabxdev.config.ChannelConfig;
 import br.com.gabxdev.lb.LoudBalance;
+import io.undertow.util.StatusCodes;
 import org.newsclub.net.unix.AFUNIXDatagramSocket;
 
 import java.io.IOException;
@@ -23,13 +24,15 @@ public class PaymentPostProducer {
         return INSTANCE;
     }
 
-    public void callAnyApi(byte[] event) {
+    public int callAnyApi(byte[] event) {
         var client = loudBalance.selectBackEnd(sockets);
 
         try {
             client.send(new DatagramPacket(event, event.length));
+
+            return StatusCodes.OK;
         } catch (IOException e) {
-            System.out.println("Erro ao enviar request: " + e.getMessage());
+            return StatusCodes.INTERNAL_SERVER_ERROR;
         }
     }
 }
